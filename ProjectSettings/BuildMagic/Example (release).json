@@ -1,0 +1,201 @@
+{
+    "_name": "Example (release)",
+    "_postBuildConfigurations": [
+        {
+            "rid": 1000
+        }
+    ],
+    "_internalPrepareConfigurations": [],
+    "_preBuildConfigurations": [
+        {
+            "rid": 1001
+        },
+        {
+            "rid": 1002
+        },
+        {
+            "rid": 1003
+        },
+        {
+            "rid": 1004
+        },
+        {
+            "rid": 1005
+        },
+        {
+            "rid": 1006
+        }
+    ],
+    "_baseSchemeName": "Example (common)",
+    "references": {
+        "version": 2,
+        "RefIds": [
+            {
+                "rid": 1000,
+                "type": {
+                    "class": "iOSAddCapabilityTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "entitlementFilePath": "Entitlement.entitlements",
+                        "capabilities": {
+                            "_value": [
+                                {
+                                    "rid": 1007
+                                },
+                                {
+                                    "rid": 1008
+                                },
+                                {
+                                    "rid": 1009
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "rid": 1001,
+                "type": {
+                    "class": "EditorUserBuildSettingsSetIOSXcodeBuildConfigTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": 1
+                }
+            },
+            {
+                "rid": 1002,
+                "type": {
+                    "class": "PlayerSettingsSetScriptingDefineSymbolsTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "pairs": [
+                            {
+                                "key": {
+                                    "_name": "Android"
+                                },
+                                "value": []
+                            },
+                            {
+                                "key": {
+                                    "_name": "iPhone"
+                                },
+                                "value": []
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "rid": 1003,
+                "type": {
+                    "class": "PlayerSettingsSetIl2CppCompilerConfigurationTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "pairs": [
+                            {
+                                "key": {
+                                    "_name": "Android"
+                                },
+                                "value": 2
+                            },
+                            {
+                                "key": {
+                                    "_name": "iPhone"
+                                },
+                                "value": 2
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "rid": 1004,
+                "type": {
+                    "class": "PlayerSettingsSetApplicationIdentifierTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "pairs": [
+                            {
+                                "key": {
+                                    "_name": "Android"
+                                },
+                                "value": "com.example.app"
+                            },
+                            {
+                                "key": {
+                                    "_name": "iPhone"
+                                },
+                                "value": "com.example.app"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "rid": 1005,
+                "type": {
+                    "class": "EditorUserBuildSettingsSetDevelopmentTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": false
+                }
+            },
+            {
+                "rid": 1006,
+                "type": {
+                    "class": "EditorUserBuildSettingsSetBuildWithDeepProfilingSupportTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": false
+                }
+            },
+            {
+                "rid": 1007,
+                "type": {
+                    "class": "iOSAddCapabilityTask/InAppPurchaseCapability",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {}
+            },
+            {
+                "rid": 1008,
+                "type": {
+                    "class": "iOSAddCapabilityTask/SigninWithAppleCapability",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {}
+            },
+            {
+                "rid": 1009,
+                "type": {
+                    "class": "iOSAddCapabilityTask/PushNotificationCapability",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "development": false
+                }
+            }
+        ]
+    }
+}

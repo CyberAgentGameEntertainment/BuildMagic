@@ -1,0 +1,54 @@
+{
+    "_name": "BuiltinTemplate",
+    "_postBuildConfigurations": [],
+    "_internalPrepareConfigurations": [],
+    "_preBuildConfigurations": [
+        {
+            "rid": 1000
+        },
+        {
+            "rid": 1001
+        },
+        {
+            "rid": 1002
+        }
+    ],
+    "references": {
+        "version": 2,
+        "RefIds": [
+            {
+                "rid": 1000,
+                "type": {
+                    "class": "BuildPlayerOptionsAddBuildOptionsTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": 0
+                }
+            },
+            {
+                "rid": 1001,
+                "type": {
+                    "class": "BuildPlayerOptionsAddScenesTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": []
+                }
+            },
+            {
+                "rid": 1002,
+                "type": {
+                    "class": "BuildPlayerOptionsSetLocationPathNameTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": "Build/"
+                }
+            }
+        ]
+    }
+}

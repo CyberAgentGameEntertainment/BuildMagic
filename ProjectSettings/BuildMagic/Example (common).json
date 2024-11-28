@@ -1,0 +1,148 @@
+{
+    "_name": "Example (common)",
+    "_postBuildConfigurations": [
+        {
+            "rid": 1000
+        }
+    ],
+    "_internalPrepareConfigurations": [],
+    "_preBuildConfigurations": [
+        {
+            "rid": 1001
+        },
+        {
+            "rid": 1002
+        },
+        {
+            "rid": 1003
+        },
+        {
+            "rid": 1004
+        },
+        {
+            "rid": 1005
+        },
+        {
+            "rid": 1006
+        },
+        {
+            "rid": 1007
+        }
+    ],
+    "_baseSchemeName": "",
+    "references": {
+        "version": 2,
+        "RefIds": [
+            {
+                "rid": 1000,
+                "type": {
+                    "class": "SaveBuildReportTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "useYaml": true,
+                        "outputPath": "Builds/report.yaml"
+                    }
+                }
+            },
+            {
+                "rid": 1001,
+                "type": {
+                    "class": "PlayerSettingsSetCompanyNameTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": "会社名"
+                }
+            },
+            {
+                "rid": 1002,
+                "type": {
+                    "class": "PlayerSettingsSetProductNameTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": "アプリ名"
+                }
+            },
+            {
+                "rid": 1003,
+                "type": {
+                    "class": "PlayerSettingsSetBundleVersionTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": "0.1"
+                }
+            },
+            {
+                "rid": 1004,
+                "type": {
+                    "class": "PlayerSettingsAndroidSetBundleVersionCodeTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": 1
+                }
+            },
+            {
+                "rid": 1005,
+                "type": {
+                    "class": "PlayerSettingsIOSSetBuildNumberTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": "0"
+                }
+            },
+            {
+                "rid": 1006,
+                "type": {
+                    "class": "EditorBuildSettingsSetScenesTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": [
+                        {
+                            "_path": "Assets/Scenes/SampleScene.unity"
+                        }
+                    ]
+                }
+            },
+            {
+                "rid": 1007,
+                "type": {
+                    "class": "PlayerSettingsSetManagedStrippingLevelTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "pairs": [
+                            {
+                                "key": {
+                                    "_name": "Android"
+                                },
+                                "value": 3
+                            },
+                            {
+                                "key": {
+                                    "_name": "iPhone"
+                                },
+                                "value": 3
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}

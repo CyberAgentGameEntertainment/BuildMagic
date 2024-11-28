@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Packages/jp.co.cyberagent.buildmagic/BuildMagic.Window/Editor/Assets/Uss/Drawers/PlatformGrouping.uss?fileID=7433441132597879392&amp;guid=bd5a34acb356d4401ba34cfb2b69896e&amp;type=3#PlatformGrouping" />
+    <ui:VisualElement name="platform-tab-button-image" class="patformgrouping-tab-button-image" />
+    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="platform-tab-button-remove" class="patformgrouping-tab-remove-button">
+        <ui:Label tabindex="-1" text="x" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; width: 10px; height: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; align-items: center; font-size: 10px;" />
+    </ui:Button>
+</ui:UXML>

@@ -1,0 +1,84 @@
+{
+    "_name": "Test",
+    "_postBuildConfigurations": [
+        {
+            "rid": 1000
+        }
+    ],
+    "_internalPrepareConfigurations": [],
+    "_preBuildConfigurations": [
+        {
+            "rid": 1001
+        },
+        {
+            "rid": 1002
+        }
+    ],
+    "references": {
+        "version": 2,
+        "RefIds": [
+            {
+                "rid": 1000,
+                "type": {
+                    "class": "iOSAddCapabilityTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "entitlementFilePath": "Entitlements.entitlements",
+                        "capabilities": {
+                            "_value": [
+                                {
+                                    "rid": 1003
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "rid": 1001,
+                "type": {
+                    "class": "EditorBuildSettingsSetScenesTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": [
+                        {
+                            "_path": "Assets/Scenes/SampleScene.unity"
+                        }
+                    ]
+                }
+            },
+            {
+                "rid": 1002,
+                "type": {
+                    "class": "DeleteAssetsTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "paths": [
+                            "Assets/Settings"
+                        ],
+                        "trashPath": "Assets/Trash"
+                    }
+                }
+            },
+            {
+                "rid": 1003,
+                "type": {
+                    "class": "iOSAddCapabilityTask/PushNotificationCapability",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "development": true
+                }
+            }
+        ]
+    }
+}

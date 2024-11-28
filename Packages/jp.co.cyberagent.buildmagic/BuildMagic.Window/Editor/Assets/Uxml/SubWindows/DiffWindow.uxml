@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <BuildMagic.Window.Editor.Elements.TabView style="flex-direction: row; margin-top: 10px;">
+        <ui:Button text="Pre Build" parse-escape-sequences="true" display-tooltip-when-elided="true" tabindex="1" class="tab" />
+        <ui:Button text="Post Build" parse-escape-sequences="true" display-tooltip-when-elided="true" tabindex="3" class="tab" />
+    </BuildMagic.Window.Editor.Elements.TabView>
+    <ui:VisualElement style="flex-direction: row; margin-top: 10px; margin-bottom: 10px;">
+        <ui:VisualElement style="width: 300px;" />
+        <ui:DropdownField name="left-dropdown" style="flex-grow: 1;" />
+        <ui:DropdownField name="right-dropdown" style="flex-grow: 1;" />
+    </ui:VisualElement>
+    <ui:ListView show-bound-collection-size="false" virtualization-method="DynamicHeight" focusable="false" show-alternating-row-backgrounds="All" selection-type="None" />
+</ui:UXML>
