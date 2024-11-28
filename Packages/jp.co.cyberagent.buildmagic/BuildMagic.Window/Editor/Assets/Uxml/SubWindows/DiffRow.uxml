@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row; margin-top: 5px; margin-bottom: 5px;">
+        <ui:Label tabindex="-1" text="XXXXXX" parse-escape-sequences="true" display-tooltip-when-elided="true" name="name" style="justify-content: flex-start; align-self: center; width: 300px; -unity-text-align: upper-right; padding-right: 8px; -unity-font-style: normal;" />
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+            <ui:VisualElement name="left-container" style="flex-grow: 1; flex-basis: 50%;">
+                <uie:PropertyField name="left-property" />
+            </ui:VisualElement>
+            <ui:VisualElement name="right-container" style="flex-grow: 1; flex-basis: 50%;">
+                <uie:PropertyField name="right-property" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

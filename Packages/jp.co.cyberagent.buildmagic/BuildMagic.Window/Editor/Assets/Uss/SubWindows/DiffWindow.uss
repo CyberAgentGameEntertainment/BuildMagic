@@ -1,0 +1,35 @@
+Button.tab {
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-width: 1px;
+    overflow: hidden;
+    border-top-width: 0.5px;
+    border-right-width: 0.5px;
+    border-left-width: 0.5px;
+    flex-direction: row;
+    border-bottom-color: rgba(255, 255, 255, 0);
+    flex-grow: 1;
+    background-color: var(--unity-colors-helpbox-background);
+    border-top-color: var(--unity-colors-helpbox-border);
+    border-right-color: var(--unity-colors-helpbox-border);
+    border-left-color: var(--unity-colors-helpbox-border);
+}
+
+Button.tab.selected {
+    background-color: var(--unity-colors-tab-background);
+    border-bottom-color: var(--unity-colors-helpbox-border);
+}
+
+Button.tab.selected:hover {
+    background-color: var(--unity-colors-tab-background-hover);
+}

@@ -1,0 +1,4 @@
+VisualElement.auto-mark {
+    background-color: rgb(26, 26, 26);
+    width: 4px;
+}

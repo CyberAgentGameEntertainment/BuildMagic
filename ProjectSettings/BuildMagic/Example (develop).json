@@ -1,0 +1,148 @@
+{
+    "_name": "Example (develop)",
+    "_postBuildConfigurations": [],
+    "_internalPrepareConfigurations": [],
+    "_preBuildConfigurations": [
+        {
+            "rid": 1000
+        },
+        {
+            "rid": 1001
+        },
+        {
+            "rid": 1002
+        },
+        {
+            "rid": 1003
+        },
+        {
+            "rid": 1004
+        },
+        {
+            "rid": 1005
+        }
+    ],
+    "_baseSchemeName": "Example (common)",
+    "references": {
+        "version": 2,
+        "RefIds": [
+            {
+                "rid": 1000,
+                "type": {
+                    "class": "EditorUserBuildSettingsSetIOSXcodeBuildConfigTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": 0
+                }
+            },
+            {
+                "rid": 1001,
+                "type": {
+                    "class": "PlayerSettingsSetScriptingDefineSymbolsTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "pairs": [
+                            {
+                                "key": {
+                                    "_name": "Android"
+                                },
+                                "value": [
+                                    "EXAMPLE_DEVELOP",
+                                    "CANALYA"
+                                ]
+                            },
+                            {
+                                "key": {
+                                    "_name": "iPhone"
+                                },
+                                "value": [
+                                    "EXAMPLE_DEVELOP",
+                                    "CANALYA"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "rid": 1002,
+                "type": {
+                    "class": "PlayerSettingsSetIl2CppCompilerConfigurationTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "pairs": [
+                            {
+                                "key": {
+                                    "_name": "Android"
+                                },
+                                "value": 0
+                            },
+                            {
+                                "key": {
+                                    "_name": "iPhone"
+                                },
+                                "value": 0
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "rid": 1003,
+                "type": {
+                    "class": "PlayerSettingsSetApplicationIdentifierTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": {
+                        "pairs": [
+                            {
+                                "key": {
+                                    "_name": "Android"
+                                },
+                                "value": "com.example.app.dev"
+                            },
+                            {
+                                "key": {
+                                    "_name": "iPhone"
+                                },
+                                "value": "com.example.app.dev"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "rid": 1004,
+                "type": {
+                    "class": "EditorUserBuildSettingsSetDevelopmentTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": true
+                }
+            },
+            {
+                "rid": 1005,
+                "type": {
+                    "class": "EditorUserBuildSettingsSetBuildWithDeepProfilingSupportTaskConfiguration",
+                    "ns": "BuildMagicEditor.BuiltIn",
+                    "asm": "BuildMagic.Editor"
+                },
+                "data": {
+                    "_value": true
+                }
+            }
+        ]
+    }
+}

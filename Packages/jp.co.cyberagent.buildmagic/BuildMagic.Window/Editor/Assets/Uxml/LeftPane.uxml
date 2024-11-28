@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <uie:Toolbar>
+        <uie:ToolbarButton text="Save" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        <uie:ToolbarMenu tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" text="Menu" />
+    </uie:Toolbar>
+    <ui:ListView show-alternating-row-backgrounds="ContentOnly" class="hide-size hide-empty" style="flex-grow: 1;" />
+</ui:UXML>

@@ -1,0 +1,75 @@
+ListView.hide-size .unity-list-view__size-field {
+    display: none;
+}
+
+ListView.hide-empty .unity-list-view__empty-label {
+    display: none;
+}
+
+.configuration-list-foldout > #unity-content {
+    margin-left: 24px;
+}
+
+Label.left-entry {
+    padding-left: 18px;
+}
+
+.right-pane-container {
+}
+
+.header {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 12px;
+    flex-direction: row;
+    flex-shrink: 0;
+}
+
+.configuration-list-foldout > Toggle {
+    font-size: 15px;
+    -unity-font-style: bold;
+    padding-left: 12px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background-color: var(--unity-colors-box-background);
+    margin-right: 0;
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+Label.configuration-name {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.configuration-list-foldout {
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.setting-name {
+    -unity-font-style: bold;
+    font-size: 18px;
+}
+
+.scheme-link-label-leading {
+    opacity: 0.7;
+}
+
+.scheme-link-label-link {
+    color: var(--unity-colors-link-text);
+}
+
+.scheme-link-label-link:hover {
+    color: var(--unity-colors-link-text);
+    opacity: 0.7;
+}
+
+.scheme-link-label {
+    flex-direction: row;
+    align-self: flex-end;
+    margin-bottom: 1px;
+    margin-left: 4px;
+}

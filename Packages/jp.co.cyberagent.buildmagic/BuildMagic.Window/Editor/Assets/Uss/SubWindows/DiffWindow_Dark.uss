@@ -1,0 +1,19 @@
+.diff-red * {
+    background-color: #2E1C20;
+}
+
+.diff-red-strong * {
+    background-color: #783634;
+}
+
+.diff-green * {
+    background-color: #18261F;
+}
+
+.diff-green-strong * {
+    background-color: #2F5632;
+}
+
+.diff-empty * {
+    background-color: #171B22;
+}

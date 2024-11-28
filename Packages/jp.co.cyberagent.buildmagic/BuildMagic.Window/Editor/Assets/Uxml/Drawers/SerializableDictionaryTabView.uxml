@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Packages/jp.co.cyberagent.buildmagic/BuildMagic.Window/Editor/Assets/Uss/Drawers/PlatformGrouping.uss?fileID=7433441132597879392&amp;guid=bd5a34acb356d4401ba34cfb2b69896e&amp;type=3#PlatformGrouping" />
+    <ui:VisualElement class="patformgrouping-box platformgrouping-root">
+        <ui:VisualElement class="platformgrouping-tab-container">
+            <ui:VisualElement name="platform-tab-container" class="platformgrounping-tab-button-container" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="add-platform-button" text="+" class="inactive patformgrouping-tab-button platformgrouping-tab-add-button" />
+        </ui:VisualElement>
+        <ui:VisualElement name="main-container" class="patformgrouping-box platformgrouping-content-container" />
+    </ui:VisualElement>
+</ui:UXML>
