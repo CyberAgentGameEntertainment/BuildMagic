@@ -1,6 +1,10 @@
 BuildMagic
 ==========
 
+[![](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![](https://img.shields.io/badge/PR-welcome-green.svg)](https://github.com/CyberAgentGameEntertainment/BuildMagic/pulls)
+[![](https://img.shields.io/badge/Unity-2022.3-green.svg)](#インストール)
+
 BuildMagicは、開発・本番などの複数の設定を管理し、ビルドパイプラインの構築をサポートするビルドユーティリティです。
 ユーザーフレンドリーなインターフェイスを提供し、特にUnityのアプリビルドでよく必要になるビルドタスクをビルトインで提供します。
 
