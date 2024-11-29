@@ -3,12 +3,12 @@
     "version": "1.5.0",
     "displayName": "Build Magic",
     "description": "Build Magic",
-    "unity": "2021.3",
-    "UnityRelease": "31f1",
+    "unity": "2022.3",
+    "UnityRelease": "12f1",
     "keywords": [
         "Tools"
     ],
     "author": {
-        "name": "CygerAgent"
+        "name": "CyberAgent"
     }
 }
