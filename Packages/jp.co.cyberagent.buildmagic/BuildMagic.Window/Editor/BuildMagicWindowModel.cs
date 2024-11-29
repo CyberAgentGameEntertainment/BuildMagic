@@ -121,8 +121,8 @@ namespace BuildMagic.Window.Editor
         private static void PreBuildInternal(BuildScheme targetScheme, BuildScheme baseScheme)
         {
             var configurations = 
-                BuildConfigurationUtility.ResolveConfigurations(baseScheme?.PreBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                                                                targetScheme.PreBuildConfigurations);
+                BuildConfigurationUtility.ResolveConfigurations(baseScheme?.PreBuildConfigurations.Where(c => c != null) ?? Enumerable.Empty<IBuildConfiguration>(),
+                                                                targetScheme.PreBuildConfigurations.Where(c => c != null));
             
             BuildPipeline.PreBuild(BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(configurations));
         }
@@ -135,12 +135,12 @@ namespace BuildMagic.Window.Editor
             internalPrepareTasks.Add(new BuildPlayerOptionsApplyEditorSettingsTask());
             internalPrepareTasks.AddRange(
                 BuildTaskBuilderUtility.CreateBuildTasks<IInternalPrepareContext>(
-                    _selected.InternalPrepareConfigurations));
+                    _selected.InternalPrepareConfigurations.Where(c => c != null)));
 
             var configurations =
                 BuildConfigurationUtility.ResolveConfigurations(
-                    _selectedBase?.PostBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                    _selected.PostBuildConfigurations);
+                    _selectedBase?.PostBuildConfigurations.Where(c => c != null) ?? Enumerable.Empty<IBuildConfiguration>(),
+                    _selected.PostBuildConfigurations.Where(c => c != null));
 
             var postBuildTasks = BuildTaskBuilderUtility
                 .CreateBuildTasks<IPostBuildContext>(configurations).ToList();
@@ -297,11 +297,11 @@ namespace BuildMagic.Window.Editor
             Assert.IsNotNull(_selected, "No selected scheme");
             
             var list = new List<Type>();
-            list.AddRange(_selected.PreBuildConfigurations.Select(c => c.GetType()));
+            list.AddRange(_selected.PreBuildConfigurations.Where(c => c != null).Select(c => c.GetType()));
 #if BUILDMAGIC_DEVELOPER
-            list.AddRange(_selected.InternalPrepareConfigurations.Select(c => c.GetType()));
+            list.AddRange(_selected.InternalPrepareConfigurations.Where(c => c != null).Select(c => c.GetType()));
 #endif
-            list.AddRange(_selected.PostBuildConfigurations.Select(c => c.GetType()));
+            list.AddRange(_selected.PostBuildConfigurations.Where(c => c != null).Select(c => c.GetType()));
             return list.ToHashSet();
         }
 

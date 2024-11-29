@@ -3,6 +3,7 @@
 // --------------------------------------------------------------
 
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -51,7 +52,7 @@ namespace BuildMagicEditor
                 if (scheme == null)
                     return;
 
-                var preBuildTask = BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(scheme.PreBuildConfigurations);
+                var preBuildTask = BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(scheme.PreBuildConfigurations.Where(c => c != null));
                 BuildPipeline.PreBuild(preBuildTask);
             };
         }

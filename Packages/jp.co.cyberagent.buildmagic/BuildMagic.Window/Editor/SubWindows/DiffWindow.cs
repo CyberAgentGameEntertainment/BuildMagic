@@ -112,15 +112,12 @@ namespace BuildMagic.Window.Editor.SubWindows
 
             IEnumerable<IBuildConfiguration> GetConfigurations(IBuildScheme scheme, ConfigurationType type)
             {
-                switch (type)
+                return (type switch
                 {
-                    case ConfigurationType.PreBuild:
-                        return scheme.PreBuildConfigurations;
-                    case ConfigurationType.PostBuild:
-                        return scheme.PostBuildConfigurations;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    ConfigurationType.PreBuild => scheme.PreBuildConfigurations,
+                    ConfigurationType.PostBuild => scheme.PostBuildConfigurations,
+                    _ => throw new ArgumentOutOfRangeException()
+                }).Where(c => c != null);
             }
         }
 

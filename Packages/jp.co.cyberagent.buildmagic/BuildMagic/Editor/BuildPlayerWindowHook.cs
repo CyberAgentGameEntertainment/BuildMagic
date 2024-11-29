@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BuildMagicEditor.BuiltIn;
 using BuildMagicEditor.Extensions;
@@ -48,14 +49,14 @@ namespace BuildMagicEditor
                 _hookedScheme = scheme;
 
                 var preBuildTask =
-                    BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(scheme.PreBuildConfigurations);
+                    BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(scheme.PreBuildConfigurations.Where(c => c != null));
                 BuildPipeline.PreBuild(preBuildTask);
 
                 var internalPrepareTasks = new List<IBuildTask<IInternalPrepareContext>>();
                 internalPrepareTasks.Add(new BuildPlayerOptionsApplyEditorSettingsTask());
                 internalPrepareTasks.AddRange(
                     BuildTaskBuilderUtility.CreateBuildTasks<IInternalPrepareContext>(
-                        scheme.InternalPrepareConfigurations));
+                        scheme.InternalPrepareConfigurations.Where(c => c != null)));
 
                 var overrideOptions = internalPrepareTasks.GenerateBuildPlayerOptions();
 
@@ -89,7 +90,7 @@ namespace BuildMagicEditor
                 return;
 
             var postBuildTasks =
-                BuildTaskBuilderUtility.CreateBuildTasks<IPostBuildContext>(scheme.PostBuildConfigurations);
+                BuildTaskBuilderUtility.CreateBuildTasks<IPostBuildContext>(scheme.PostBuildConfigurations.Where(c => c != null));
 
             foreach (var task in postBuildTasks)
                 task.Run(PostBuildContext.Create(report));

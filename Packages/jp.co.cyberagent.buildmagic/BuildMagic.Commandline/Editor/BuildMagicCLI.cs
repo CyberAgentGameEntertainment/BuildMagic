@@ -44,8 +44,8 @@ public static class BuildMagicCLI
         RunCommand(context =>
         {
             var configurations = BuildConfigurationUtility.ResolveConfigurations(
-                context.BaseScheme?.PreBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                context.CurrentScheme.PreBuildConfigurations);
+                context.BaseScheme?.PreBuildConfigurations.Where(c => c != null) ?? Enumerable.Empty<IBuildConfiguration>(),
+                context.CurrentScheme.PreBuildConfigurations.Where(c => c != null));
 
             var preBuildTasks = configurations
                 .Select(c => CreateBuildTask(c, context))
@@ -69,8 +69,8 @@ public static class BuildMagicCLI
             var internalPrepareTasks = CreateInternalPrepareTasks(context);
 
             var configurations = BuildConfigurationUtility.ResolveConfigurations(
-                context.BaseScheme?.PostBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                context.CurrentScheme.PostBuildConfigurations);
+                context.BaseScheme?.PostBuildConfigurations.Where(c => c != null) ?? Enumerable.Empty<IBuildConfiguration>(),
+                context.CurrentScheme.PostBuildConfigurations.Where(c => c != null));
 
             var postBuildTasks = configurations
                 .Select(c => CreateBuildTask(c, context))
