@@ -107,6 +107,12 @@ namespace BuildMagicEditor
         /// </summary>
         public BuildPlayerOptions Build()
         {
+            var options = _options;
+
+#if BUILDMAGIC_NO_DETAILED_BUILD_REPORT
+            options &= ~BuildOptions.DetailedBuildReport;
+#endif
+
             return new BuildPlayerOptions
             {
                 locationPathName = string.IsNullOrWhiteSpace(_locationPathName) ? GetDefaultBuildPath(_buildTarget) : _locationPathName,
@@ -115,7 +121,7 @@ namespace BuildMagicEditor
                 target = _buildTarget,
                 targetGroup = _buildTargetGroup,
                 subtarget = _subtarget,
-                options = _options,
+                options = options,
                 extraScriptingDefines = _extraScriptingDefines.ToArray()
             };
         }
