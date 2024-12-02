@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.1]
+
+- エディタがビルド時にクラッシュする場合があるのを回避するため、`BuildOptions.DetailedBuildReport` を `BUILDMAGIC_NO_DETAILED_BUILD_REPORT` シンボルで無効化できるようにしました。
+- 不要な README.md.meta を削除しました。
+
 ## [1.5.0]
 
 - Build Settings / Build Profiles ウィンドウからのビルド時にビルドタスクを実行できるようになりました
