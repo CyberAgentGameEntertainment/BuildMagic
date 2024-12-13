@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-direction: row; flex-grow: 1; align-self: flex-start;">
-        <ui:VisualElement name="auto-mark" class="auto-mark" />
+    <ui:VisualElement style="flex-direction: row; flex-grow: 1; align-self: stretch; align-items: center;">
         <ui:Label parse-escape-sequences="true" display-tooltip-when-elided="true" name="name-label" text="Name" class="left-entry" style="-unity-text-align: middle-left;" />
+        <ui:Label parse-escape-sequences="true" display-tooltip-when-elided="true" name="auto-mark" text="primary" style="-unity-text-align: middle-left; border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; background-color: rgba(127, 127, 127, 0.5); padding-top: 1px; padding-right: 5px; padding-bottom: 1px; padding-left: 5px; font-size: 10px; margin-left: 4px;" />
     </ui:VisualElement>
 </ui:UXML>
