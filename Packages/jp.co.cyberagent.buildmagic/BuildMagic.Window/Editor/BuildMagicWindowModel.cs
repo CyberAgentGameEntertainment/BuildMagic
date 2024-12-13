@@ -105,25 +105,22 @@ namespace BuildMagic.Window.Editor
         {
             Assert.IsNotNull(_selected, "No selected scheme");
 
-            PreBuildInternal(_selected, _selectedBase);
+            PreBuildInternal(_selected);
         }
         
         public void PreBuildByName(string targetSchemeName)
         {
             var targetScheme = _schemes.FirstOrDefault(s => s.Name == targetSchemeName);
             Assert.IsNotNull(targetScheme, $"{targetSchemeName} is not found");
-            
-            var baseScheme = _schemes.FirstOrDefault(s => s.Name == targetScheme.BaseSchemeName) ?? EmptyBuildScheme;
 
-            PreBuildInternal(targetScheme, baseScheme);
+            PreBuildInternal(targetScheme);
         }
         
-        private static void PreBuildInternal(BuildScheme targetScheme, BuildScheme baseScheme)
+        private void PreBuildInternal(BuildScheme targetScheme)
         {
-            var configurations = 
-                BuildConfigurationUtility.ResolveConfigurations(baseScheme?.PreBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                                                                targetScheme.PreBuildConfigurations);
-            
+            var configurations =
+                BuildSchemeUtility.EnumerateComposedConfigurations<IPreBuildContext>(targetScheme, _schemes);
+
             BuildPipeline.PreBuild(BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(configurations));
         }
 
@@ -138,9 +135,7 @@ namespace BuildMagic.Window.Editor
                     _selected.InternalPrepareConfigurations));
 
             var configurations =
-                BuildConfigurationUtility.ResolveConfigurations(
-                    _selectedBase?.PostBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                    _selected.PostBuildConfigurations);
+                BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(_selected, _schemes);
 
             var postBuildTasks = BuildTaskBuilderUtility
                 .CreateBuildTasks<IPostBuildContext>(configurations).ToList();
