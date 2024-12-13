@@ -48,8 +48,6 @@ namespace BuildMagic.Window.Editor.Elements
             _treeView.RemoveRequested += value => RemoveRequested(value);
             _treeView.PreBuildRequestedByName += value => PreBuildRequestedByName(value);
             _treeView.OnSelectionChanged += index => OnSelectionChanged(index);
-            // _treeView.viewDataKey = $"{nameof(LeftPaneView)}.{nameof(LeftPaneTreeView)}";
-            // _treeView.makeItem = () => new LeftPaneListEntryView();
         }
 
         public event Action<string> CopyCreateRequested;
