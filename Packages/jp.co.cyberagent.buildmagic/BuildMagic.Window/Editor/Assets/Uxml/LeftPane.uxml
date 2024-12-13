@@ -3,5 +3,5 @@
         <uie:ToolbarButton text="Save" parse-escape-sequences="true" display-tooltip-when-elided="true" />
         <uie:ToolbarMenu tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" text="Menu" />
     </uie:Toolbar>
-    <ui:ListView show-alternating-row-backgrounds="ContentOnly" class="hide-size hide-empty" style="flex-grow: 1;" />
+    <BuildMagic.Window.Editor.Elements.LeftPaneTreeView show-alternating-row-backgrounds="All" reorderable="true" view-data-key="LeftPane_LeftPaneTreeView" />
 </ui:UXML>

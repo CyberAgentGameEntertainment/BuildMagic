@@ -43,6 +43,7 @@ namespace BuildMagic.Window.Editor
         public void Bind(SerializedObject so)
         {
             _rootVisualElement.Bind(so);
+            _leftPaneView.OnBind(so);
         }
 
         public void Unbind()
