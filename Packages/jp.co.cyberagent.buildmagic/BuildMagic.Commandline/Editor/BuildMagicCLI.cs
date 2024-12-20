@@ -179,10 +179,15 @@ public static class BuildMagicCLI
             foreach (var keyValue in options)
             {
                 // the override property is separated by equal sign such as "KEY1=VALUE1".
-                var ps = keyValue.Split('=');
-                if (ps.Length != 2) continue;
+                // use the first equal sign to split the key and value.
+                var ps = keyValue.IndexOf('=');
+                if (ps < 0)
+                {
+                    Debug.LogWarning($"Override property does not parsed correctly:\n{keyValue}");
+                    continue;
+                }
 
-                properties.Add(new OverrideProperty(ps[0], ps[1]));
+                properties.Add(new OverrideProperty(keyValue[..ps], keyValue[(ps+1)..]));
             }
 
         if (aliases != null)
