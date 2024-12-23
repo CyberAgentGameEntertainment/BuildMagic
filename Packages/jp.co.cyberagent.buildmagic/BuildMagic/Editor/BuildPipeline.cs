@@ -29,7 +29,14 @@ namespace BuildMagicEditor
             RunTasks(new IBuildTask[] { buildPlayerTask }, buildPlayerContext);
 
             if (buildPlayerContext.TryGetResult(out var buildReport))
-                RunTasks(postBuildTasks, PostBuildContext.Create(buildReport));
+            {
+                var context = PostBuildContext.Create(buildReport);
+
+                // save build report to default location in text format
+                new SaveBuildReportTask(true, "Library/LastBuild.buildreport.txt").Run(context);
+                RunTasks(postBuildTasks, context);
+            }
+
 
             if (buildReport.summary.result != BuildResult.Succeeded ||
                 strictMode && buildReport.summary.totalErrors > 0)
