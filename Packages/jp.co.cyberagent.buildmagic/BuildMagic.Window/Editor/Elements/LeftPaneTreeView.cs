@@ -17,10 +17,11 @@ namespace BuildMagic.Window.Editor.Elements
         private SerializedProperty _currentSchemeListProp;
         private BuildScheme[] _currentSchemes;
         private (BuildScheme scheme, SerializedProperty prop)[] _currentSchemesById;
-        private VisualElement _currentTracker;
+        private readonly VisualElement _currentTracker;
 
         public LeftPaneTreeView()
         {
+            hierarchy.Add(_currentTracker = new VisualElement());
             makeItem = () =>
             {
                 var item = new LeftPaneListEntryView();
@@ -69,6 +70,7 @@ namespace BuildMagic.Window.Editor.Elements
                 pair.prop.FindPropertyRelative("_baseSchemeName").stringValue = baseName;
                 _currentSchemeListProp.serializedObject.ApplyModifiedProperties();
                 RebuildTree(_currentSchemeListProp);
+                SetSelectionById(Array.FindIndex(_currentSchemesById, newPair => newPair.scheme == pair.scheme));
             };
         }
 
@@ -96,10 +98,9 @@ namespace BuildMagic.Window.Editor.Elements
             _currentSchemeListProp = schemeListProp;
             var sizeProp = schemeListProp.FindPropertyRelative("Array");
             sizeProp.Next(true);
-            _currentTracker?.RemoveFromHierarchy();
-            (_currentTracker = new VisualElement()).TrackPropertyValue(sizeProp,
+            _currentTracker.Unbind();
+            _currentTracker.TrackPropertyValue(sizeProp,
                 _ => RebuildTree(schemeListProp)); // rebuild on resize
-            hierarchy.Add(_currentTracker);
             RebuildTree(schemeListProp);
         }
 

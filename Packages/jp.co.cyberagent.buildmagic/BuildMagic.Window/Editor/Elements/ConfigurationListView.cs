@@ -19,7 +19,7 @@ namespace BuildMagic.Window.Editor.Elements
     {
         private readonly Label _label;
         private readonly ListView _listView;
-        private VisualElement _arraySizeTracker;
+        private readonly VisualElement _arraySizeTracker;
         private ConfigurationListView _baseView;
         private Action<ConfigurationType, int, IBuildConfiguration> _requestRemove;
         private ConfigurationType _type;
@@ -35,6 +35,7 @@ namespace BuildMagic.Window.Editor.Elements
                 showBoundCollectionSize = false,
                 virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
             });
+            Add(_arraySizeTracker = new VisualElement());
             _listView.AddToClassList("hide-size");
             _listView.AddToClassList("hide-empty");
             _listView.AddToClassList("configuration-list");
@@ -90,12 +91,6 @@ namespace BuildMagic.Window.Editor.Elements
 
             RebuildBaseView();
 
-            if (_arraySizeTracker != null)
-            {
-                _arraySizeTracker.RemoveFromHierarchy();
-                _arraySizeTracker = null;
-            }
-
             if (!isDerived)
             {
                 // track array size to trigger filter rebinding
@@ -103,7 +98,7 @@ namespace BuildMagic.Window.Editor.Elements
                 var arraySizeProp = arrayProp.FindPropertyRelative("Array");
                 arraySizeProp.Next(true);
 
-                Add(_arraySizeTracker = new VisualElement());
+                _arraySizeTracker.Unbind();
                 _arraySizeTracker.TrackPropertyValue(arraySizeProp, _ => { RebuildBaseView(); });
             }
 
@@ -229,6 +224,7 @@ namespace BuildMagic.Window.Editor.Elements
 
             public bool IsVisible(IBuildConfiguration configuration)
             {
+                if(configuration == null) return false;
                 return (_parent?.IsVisible(configuration) ?? true) &&
                        !_excludedTaskTypes.Contains(configuration.TaskType);
             }

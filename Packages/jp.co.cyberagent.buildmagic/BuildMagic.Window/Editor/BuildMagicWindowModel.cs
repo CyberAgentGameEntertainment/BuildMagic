@@ -156,7 +156,7 @@ namespace BuildMagic.Window.Editor
             else
             {
                 _selected = new(_schemes[index], _schemes);
-                _selectedIndex.Value = index;
+                _selectedIndex.SetValueAndNotify(index); // NOTE: update on reorder by LeftPaneTreeView
             }
         }
 
