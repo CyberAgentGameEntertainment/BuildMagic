@@ -18,26 +18,23 @@ namespace BuildMagic.Window.Editor
 {
     internal sealed class BuildMagicWindowModel : ScriptableObject
     {
-        // HACK: this is used to indicate _selectedBase is empty without making UI Toolkit binding system confused.
-        private static readonly BuildScheme EmptyBuildScheme = new();
-
         private const int DefaultSelectedIndex = -1;
+
         private const string BuiltinTemplateName = "< BuiltinTemplate >";
 
-        [SerializeReference]
-        private BuildScheme
-            _selected = new(); // HACK: Assign a dummy as the initial value because if it is null at binding, the change will not be applied.
+        private static readonly BuildSchemeContainer EmptyBuildSchemeContainer = new(new(), null);
 
-        [SerializeReference] private BuildScheme _selectedBase = EmptyBuildScheme;
+        // HACK: Assign a dummy as the initial value because if it is null at binding, the change will not be applied.
+        [SerializeReference] private BuildSchemeContainer _selected = EmptyBuildSchemeContainer;
 
         [SerializeReference] private List<BuildScheme> _schemes = new();
 
-        [SerializeField]
-        private ObservableProperty<int> _selectedIndex = new(DefaultSelectedIndex);
+        [SerializeField] private ObservableProperty<int> _selectedIndex = new(DefaultSelectedIndex);
 
         public IReadOnlyObservableProperty<int> SelectedIndex => _selectedIndex;
 
-        public ICollection<string> SchemeNamesWithTemplate => _schemes.Select(s => s.Name).Prepend(BuiltinTemplateName).ToArray();
+        public ICollection<string> SchemeNamesWithTemplate =>
+            _schemes.Select(s => s.Name).Prepend(BuiltinTemplateName).ToArray();
 
         public ICollection<string> RootSchemeNames => _schemes.Where(s => string.IsNullOrEmpty(s.BaseSchemeName))
             .Select(s => s.Name).ToArray();
@@ -76,7 +73,7 @@ namespace BuildMagic.Window.Editor
             _schemes.Add(newSetting);
             _schemes.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal));
             if (_selected != null)
-                _selectedIndex.Value = _schemes.IndexOf(_selected);
+                _selectedIndex.Value = _schemes.IndexOf(_selected.Self);
             EditorUtility.SetDirty(this);
         }
 
@@ -85,15 +82,16 @@ namespace BuildMagic.Window.Editor
             Undo.RecordObject(this, $"{UndoRedoEventName.Remove}|{targetSchemeName}");
 
             BuildScheme targetScheme;
-            if (_selected != null && _selected.Name == targetSchemeName)
+            if (_selected != null && _selected.Self.Name == targetSchemeName)
             {
-                targetScheme = _selected;
+                targetScheme = _selected.Self;
                 _selected = null;
-                _selectedBase = EmptyBuildScheme;
                 _selectedIndex.Value = DefaultSelectedIndex;
             }
             else
+            {
                 targetScheme = _schemes.FirstOrDefault(s => s.Name == targetSchemeName);
+            }
 
             Assert.IsNotNull(targetScheme, "No selected scheme");
             _schemes.Remove(targetScheme);
@@ -105,9 +103,9 @@ namespace BuildMagic.Window.Editor
         {
             Assert.IsNotNull(_selected, "No selected scheme");
 
-            PreBuildInternal(_selected);
+            PreBuildInternal(_selected.Self);
         }
-        
+
         public void PreBuildByName(string targetSchemeName)
         {
             var targetScheme = _schemes.FirstOrDefault(s => s.Name == targetSchemeName);
@@ -115,7 +113,7 @@ namespace BuildMagic.Window.Editor
 
             PreBuildInternal(targetScheme);
         }
-        
+
         private void PreBuildInternal(BuildScheme targetScheme)
         {
             var configurations =
@@ -132,10 +130,10 @@ namespace BuildMagic.Window.Editor
             internalPrepareTasks.Add(new BuildPlayerOptionsApplyEditorSettingsTask());
             internalPrepareTasks.AddRange(
                 BuildTaskBuilderUtility.CreateBuildTasks<IInternalPrepareContext>(
-                    _selected.InternalPrepareConfigurations));
+                    _selected.Self.InternalPrepareConfigurations));
 
             var configurations =
-                BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(_selected, _schemes);
+                BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(_selected.Self, _schemes);
 
             var postBuildTasks = BuildTaskBuilderUtility
                 .CreateBuildTasks<IPostBuildContext>(configurations).ToList();
@@ -153,13 +151,11 @@ namespace BuildMagic.Window.Editor
             if (index < 0)
             {
                 _selected = null;
-                _selectedBase = EmptyBuildScheme;
                 _selectedIndex.Value = DefaultSelectedIndex;
             }
             else
             {
-                _selected = _schemes[index];
-                _selectedBase = _schemes.FirstOrDefault(s => s.Name == _selected.BaseSchemeName) ?? EmptyBuildScheme;
+                _selected = new(_schemes[index], _schemes);
                 _selectedIndex.Value = index;
             }
         }
@@ -168,9 +164,7 @@ namespace BuildMagic.Window.Editor
         {
             var index = _schemes.FindIndex(scheme => scheme.Name == schemeName);
             if (index < 0)
-            {
                 return;
-            }
 
             Select(index);
         }
@@ -195,7 +189,7 @@ namespace BuildMagic.Window.Editor
                 _selectedIndex.SetValueAndNotify(_selectedIndex.Value);
                 EditorUtility.SetDirty(this);
             }
-            
+
             void RemoveEvent(in UndoRedoInfo info)
             {
                 var schemeName = info.undoName.Split('|')[1];
@@ -205,7 +199,7 @@ namespace BuildMagic.Window.Editor
                     BuildSchemeLoader.Save(_schemes.FirstOrDefault(s => s.Name == schemeName));
                 _selectedIndex.SetValueAndNotify(_selectedIndex.Value);
             }
-            
+
             void ChangeIndexEvent(in UndoRedoInfo _)
             {
                 _selectedIndex.SetValueAndNotify(_selectedIndex.Value);
@@ -217,16 +211,16 @@ namespace BuildMagic.Window.Editor
             Assert.IsNotNull(_selected, "No selected scheme");
             Assert.IsTrue(configurationType != ConfigurationType.None, "Invalid configuration type");
             Assert.IsNotNull(type, "type is null");
-            
+
             Undo.RecordObject(this, $"{UndoRedoEventName.AddConfiguration}|{configurationType}|{type.Name}");
-            
+
             var configuration = (IBuildConfiguration)Activator.CreateInstance(type);
             Assert.IsNotNull(configuration, "Failed to create configuration");
 
             switch (configurationType)
             {
                 case ConfigurationType.PreBuild:
-                    _selected.AddPreBuildConfiguration(configuration);
+                    _selected.Self.AddPreBuildConfiguration(configuration);
                     break;
 #if BUILDMAGIC_DEVELOPER
                 case ConfigurationType.InternalPrepare:
@@ -234,29 +228,32 @@ namespace BuildMagic.Window.Editor
                     break;
 #endif
                 case ConfigurationType.PostBuild:
-                    _selected.AddPostBuildConfiguration(configuration);
+                    _selected.Self.AddPostBuildConfiguration(configuration);
                     break;
                 case ConfigurationType.None:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(configurationType), configurationType, null);
             }
+
             EditorUtility.SetDirty(this);
         }
 
-        public void RemoveConfiguration(ConfigurationType configurationType, int index, IBuildConfiguration configuration)
+        public void RemoveConfiguration(ConfigurationType configurationType, int index,
+            IBuildConfiguration configuration)
         {
             Assert.IsNotNull(_selected, "No selected scheme");
             Assert.IsTrue(configurationType != ConfigurationType.None, "Invalid configuration type");
-            
-            Undo.RecordObject(this, $"{UndoRedoEventName.RemoveConfiguration}|{configurationType}|{configuration?.GetType().Name ?? "Missing"}");
+
+            Undo.RecordObject(this,
+                $"{UndoRedoEventName.RemoveConfiguration}|{configurationType}|{configuration?.GetType().Name ?? "Missing"}");
 
             var targetList = configurationType switch
             {
-                ConfigurationType.PreBuild => _selected.PreBuildConfigurations,
+                ConfigurationType.PreBuild => _selected.Self.PreBuildConfigurations,
 #if BUILDMAGIC_DEVELOPER
-                ConfigurationType.InternalPrepare => _selected.InternalPrepareConfigurations,
+                ConfigurationType.InternalPrepare => _selected.Self.InternalPrepareConfigurations,
 #endif
-                ConfigurationType.PostBuild => _selected.PostBuildConfigurations,
+                ConfigurationType.PostBuild => _selected.Self.PostBuildConfigurations,
                 _ => throw new ArgumentOutOfRangeException(nameof(configurationType), configurationType, null)
             };
             Assert.AreEqual(configuration, targetList[index], "Invalid configuration");
@@ -264,15 +261,15 @@ namespace BuildMagic.Window.Editor
             switch (configurationType)
             {
                 case ConfigurationType.PreBuild:
-                    _selected.RemovePreBuildConfiguration(index);
+                    _selected.Self.RemovePreBuildConfiguration(index);
                     break;
 #if BUILDMAGIC_DEVELOPER
                 case ConfigurationType.InternalPrepare:
-                    _selected.RemovePrepareBuildPlayerConfiguration(index);
+                    _selected.Self.RemovePrepareBuildPlayerConfiguration(index);
                     break;
 #endif
                 case ConfigurationType.PostBuild:
-                    _selected.RemovePostBuildConfiguration(index);
+                    _selected.Self.RemovePostBuildConfiguration(index);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(configurationType), configurationType, null);
@@ -280,7 +277,7 @@ namespace BuildMagic.Window.Editor
 
             EditorUtility.SetDirty(this);
         }
-        
+
         public void Save()
         {
             _schemes.ForEach(BuildSchemeLoader.Save);
@@ -290,13 +287,13 @@ namespace BuildMagic.Window.Editor
         public HashSet<Type> GetConfigurationTypes()
         {
             Assert.IsNotNull(_selected, "No selected scheme");
-            
+
             var list = new List<Type>();
-            list.AddRange(_selected.PreBuildConfigurations.Select(c => c.GetType()));
+            list.AddRange(_selected.Self.PreBuildConfigurations.Select(c => c.GetType()));
 #if BUILDMAGIC_DEVELOPER
             list.AddRange(_selected.InternalPrepareConfigurations.Select(c => c.GetType()));
 #endif
-            list.AddRange(_selected.PostBuildConfigurations.Select(c => c.GetType()));
+            list.AddRange(_selected.Self.PostBuildConfigurations.Select(c => c.GetType()));
             return list.ToHashSet();
         }
 
@@ -307,6 +304,28 @@ namespace BuildMagic.Window.Editor
             public const string ChangeIndex = "index changed";
             public const string AddConfiguration = "Add configuration";
             public const string RemoveConfiguration = "Remove configuration";
+        }
+
+        [Serializable]
+        private class BuildSchemeContainer
+        {
+            [SerializeReference] private BuildScheme _self;
+            [SerializeReference] private BuildSchemeContainer _base;
+
+            public BuildScheme Self => _self;
+            public BuildSchemeContainer Base => _base;
+
+            public BuildSchemeContainer(BuildScheme self, IEnumerable<BuildScheme> allSchemes)
+            {
+                _self = self;
+                var baseName = self.BaseSchemeName;
+                if (!string.IsNullOrEmpty(baseName))
+                {
+                    var baseScheme = allSchemes.FirstOrDefault(s => s.Name == baseName);
+                    if (baseScheme != null)
+                        _base = new BuildSchemeContainer(baseScheme, allSchemes);
+                }
+            }
         }
     }
 }

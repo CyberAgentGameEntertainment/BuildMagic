@@ -75,16 +75,13 @@ namespace BuildMagic.Window.Editor
 
         private void Bind()
         {
-            var so = new SerializedObject(_model);
-            using (new DebugLogDisabledScope())
-                _view.Bind(so);
-
+            // TinyRx runs OnNext immediately
             _model.SelectedIndex
                   .Subscribe(index =>
                   {
-                      _view.UpdateSelectedIndex(index);
                       using (new DebugLogDisabledScope())
                           _view.Bind(new SerializedObject(_model)); // HACK: SerializeReference bindings are still not working properly in some cases. Rebind and force update
+                      _view.UpdateSelectedIndex(index);
                   })
                   .DisposeWith(_bindDisposable);
         }

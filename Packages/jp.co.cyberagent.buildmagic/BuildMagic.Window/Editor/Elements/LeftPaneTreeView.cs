@@ -81,6 +81,7 @@ namespace BuildMagic.Window.Editor.Elements
         public void SelectIndex(int index)
         {
             var id = -1;
+            if (_currentSchemes == null) return;
             if (index >= 0 && index < _currentSchemes.Length)
                 id = Array.FindIndex(_currentSchemesById, pair => pair.scheme == _currentSchemes[index]);
 
