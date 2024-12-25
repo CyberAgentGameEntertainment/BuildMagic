@@ -9,7 +9,7 @@
         </ui:VisualElement>
         <ui:ScrollView>
             <ui:Foldout text="Pre-build" name="pre-build-configuration-foldout" class="configuration-list-foldout">
-                <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="PreBuild" binding-path="con" class="configuration-list-view-root" />
+                <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="PreBuild" class="configuration-list-view-root" />
             </ui:Foldout>
             <ui:Foldout text="Internal Prepare" name="internal-prepare-configuration-foldout" class="configuration-list-foldout">
                 <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="InternalPrepare" class="configuration-list-view-root" />
