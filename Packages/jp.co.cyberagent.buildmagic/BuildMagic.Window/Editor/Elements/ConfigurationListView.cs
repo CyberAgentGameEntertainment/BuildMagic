@@ -85,8 +85,6 @@ namespace BuildMagic.Window.Editor.Elements
             listView.bindItem = (e, index) => BindConfiguration(e, index, listView.itemsSource, _type, filter);
             listView.unbindItem = (e, _) => UnbindConfiguration(e);
             listView.reorderable = !isDerived;
-
-            // HACK: refresh item height cache and rebuild
             listView.Rebuild();
 
             RebuildBaseView();
