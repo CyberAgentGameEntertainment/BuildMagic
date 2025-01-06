@@ -49,7 +49,7 @@ namespace BuildMagic.Window.Editor.Elements
             style.visibility = selected ? Visibility.Visible : Visibility.Hidden;
         }
 
-        public void OnBind(SerializedObject modelObject)
+        public void OnBeforeBind(SerializedObject modelObject)
         {
             var selected = modelObject.FindProperty("_selected");
             if (selected.managedReferenceId is ManagedReferenceUtility.RefIdUnknown
