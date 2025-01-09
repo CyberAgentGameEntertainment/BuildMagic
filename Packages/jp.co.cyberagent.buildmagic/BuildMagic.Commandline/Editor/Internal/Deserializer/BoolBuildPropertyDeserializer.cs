@@ -17,7 +17,7 @@ namespace BuildMagicEditor.Commandline.Internal
         /// <inheritdoc cref="IBuildPropertyDeserializer.Deserialize" />
         public object Deserialize(string value, Type _)
         {
-            return value switch
+            return value.ToLowerInvariant() switch
             {
                 "true" => true, 
                 "false" => false,
