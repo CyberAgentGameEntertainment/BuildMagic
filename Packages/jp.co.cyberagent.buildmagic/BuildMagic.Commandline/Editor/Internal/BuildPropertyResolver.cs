@@ -70,6 +70,7 @@ namespace BuildMagicEditor.Commandline.Internal
         {
             return new IBuildPropertyDeserializer[]
             {
+                new BoolBuildPropertyDeserializer(),
                 new IntBuildPropertyDeserializer(),
                 new SingleBuildPropertyDeserializer(),
                 new EnumBuildPropertyDeserializer(),
