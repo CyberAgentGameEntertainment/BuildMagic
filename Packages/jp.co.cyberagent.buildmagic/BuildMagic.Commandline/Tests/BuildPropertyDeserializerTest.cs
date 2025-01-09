@@ -82,6 +82,25 @@ namespace BuildMagicEditor.Commandline.Tests
             Assert.AreEqual(EnumType.Two, (EnumType)deserializedValue);
         }
 
+        [Test]
+        public void BoolBuildPropertyDeserializer_WillProcess()
+        {
+            var deserializer = new BoolBuildPropertyDeserializer();
+            Assert.IsTrue(deserializer.WillProcess(typeof(bool)));
+            Assert.IsFalse(deserializer.WillProcess(typeof(string)));
+        }
+
+        [Test]
+        public void BoolBuildPropertyDeserializer_Deserialize()
+        {
+            var deserializer = new BoolBuildPropertyDeserializer();
+            var deserializedValue = deserializer.Deserialize("true", typeof(bool));
+
+            Assert.AreEqual(typeof(bool), deserializedValue.GetType());
+            Assert.AreEqual(true, (bool)deserializedValue);
+            Assert.AreEqual(false, (bool)deserializer.Deserialize("false", typeof(bool)));
+        }
+
         private enum EnumType
         {
             One,
