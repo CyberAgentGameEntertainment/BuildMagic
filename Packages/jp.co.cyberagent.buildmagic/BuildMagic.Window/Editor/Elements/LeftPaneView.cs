@@ -59,9 +59,9 @@ namespace BuildMagic.Window.Editor.Elements
         public event Action BuildRequested;
         public event Action SaveRequested;
 
-        public void OnBind(SerializedObject model)
+        public void OnBoundSchemeListChanged(SerializedProperty schemesProp)
         {
-            _treeView.BindSchemeList(model.FindProperty("_schemes"));
+            _treeView.BindSchemeList(schemesProp);
         }
 
         public void UpdateSelectedIndex(int index)

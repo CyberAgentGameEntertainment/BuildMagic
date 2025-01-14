@@ -43,9 +43,9 @@ namespace BuildMagic.Window.Editor
         public void Bind(SerializedObject so)
         {
             _rootVisualElement.Unbind();
-            _rightPaneView.OnBeforeBind(so);
+            _rightPaneView.OnSelectedSchemeChanged(so.FindProperty("_selected"));
+            _leftPaneView.OnBoundSchemeListChanged(so.FindProperty("_schemes"));
             _rootVisualElement.Bind(so);
-            _leftPaneView.OnBind(so);
         }
 
         public void Unbind()

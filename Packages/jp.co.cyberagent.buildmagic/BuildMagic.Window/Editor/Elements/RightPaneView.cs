@@ -49,15 +49,14 @@ namespace BuildMagic.Window.Editor.Elements
             style.visibility = selected ? Visibility.Visible : Visibility.Hidden;
         }
 
-        public void OnBeforeBind(SerializedObject modelObject)
+        public void OnSelectedSchemeChanged(SerializedProperty selectedSchemeProp)
         {
-            var selected = modelObject.FindProperty("_selected");
-            if (selected.managedReferenceId is ManagedReferenceUtility.RefIdUnknown
+            if (selectedSchemeProp.managedReferenceId is ManagedReferenceUtility.RefIdUnknown
                 or ManagedReferenceUtility.RefIdNull) return;
 
             foreach (var configurationListView in this.Query<ConfigurationListView>()
                          .Class("configuration-list-view-root").Build())
-                configurationListView.Bind(selected,
+                configurationListView.Bind(selectedSchemeProp,
                     (type, index, configuration) => RemoveRequested?.Invoke(type, index, configuration));
         }
         
