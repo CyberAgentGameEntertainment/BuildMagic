@@ -43,9 +43,9 @@ public static class BuildMagicCLI
         // TODO: System.Commandline ライクな実装に仕上げたいが後回し
         RunCommand(context =>
         {
-            var configurations = BuildConfigurationUtility.ResolveConfigurations(
-                context.BaseScheme?.PreBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                context.CurrentScheme.PreBuildConfigurations);
+            var configurations =
+                BuildSchemeUtility.EnumerateComposedConfigurations<IPreBuildContext>(context
+                    .InheritanceTreeFromLeafToRoot);
 
             var preBuildTasks = configurations
                 .Select(c => CreateBuildTask(c, context))
@@ -68,9 +68,9 @@ public static class BuildMagicCLI
         {
             var internalPrepareTasks = CreateInternalPrepareTasks(context);
 
-            var configurations = BuildConfigurationUtility.ResolveConfigurations(
-                context.BaseScheme?.PostBuildConfigurations ?? Enumerable.Empty<IBuildConfiguration>(),
-                context.CurrentScheme.PostBuildConfigurations);
+            var configurations =
+                BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(context
+                    .InheritanceTreeFromLeafToRoot);
 
             var postBuildTasks = configurations
                 .Select(c => CreateBuildTask(c, context))
@@ -142,29 +142,19 @@ public static class BuildMagicCLI
         }
     }
 
-    internal static BuildScheme LoadScheme(CommandLineParser parser)
+    internal static BuildScheme LoadScheme(CommandLineParser parser, IEnumerable<BuildScheme> allSchemes = null)
     {
         var name = parser.ParseFirst(SchemeOption);
 
-        var scheme = BuildSchemeLoader.LoadAll<BuildScheme>().FirstOrDefault(s => s.Name == name);
+        allSchemes ??= BuildSchemeLoader.LoadAll<BuildScheme>();
+
+        var scheme = allSchemes.FirstOrDefault(s => s.Name == name);
         if (scheme == null)
         {
             throw new CommandLineArgumentException($"No such scheme found: {name}");
         }
 
         return scheme;
-    }
-
-    internal static BuildScheme LoadBaseScheme(BuildScheme scheme)
-    {
-        if (string.IsNullOrEmpty(scheme.BaseSchemeName))
-            return null;
-
-        var baseScheme = BuildSchemeLoader.LoadAll<BuildScheme>().FirstOrDefault(s => s.Name == scheme.BaseSchemeName);
-        if (baseScheme == null)
-            throw new CommandLineArgumentException($"No such base scheme found: {scheme.BaseSchemeName}");
-
-        return baseScheme;
     }
 
     internal static List<OverrideProperty> ParseOverrideProperties(
@@ -209,7 +199,7 @@ public static class BuildMagicCLI
     {
         public CommandLineParser CommandLineParser { get; }
         public IBuildScheme CurrentScheme { get; }
-        public IBuildScheme BaseScheme { get; }
+        public IEnumerable<IBuildScheme> InheritanceTreeFromLeafToRoot { get; }
         public BuildPropertyResolver BuildPropertyResolver { get; }
 
         public BuildTaskBuilderProvider TaskBuilderProvider { get; }
@@ -220,25 +210,26 @@ public static class BuildMagicCLI
         public static Context Create(ILogger logger)
         {
             var parser = CommandLineParser.Create();
-            var scheme = LoadScheme(parser);
-            var baseScheme = LoadBaseScheme(scheme);
+            var allSchemes = BuildSchemeLoader.LoadAll<BuildScheme>();
+            var scheme = LoadScheme(parser, allSchemes);
+            var tree = BuildSchemeUtility.EnumerateSchemeTreeFromLeafToRoot(scheme, allSchemes);
             var resolver = BuildPropertyResolver.CreateDefault(ParseOverrideProperties(parser, OverrideAliases));
             var provider = BuildTaskBuilderProvider.CreateDefault();
 
-            return new Context(parser, scheme, baseScheme, provider, resolver, logger);
+            return new Context(parser, scheme, tree, provider, resolver, logger);
         }
 
         private Context(
             CommandLineParser parser,
             IBuildScheme scheme,
-            IBuildScheme baseScheme,
+            IEnumerable<IBuildScheme> inheritanceTreeFromLeafToRoot,
             BuildTaskBuilderProvider provider,
             BuildPropertyResolver resolver,
             ILogger logger)
         {
             CommandLineParser = parser;
             CurrentScheme = scheme;
-            BaseScheme = baseScheme;
+            InheritanceTreeFromLeafToRoot = inheritanceTreeFromLeafToRoot;
             BuildPropertyResolver = resolver;
             TaskBuilderProvider = provider;
             Logger = logger;

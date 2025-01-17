@@ -244,6 +244,7 @@ namespace BuildMagic.Window.Editor.Elements
 
                 var removeButton = this.Q<Button>("platform-tab-button-remove");
                 removeButton.clicked += () => OnRemoveTab?.Invoke();
+                typeof(Clickable).GetProperty("acceptClicksIfDisabled", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(clickable, true);
             }
 
             private VisualElement IconImage { get; }

@@ -9,22 +9,13 @@
         </ui:VisualElement>
         <ui:ScrollView>
             <ui:Foldout text="Pre-build" name="pre-build-configuration-foldout" class="configuration-list-foldout">
-                <ui:ListView name="pre-build-configuration-list" reorderable="true" virtualization-method="DynamicHeight" reorder-mode="Animated" show-bound-collection-size="false" show-foldout-header="false" header-title="Pre Build Configuration" class="hide-size hide-empty configuration-list" />
-                <ui:BindableElement class="derived">
-                    <ui:ListView name="pre-build-configuration-list" reorderable="false" virtualization-method="DynamicHeight" reorder-mode="Animated" show-bound-collection-size="false" show-foldout-header="true" header-title="Derived" class="hide-size hide-empty configuration-list" />
-                </ui:BindableElement>
+                <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="PreBuild" class="configuration-list-view-root" />
             </ui:Foldout>
             <ui:Foldout text="Internal Prepare" name="internal-prepare-configuration-foldout" class="configuration-list-foldout">
-                <ui:ListView name="internal-prepare-configuration-list" reorderable="true" virtualization-method="DynamicHeight" reorder-mode="Animated" show-bound-collection-size="false" header-title="Build Player Settings" show-foldout-header="false" class="hide-size hide-empty configuration-list" />
-                <ui:BindableElement class="derived">
-                    <ui:ListView name="internal-prepare-configuration-list" reorderable="false" virtualization-method="DynamicHeight" reorder-mode="Animated" show-bound-collection-size="false" header-title="Derived" show-foldout-header="true" class="hide-size hide-empty configuration-list" />
-                </ui:BindableElement>
+                <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="InternalPrepare" class="configuration-list-view-root" />
             </ui:Foldout>
             <ui:Foldout text="Post-build" name="post-build-configuration-foldout" class="configuration-list-foldout">
-                <ui:ListView name="post-build-configuration-list" reorderable="true" virtualization-method="DynamicHeight" reorder-mode="Animated" show-bound-collection-size="false" show-foldout-header="false" header-title="Post Build Configuration" class="hide-size hide-empty configuration-list" />
-                <ui:BindableElement class="derived">
-                    <ui:ListView name="post-build-configuration-list" reorderable="false" virtualization-method="DynamicHeight" reorder-mode="Animated" show-bound-collection-size="false" show-foldout-header="true" header-title="Derived" class="hide-size hide-empty configuration-list" />
-                </ui:BindableElement>
+                <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="PostBuild" class="configuration-list-view-root" />
             </ui:Foldout>
         </ui:ScrollView>
     </ui:BindableElement>
