@@ -32,18 +32,15 @@ namespace BuildMagicEditor.BuiltIn
             var dest = Path.Combine("Assets", _destinationDirectory);
             Directory.CreateDirectory(dest);
 
-            Debug.Log(dest);
             if (_googleServiceInfoPlist)
             {
                 var source = AssetDatabase.GetAssetPath(_googleServiceInfoPlist);
                 {
                     var bundleId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
-                    if (!TryGetBundleIdFromGoogleServiceInfoPlist(source, out var bundleIdFromConfig))
-                        throw new InvalidOperationException($"Failed to get bundle id from {source}");
-
-                    if (bundleIdFromConfig != bundleId)
+                    // It may contain multiple bundle ids
+                    if (!ContainsBundleIdGoogleServiceInfoPlist(source, bundleId))
                         throw new InvalidOperationException(
-                            $"Bundle id mismatch. expected: {bundleIdFromConfig}, actual: {bundleId}");
+                            $"{source} does not contain the bundle id \"{bundleId}\" which is currently set to this project.");
                 }
                 File.Copy(AssetDatabase.GetAssetPath(_googleServiceInfoPlist),
                     Path.Combine(dest, "GoogleService-Info.plist"), true);
@@ -54,59 +51,49 @@ namespace BuildMagicEditor.BuiltIn
                 var source = AssetDatabase.GetAssetPath(_googleServicesJson);
                 {
                     var bundleId = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android);
-                    if (!TryGetBundleIdFromGoogleServicesJson(source, out var bundleIdFromConfig))
-                        throw new InvalidOperationException($"Failed to get bundle id from {source}");
-
-                    if (bundleIdFromConfig != bundleId)
+                    // It may contain multiple bundle ids
+                    if (!ContainsBundleIdGoogleServicesJson(source, bundleId))
                         throw new InvalidOperationException(
-                            $"Bundle id mismatch. expected: {bundleIdFromConfig}, actual: {bundleId}");
+                            $"{source} does not contain the bundle id \"{bundleId}\" which is currently set to this project.");
                 }
                 File.Copy(source, Path.Combine(dest, "google-services.json"), true);
             }
+
+            AssetDatabase.Refresh();
         }
 
-        private bool TryGetBundleIdFromGoogleServiceInfoPlist(string path, out string bundleId)
+        private bool ContainsBundleIdGoogleServiceInfoPlist(string path, string bundleId)
         {
             var doc = new XmlDocument();
             using var reader = new StreamReader(path);
             doc.Load(reader);
-            if (doc.SelectSingleNode("plist/dict") is { } dictNode)
-                for (var i = 0; i < dictNode.ChildNodes.Count; i++)
+            if (doc.SelectSingleNode("plist/dict") is not { } dictNode) return false;
+
+            for (var i = 0; i < dictNode.ChildNodes.Count; i++)
+            {
+                var node = dictNode.ChildNodes[i];
+                if (node.Name == "key" && node.InnerText == "BUNDLE_ID")
                 {
-                    var node = dictNode.ChildNodes[i];
-                    if (node.Name == "key" && node.InnerText == "BUNDLE_ID")
-                    {
-                        var valueNode = dictNode.ChildNodes[i + 1];
-                        if (valueNode.Name != "string")
-                        {
-                            bundleId = default;
-                            return false;
-                        }
+                    var valueNode = dictNode.ChildNodes[i + 1];
+                    if (valueNode.Name != "string")
+                        continue;
 
-                        bundleId = valueNode.InnerText;
-                        return true;
-                    }
+                    if (valueNode.InnerText == bundleId) return true;
                 }
+            }
 
-            bundleId = default;
             return false;
         }
 
-
-        private bool TryGetBundleIdFromGoogleServicesJson(string path, out string bundleId)
+        private bool ContainsBundleIdGoogleServicesJson(string path, string bundleId)
         {
             var json = JsonUtility.FromJson<GoogleServicesJson>(File.ReadAllText(path));
             foreach (var client in json.client)
             {
                 var packageName = client.client_info.android_client_info.package_name;
-                if (!string.IsNullOrEmpty(packageName))
-                {
-                    bundleId = packageName;
-                    return true;
-                }
+                if (packageName == bundleId) return true;
             }
 
-            bundleId = default;
             return false;
         }
 
