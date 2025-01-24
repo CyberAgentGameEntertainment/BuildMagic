@@ -11,9 +11,9 @@ BuildMagicは、開発・本番などの複数の設定を管理し、ビルド�
 <!-- TOC -->
 * [BuildMagic](#buildmagic)
   * [モチベーション](#モチベーション)
+  * [BuildMagicの構成](#buildmagicの構成)
   * [機能](#機能)
     * [Unity の Build Profiles との相違点](#unity-の-build-profiles-との相違点)
-  * [BuildMagicの構成](#buildmagicの構成)
   * [Quick Start](#quick-start)
     * [インストール](#インストール)
     * [ビルドスキームの作成](#ビルドスキームの作成)
@@ -51,7 +51,7 @@ BuildMagicでは、開発・本番などの設定を **ビルドスキーム (Bu
 
 ビルドスキームは複数の **ビルドコンフィギュレーション (Build Configuration)** を持ちます。
 
-ビルドコンフィギュレーションは、バンドルIDの設定やアプリケーションアイコンの設定を行う **ビルドタスク** と、実際にどのような値を設定するかのパラメーターを保持しています。
+ビルドコンフィギュレーションは、バンドルIDの設定やアプリケーションアイコンなど実際の設定を行う実装として **ビルドタスク** を提供し、ビルドタスクに渡されるパラメーターを保持しています。
 
 以下の図に、ビルドスキーム、ビルドコンフィギュレーション、ビルドタスクの関係を示します。
 
@@ -163,8 +163,7 @@ BuildMagicウインドウの画面左上にある「Menu」をクリックして
 他のビルドスキームを継承して作成したビルドスキームをUI上で選択すると、**Derived** という項目に継承元のビルドスキームに含まれるビルドコンフィギュレーションが表示されます。
 設定の追加・上書きは**ビルドコンフィギュレーション単位**で行われます。
 
-> [!WARNING]
-> あるビルドスキームを継承したビルドスキームを、さらに継承することはできません。
+ビルドスキームをツリービュー上でドラッグ&ドロップすることで、作成済みのビルドスキームの継承関係を変更することも可能です。ツリービュー上で、ビルドスキームはその**Base**となるビルドスキームの下の階層に表示されます。
 
 ![](./Documentation~/configure-build-scheme-override.png)
 
@@ -172,13 +171,15 @@ BuildMagicウインドウの画面左上にある「Menu」をクリックして
 
 BuildMagicは、コマンドライン経由での実行をサポートしています。
 
-コマンドラインでのアプリビルドは、「PreBuildフェーズ」と「PostBuildフェーズ」の2つのフェーズに分かれています。
+BuildMagicにおけるビルドタスクの実行は「PreBuildフェーズ」と「PostBuildフェーズ」の2つのフェーズに分かれています。
 
 - PreBuildフェーズ:
     - プラットフォームの切り替えと、BuildMagicが管理するビルド設定をプロジェクトに適用するフェーズです。
-    - このフェーズで、Define Symbolsの更新やアセット、ソースコードの物理削除を行います。
+    - Define Symbolsの更新やアセット、ソースコードの物理削除はこのフェースで行います。
 - PostBuildフェーズ:
-    - `BuildPipeline.BuildPlayer` を介してUnityアプリをビルドした後に実行されるフェーズです
+    - Unityアプリをビルドした後に実行されるフェーズです
+
+コマンドライン経由の実行では、PreBuildフェーズを実行してからUnityを再起動し、アプリビルド・PostBuildフェーズを実行します。
 
 このアプローチを採用しているのは、コマンドライン経由のバッチモード実行ではドメインリロードができないためです。
 プラットフォームやDefine Symbolsの更新を行った同じプロセスでビルドを実行すると、コードの再コンパイルが正常に行われず、期待したビルドが得られない可能性があります。
@@ -199,7 +200,7 @@ BuildMagicは、コマンドライン経由での実行をサポートしてい�
   -scheme ${BUILD_MAGIC_SCHEME_NAME} \
   -override KEY1=VALUE1 -override KEY2=VALUE2
 
-# ビルドフェーズの実行
+# アプリビルドとポストビルドフェーズの実行
 /Path/to/Unity -projectPath /Path/To/Project -quit -batchmode -executeMethod BuildMagicCLI.Build \
   -scheme ${BUILD_MAGIC_SCHEME_NAME} \
   -override KEY1=VALUE1 -override KEY2=VALUE2
@@ -297,7 +298,7 @@ public class SampleApiSetting : ScriptableObject
 using BuildMagicEditor;
 using UnityEditor;
 
-// ビルドタスクを管理するために必要な属性の定義
+// BuildConfiguration等を自動生成するために必要な属性
 [GenerateBuildTaskAccessories(
     // displayNameはBuildMagicウインドウで表示されるビルドコンフィギュレーションの名前
     "Sample Api Setting",
