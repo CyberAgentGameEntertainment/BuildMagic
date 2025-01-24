@@ -1,5 +1,7 @@
 # Builtin Task Generator
 
+English: [README.md](./README.md)
+
 これは、[UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference)のソースをもとに、`PlayerSettings`や`EditorUserBuildSettings`などに対して設定を行う`IBuildTask`実装を事前生成するツールです。
 
 新しいUnityバージョンがリリースされ、[UnityCsReferenceにタグとして追加されたら](https://github.com/Unity-Technologies/UnityCsReference/tags)、本ツールを実行することで新しいバージョンに対する解析を行い、生成コードを更新します。
