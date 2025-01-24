@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace BuildMagic.BuiltinTaskGenerator;
 
 /// <summary>
-///     バージョンごとの解析結果を保持する
+///     Represents a result of analysis for a specific version
 /// </summary>
 public class AnalysisResult
 {
