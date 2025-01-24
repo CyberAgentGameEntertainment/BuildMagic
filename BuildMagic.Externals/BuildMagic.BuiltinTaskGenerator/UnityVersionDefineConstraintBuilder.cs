@@ -90,10 +90,10 @@ public class UnityVersionDefineConstraintBuilder
             var start = segment.Since;
             var end = segment.Until;
 
-            // 最低サポートverで有効なので、それ以前のバージョンでも有効になるようにする
+            // it is valid for the earliest supported version, so make it valid for versions before that
             var firstAvailable = start == Earliest;
 
-            // 最新verで有効なので、それ以降のバージョンでも有効になるようにする
+            // it is valid for the latest supported version, so make it valid for versions after that
             var latestAvailable = end == Latest;
 
             var minorLocal = start.Major == end.Major && start.Minor == end.Minor;
@@ -103,9 +103,8 @@ public class UnityVersionDefineConstraintBuilder
             var startIndex = Array.IndexOf(_knownVersionsAscending, start);
             var endIndex = Array.IndexOf(_knownVersionsAscending, end);
 
-            // 最新ではないminorにおける最新のrevisionは、今後追加されるrevisionに対して有効にする
-            // 生成コードの差分が減り、新しいUnityリリースに対応しやすくなる
-            // (e.g. 7000.0.xがすでに出ているが、6000.1.x系にまだ更新がきていて、最新6000.1.xにおいて有効だが7000.0.0において無効な項目は、将来の6000.1.xバージョンに対しては項目が有効になるようにする)
+            // Future revisions of the non-latest minor version are valid, reducing the diff of generated code and making it easier to support new Unity releases.
+            // (e.g. 7000.0.x is already out, but 6000.1.x series is still getting updates, and items that are valid in the latest 6000.1.x but not in 7000.0.0 should be valid for future 6000.1.x versions)
 
             var latestRevisionInPrevMinor = !latestAvailable && _knownVersionsAscending[endIndex + 1].Revision == 0;
 
@@ -180,9 +179,8 @@ public class UnityVersionDefineConstraintBuilder
                     }
                     else
                     {
-                        // マイナーバージョンの途中で終わっている
-                        // この場合、endの次のバージョン以降のマイナーバージョンを除外する方法だと、新しいマイナーバージョンがリリースされた場合に対応できない
-                        // endまでのマイナーバージョンをすべて含める方法にする
+                        // It is terminated in the middle of the minor version.
+                        // To making sure that the constraint is valid for future minor versions, we need to "include" all minor version until the end, not "exclude" all minor versions after the end.
 
                         constraint = !$"UNITY_{end.Major}_{end.Minor}_OR_NEWER".ToDefine();
 
@@ -208,7 +206,7 @@ public class UnityVersionDefineConstraintBuilder
 
                 if (!firstAvailable)
                 {
-                    // startから有効化
+                    // "include" after the start
 
                     var low = $"UNITY_{start.Major}_{start.Minor}_OR_NEWER".ToDefine();
                     if (constraint != null)

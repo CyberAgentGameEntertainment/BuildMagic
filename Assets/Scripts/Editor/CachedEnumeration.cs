@@ -7,8 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-///     列挙型クラス
-///     GetValuesの値をstatic変数にキャッシュしておく
+///     A cache of the result of Enum.GetValues()
 /// </summary>
 internal abstract class CachedEnumeration<T> : Enumeration
     where T : Enumeration

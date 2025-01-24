@@ -20,7 +20,7 @@ public abstract class Enumeration : IComparable
     public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
 
     /// <summary>
-    ///     リフレクション機能を使用しIEnumerableを返す
+    ///     Enumerate all values of the given enum
     /// </summary>
     public static IEnumerable<T> GetValues<T>() where T : Enumeration
     {

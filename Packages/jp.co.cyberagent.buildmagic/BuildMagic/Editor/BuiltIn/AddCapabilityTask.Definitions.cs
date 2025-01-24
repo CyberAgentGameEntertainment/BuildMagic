@@ -201,17 +201,17 @@ namespace BuildMagicEditor.BuiltIn
                         {
                             rect.y += 2;
 
-                            // 現在のクラスインスタンスを取得
+                            // get current class instance
                             var currentInstance = element.managedReferenceValue as ICapability;
 
-                            // クラス選択用のPopup
+                            // popup to pick a class
                             var selectedIndex = Array.IndexOf(_capabilityTypes, currentInstance?.GetType());
                             selectedIndex =
                                 EditorGUI.Popup(
                                     new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
                                     selectedIndex, _capabilityTypes.Select(t => t.Name).ToArray());
 
-                            // 選択されたクラスに基づいて新しいインスタンスを作成
+                            // create a new instance based on the selected class
                             if (selectedIndex >= 0 && selectedIndex < _capabilityTypes.Length)
                             {
                                 var selectedType = _capabilityTypes[selectedIndex];
@@ -219,7 +219,7 @@ namespace BuildMagicEditor.BuiltIn
                                     element.managedReferenceValue = Activator.CreateInstance(selectedType);
                             }
 
-                            // インスタンスのプロパティを描画
+                            // draw the properties
                             if (element.managedReferenceValue != null)
                             {
                                 var propertyRect = new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight + 2,

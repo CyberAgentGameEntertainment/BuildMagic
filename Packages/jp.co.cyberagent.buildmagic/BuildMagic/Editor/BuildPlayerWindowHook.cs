@@ -20,12 +20,12 @@ namespace BuildMagicEditor
 
         static BuildPlayerWindowHook()
         {
-            // NOTE: RegisterGetBuildPlayerOptionsHandlerは排他的なので、他のコールバックが登録されると無効化される
+            // NOTE: RegisterGetBuildPlayerOptionsHandler is exclusive, so it will be disabled if other callbacks are registered
             BuildPlayerWindow.RegisterGetBuildPlayerOptionsHandler(options =>
             {
                 _hookedScheme = null;
 
-                // Primary Schemeがない場合はデフォルト動作（BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptionsInternal()）
+                // Behave as default if Primary Scheme is not set（BuildPlayerWindow.DefaultBuildMethods.GetBuildPlayerOptionsInternal()）
 
                 var target = ScriptableSingleton<BuildMagicSettings>.instance.PrimaryBuildScheme;
                 if (string.IsNullOrEmpty(target))
@@ -44,7 +44,7 @@ namespace BuildMagicEditor
                 if (result == 1)
                     return GetBuildPlayerOptionsInternal(true, options);
 
-                // あとでpost buildをトリガーするためにここでセット
+                // memorize the scheme to run OnPostProcessBuild
                 _hookedScheme = scheme;
 
                 var preBuildTask =
@@ -66,7 +66,7 @@ namespace BuildMagicEditor
                 if (updateExistingBuild)
                     options.options |= BuildOptions.AcceptExternalModificationsToPlayer;
 
-                // PickBuildLocationの結果を反映
+                // reflect the result of PickBuildLocation
                 options.locationPathName = EditorUserBuildSettings.GetBuildLocation(overrideOptions.target);
 
                 return overrideOptions;
