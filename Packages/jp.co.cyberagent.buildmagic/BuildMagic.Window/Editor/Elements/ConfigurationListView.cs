@@ -22,7 +22,6 @@ namespace BuildMagic.Window.Editor.Elements
         private readonly VisualElement _arraySizeTracker;
         private ConfigurationListView _baseView;
         private Action<ConfigurationType, int, IBuildConfiguration> _requestRemove;
-        private ConfigurationType _type;
 
         public ConfigurationListView()
         {
@@ -46,16 +45,18 @@ namespace BuildMagic.Window.Editor.Elements
 
         public ConfigurationListView(ConfigurationType type) : this()
         {
-            _type = type;
+            Type = type;
         }
+
+        public ConfigurationType Type { get; private set; }
 
         public void Bind(SerializedProperty buildSchemeContainerProp,
-            Action<ConfigurationType, int, IBuildConfiguration> requestRemove)
+            Action<ConfigurationType, int, IBuildConfiguration> requestRemove, out bool hasAny)
         {
-            Bind(buildSchemeContainerProp, null, false, requestRemove);
+            Bind(buildSchemeContainerProp, null, out hasAny, false, requestRemove);
         }
 
-        private void Bind(SerializedProperty buildSchemeContainerProp, IConfigurationFilter filter,
+        private void Bind(SerializedProperty buildSchemeContainerProp, IConfigurationFilter filter, out bool hasAny,
             bool isDerived = false,
             Action<ConfigurationType, int, IBuildConfiguration> requestRemove = null)
         {
@@ -73,7 +74,7 @@ namespace BuildMagic.Window.Editor.Elements
                 _label.style.display = new StyleEnum<DisplayStyle>(StyleKeyword.None);
             }
 
-            var relativeBindingPath = _type switch
+            var relativeBindingPath = Type switch
             {
                 ConfigurationType.PreBuild => "_self._preBuildConfigurations",
                 ConfigurationType.InternalPrepare => "_self._internalPrepareConfigurations",
@@ -81,13 +82,15 @@ namespace BuildMagic.Window.Editor.Elements
                 _ => null
             };
             listView.bindingPath = relativeBindingPath;
-            listView.makeItem = () => MakeConfigurationEntryView(_type);
-            listView.bindItem = (e, index) => BindConfiguration(e, index, listView.itemsSource, _type, filter);
+            listView.makeItem = () => MakeConfigurationEntryView(Type);
+            listView.bindItem = (e, index) => BindConfiguration(e, index, listView.itemsSource, Type, filter);
             listView.unbindItem = (e, _) => UnbindConfiguration(e);
             listView.reorderable = !isDerived;
             listView.Rebuild();
 
-            RebuildBaseView();
+            hasAny = buildSchemeContainerProp.FindPropertyRelative(relativeBindingPath).arraySize > 0;
+            RebuildBaseView(out var hasBaseAny);
+            hasAny |= hasBaseAny;
 
             if (!isDerived)
             {
@@ -97,10 +100,10 @@ namespace BuildMagic.Window.Editor.Elements
                 arraySizeProp.Next(true);
 
                 _arraySizeTracker.Unbind();
-                _arraySizeTracker.TrackPropertyValue(arraySizeProp, _ => { RebuildBaseView(); });
+                _arraySizeTracker.TrackPropertyValue(arraySizeProp, _ => { RebuildBaseView(out var _); });
             }
 
-            void RebuildBaseView()
+            void RebuildBaseView(out bool hasAny)
             {
                 var baseProp = buildSchemeContainerProp.FindPropertyRelative("_base");
                 if (baseProp.managedReferenceId is ManagedReferenceUtility.RefIdNull
@@ -109,12 +112,13 @@ namespace BuildMagic.Window.Editor.Elements
                     // root
                     _baseView?.RemoveFromHierarchy();
                     _baseView = null;
+                    hasAny = false;
                 }
                 else
                 {
                     if (_baseView == null)
                     {
-                        _baseView = new ConfigurationListView(_type);
+                        _baseView = new ConfigurationListView(Type);
                         _baseView.SetEnabled(false);
                         Add(_baseView);
                     }
@@ -128,7 +132,8 @@ namespace BuildMagic.Window.Editor.Elements
                     }
 
                     var configurationsProp = buildSchemeContainerProp.FindPropertyRelative(relativeBindingPath);
-                    _baseView.Bind(baseProp, new ConfigurationFilter(GetTaskTypes(configurationsProp), filter), true);
+                    _baseView.Bind(baseProp, new ConfigurationFilter(GetTaskTypes(configurationsProp), filter),
+                        out hasAny, true);
                 }
             }
         }
@@ -200,7 +205,7 @@ namespace BuildMagic.Window.Editor.Elements
                 base.Init(ve, bag, cc);
 
                 var derived = (ConfigurationListView)ve;
-                derived._type = _type.GetValueFromBag(bag, cc);
+                derived.Type = _type.GetValueFromBag(bag, cc);
             }
         }
 
@@ -222,7 +227,7 @@ namespace BuildMagic.Window.Editor.Elements
 
             public bool IsVisible(IBuildConfiguration configuration)
             {
-                if(configuration == null) return false;
+                if (configuration == null) return false;
                 return (_parent?.IsVisible(configuration) ?? true) &&
                        !_excludedTaskTypes.Contains(configuration.TaskType);
             }
