@@ -64,10 +64,10 @@ namespace BuildMagicEditor
                     throw new OperationCanceledException();
 
                 if (updateExistingBuild)
-                    options.options |= BuildOptions.AcceptExternalModificationsToPlayer;
+                    overrideOptions.options |= BuildOptions.AcceptExternalModificationsToPlayer;
 
                 // PickBuildLocationの結果を反映
-                options.locationPathName = EditorUserBuildSettings.GetBuildLocation(overrideOptions.target);
+                overrideOptions.locationPathName = EditorUserBuildSettings.GetBuildLocation(overrideOptions.target);
 
                 return overrideOptions;
             });
