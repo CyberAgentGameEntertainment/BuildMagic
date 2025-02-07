@@ -59,6 +59,9 @@ namespace BuildMagicEditor
 
                 var overrideOptions = internalPrepareTasks.GenerateBuildPlayerOptions();
 
+                // Apply default options such as AutoRunPlayer
+                overrideOptions.options |= options.options;
+
                 if (!PickBuildLocation(overrideOptions.targetGroup, overrideOptions.target, overrideOptions.subtarget,
                         overrideOptions.options, out var updateExistingBuild))
                     throw new OperationCanceledException();
