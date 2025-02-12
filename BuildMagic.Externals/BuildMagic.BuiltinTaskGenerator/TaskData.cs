@@ -74,8 +74,12 @@ namespace BuildMagic.BuiltinTaskGenerator
         private static IEnumerable<(WeavedTaskParameter result, TaskParameterData source)> WeaveParameters(
             IReadOnlyList<(TaskParameterData parameter, int index)> parameters, ReadOnlySpan<string> dictionaryKeyTypes)
         {
-            // GetterとSetterの引数をマッチングして、設定値のキーとなる型（NamedBuildTarget）とかを自動判別し、ディクショナリとしてシリアライズする
-            // キーの優先順位はappsettings.jsonのDictionaryKeyTypesに記載された順番に従う
+            // Find the key parameter of the setting (e.g. NamedBuildTarget) by matching the arguments of the getter and setter, and automatically determine the type (NamedBuildTarget) of the key of the setting value as a dictionary
+            // ex.
+            //   void SetSomething(NamedBuildTarget target, object value)
+            //   object GetSomething(NamedBuildTarget target)
+            //    -> keys: [target], values: [value]
+            // The key priority is based on the order in DictionaryKeyTypes in appsettings.json
 
             if (parameters.Count == 1)
                 return
@@ -122,14 +126,14 @@ namespace BuildMagic.BuiltinTaskGenerator
             sourceBuilder.AppendLine(
                 $"// {string.Join(", ", range.Segments.Select(s => $"[{s.Since} - {(s.Until == defineBuilder.Latest ? "(latest)" : s.Until == defineBuilder.GetLatestRevision(s.Until) ? $"({s.Until.Major}.{s.Until.Minor} latest)" : s.Until)}]"))}");
             if (versionDefine != null)
-                // このタスクのversion defines
+                // version defines of this task
                 sourceBuilder.AppendLine(
                     /*  lang=c# */
                     $$"""
                       #if {{versionDefine}}
                       """);
 
-            // TODO: パラメータクラス生成処理のSource Generatorとの共通化が必要。現状PlayerSettingsにFormerlySerializedAsを要する項目がないので、スキップしている
+            // TODO: generation of the parameter class should be shared with Source Generator. Currently, PlayerSettings does not have any items that require FormerlySerializedAs, so it is skipped
             var hasFormerSerializationNames = weavedRootParameters.Any(p => p.FormerSerializationNames.Any());
 
             sourceBuilder.AppendLine(
@@ -137,7 +141,7 @@ namespace BuildMagic.BuiltinTaskGenerator
                 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"{{_options?.OverrideDisplayName ?? LatestVersionApiData.DisplayName}}", PropertyName = @"{{LatestVersionApiData.PropertyName}}")]
                 """);
 
-            // Obsoleteな項目はTaskにもObsoleteをつける
+            // Mark as obsolete if the latest version is obsolete
             var obsoleteVersionDefine =
                 defineBuilder.Get(_versions.Where(v => v.data.IsObsolete).Select(v => v.version),
                     out var isNeverObsolete);
@@ -150,9 +154,9 @@ namespace BuildMagic.BuiltinTaskGenerator
                       #endif
                       """);
 
-            // Task本体
+            // Task body
 
-            // コンストラクタ
+            // constructor
 
             sourceBuilder.AppendLine(
 /*  lang=c# */$$"""
@@ -182,7 +186,7 @@ namespace BuildMagic.BuiltinTaskGenerator
             var isFirst = true;
             foreach (var grouping in _versions.GroupBy(v => v.data.SetterExpression))
             {
-                // バージョンごとにSetter Expressionが異なる場合はdefine symbolを切る
+                // generate branches for each different setter expression among versions
                 var setterExpressionVersionDefine =
                     defineBuilder.Get(grouping.Select(g => g.version), out _)?.ToString();
 
@@ -235,7 +239,7 @@ namespace BuildMagic.BuiltinTaskGenerator
             sourceBuilder.AppendLine(
 /*  lang=c# */"""    }""");
 
-            // フィールド
+            // fields
 
             foreach (var parameter in weavedRootParameters)
                 sourceBuilder.AppendLine(
@@ -547,7 +551,7 @@ namespace BuildMagic.BuiltinTaskGenerator
 
         public bool IsCompatibleWith(ParameterData parameterData)
         {
-            // TODO: MovedFrom等の考慮？
+            // TODO: take into account MovedFrom etc.?
             if (parameterData.IsOutput != IsOutputParameter) return false;
             return TypeExpression == parameterData.TypeExpression;
         }

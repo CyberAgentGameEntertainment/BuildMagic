@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.Operations;
 namespace BuildMagic.BuiltinTaskGenerator;
 
 /// <summary>
-///     エディタコードからラベル等を取得する
+///     Obtains nice label names from editor code
 /// </summary>
 public class UnityEditorGuiAnalyzer
 {
@@ -44,7 +44,7 @@ public class UnityEditorGuiAnalyzer
 
     private IOperation? GetInitialValue(IFieldSymbol field)
     {
-        // フィールドの初期値を取得する
+        // get the initial value of the field
         var syntax = field
             .DeclaringSyntaxReferences
             .Select(r => r.GetSyntax())
@@ -69,7 +69,7 @@ public class UnityEditorGuiAnalyzer
 
     private void AnalyzeMethod(IMethodSymbol method)
     {
-        // 再帰ループ防止
+        // avoid infinite recursion
         if (!_seenMethods.Add(method)) return;
 
         var syntax = method
@@ -95,7 +95,7 @@ public class UnityEditorGuiAnalyzer
 
     private IOperation ResolveStoredValue(IOperation operation)
     {
-        // フィールドに代入された値を取得する
+        // get the value stored in the field
         switch (operation)
         {
             case IFieldReferenceOperation fieldReference:
@@ -113,7 +113,7 @@ public class UnityEditorGuiAnalyzer
 
     private void AnalyzeOperation(IMethodSymbol currentMethod, IOperation operation)
     {
-        // フィールドへの代入を記録
+        // record field assignments
         if (operation is IAssignmentOperation assignment)
             if (assignment.Target is IFieldReferenceOperation fieldReference)
             {
@@ -129,10 +129,10 @@ public class UnityEditorGuiAnalyzer
                 method.ContainingType.ContainingNamespace.ToString() is "UnityEditor" &&
                 method.ContainingType.Name is "EditorGUILayout" or "EditorGUI")
             {
-                // EditorGUI.~~Field()、EditorGUILayout.~~Field()に注目
+                // EditorGUI.~~Field()、EditorGUILayout.~~Field()
                 if (!method.Name.EndsWith("Field", StringComparison.Ordinal)) return;
 
-                // 引数を取得
+                // get parameters
 
                 if (!TryGetParameter(invocation, "property", out var propertyArgument) &&
                     !TryGetParameter(invocation, "prop", out propertyArgument))
@@ -141,13 +141,13 @@ public class UnityEditorGuiAnalyzer
                 _ = !TryGetParameter(invocation, "label", out var labelArgument) &&
                     !TryGetParameter(invocation, "uiString", out labelArgument);
 
-                // 引数がフィールドに由来しているなら、それを解決
+                // if the parameter is from a fiels, resolve it
 
                 propertyArgument = ResolveStoredValue(propertyArgument);
 
                 labelArgument = labelArgument != null ? ResolveStoredValue(labelArgument) : null;
 
-                // ラベルがローカライズされている場合は EditorGUI.TrTextContent() が呼ばれているので、その引数を展開
+                // if the label is localized, EditorGUI.TrTextContent() is called, so expand the arguments
 
                 if (labelArgument is IInvocationOperation { TargetMethod: { Name: "TrTextContent" } } labelInvocation)
                 {
@@ -155,7 +155,7 @@ public class UnityEditorGuiAnalyzer
                     if (args.Length >= 1) labelArgument = labelInvocation.Arguments[0].Value;
                 }
 
-                // プロパティはFindPropertyAssert()で取得されているので、引数を展開してプロパティパスを取得
+                // get the property path from the argument of FindPropertyAssert()
 
                 string? propertyName = null;
                 if (propertyArgument is IInvocationOperation
@@ -178,7 +178,7 @@ public class UnityEditorGuiAnalyzer
                     } labelLiteral)
                     labelValue = labelLiteral.ConstantValue.Value as string;
 
-                // プロパティパスとラベルを対応づける
+                // associate the property path with the label
 
                 if (propertyName != null)
                 {
@@ -189,7 +189,7 @@ public class UnityEditorGuiAnalyzer
             }
             else
             {
-                // 同じインスタンスのメソッドを呼んでいる場合は再帰的に解析
+                // Recurse instance method call with the same instance
                 if (invocation.Instance is IInstanceReferenceOperation ||
                     method.IsStatic && method.ContainingType == currentMethod.ContainingType)
                     AnalyzeMethod(method);

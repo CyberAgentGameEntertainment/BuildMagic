@@ -1,109 +1,113 @@
 # Builtin Task Generator
 
-これは、[UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference)のソースをもとに、`PlayerSettings`や`EditorUserBuildSettings`などに対して設定を行う`IBuildTask`実装を事前生成するツールです。
+Japanese: [README.ja.md](./README.ja.md)
 
-新しいUnityバージョンがリリースされ、[UnityCsReferenceにタグとして追加されたら](https://github.com/Unity-Technologies/UnityCsReference/tags)、本ツールを実行することで新しいバージョンに対する解析を行い、生成コードを更新します。
+Buildin Task Generator is a tool that generates `IBuildTask` implementations that set settings for `PlayerSettings`, `EditorUserBuildSettings`, etc. based on the source code of [UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference).
+
+When a new Unity version is released and added as a tag to [UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference), running this tool will analyze the new version and update the generated code.
 
 <!-- TOC -->
 * [Builtin Task Generator](#builtin-task-generator)
-  * [基本的な使い方](#基本的な使い方)
-  * [解析結果のキャッシュ](#解析結果のキャッシュ)
-  * [Unityバージョン](#unityバージョン)
-  * [処理対象](#処理対象)
-  * [現在の設定値の取得](#現在の設定値の取得)
-  * [生成ルール](#生成ルール)
-    * [処理対象に関するルール](#処理対象に関するルール)
-    * [バージョン互換性に関するルール](#バージョン互換性に関するルール)
-    * [`IProjectSettingApplier`実装に関するルール](#iprojectsettingapplier実装に関するルール)
-    * [タスクパラメータ型に関するルール](#タスクパラメータ型に関するルール)
-      * [シリアライズできない型の例外的対応](#シリアライズできない型の例外的対応)
-  * [設定](#設定)
+  * [Basic Usage](#basic-usage)
+  * [Caching of Analysis Results](#caching-of-analysis-results)
+  * [Unity Versions](#unity-versions)
+  * [Processed Targets](#processed-targets)
+  * [Getting Current Settings](#getting-current-settings)
+  * [Generation Rules](#generation-rules)
+    * [Rules for Processed Targets](#rules-for-processed-targets)
+    * [Rules for Version Compatibility](#rules-for-version-compatibility)
+    * [Rules for `IProjectSettingApplier` Implementation](#rules-for-iprojectsettingapplier-implementation)
+    * [Rules for Task Parameter Types](#rules-for-task-parameter-types)
+      * [Exceptional Behavior for Unserializable Types](#exceptional-behavior-for-unserializable-types)
+  * [Configuration](#configuration)
     * [`Apis`](#apis)
       * [`Ignored`](#ignored)
       * [`OverrideDisplayName`](#overridedisplayname)
     * [`DictionaryKeyTypes`](#dictionarykeytypes)
 <!-- TOC -->
 
-## 基本的な使い方
+## Basic Usage
 
-`generate`サブコマンドを使用します。`-o`オプションで生成ファイル (`.cs`) の出力先ディレクトリを指定します。
+Use the `generate` subcommand. Specify the output directory for the generated files (`.cs`) with the `-o` option.
 
 ```shell
 dotnet run -- generate -o ../../Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated
 ```
 
-## 解析結果のキャッシュ
+## Caching of Analysis Results
 
-本ツールは、UnityCsReferenceの各リリースバージョンに対して解析を行い、バージョン間の互換性をできるだけ維持できるようにコードを生成します。  
-一度解析を行ったバージョンの解析結果は、ローカルにキャッシュし次回以降の解析で再利用することで高速化を図ります。  
-キャッシュは以下のディレクトリに保存されます（macOSの場合）。
+This tool analyzes each release version of UnityCsReference and generates code to maintain compatibility between versions as much as possible.  
+The analysis results for each version are cached locally and reused in subsequent analyses to speed up the process.  
+The cache is stored in the following directory (macOS).
 
 ```
 ~/Library/Application Support/BuildMagic.BuiltinTaskGenerator/library
 ```
 
 > [!NOTE]
-> このパスは`Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)`に基づきます。
-  
-キャッシュを無視してすべてのバージョンの解析を行う場合は、`-f`オプションを指定してください。
+> This path is based on `Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)`.
 
-## Unityバージョン
+To ignore the cache and perform analysis on all versions, specify the `-f` option.
 
-Unity 2022.3.0f1以降のリリース(`f`)バージョンを処理対象としています。
+## Target Unity Versions
 
-## 処理対象
-現時点での処理対象クラスは以下の通りです。 (かっこ内はエディタラベル解析に使用するクラス)
+This tool targets releases (`f` versions) of Unity 2022.3.0f1 and later.
+
+## Processed Targets
+
+The classes currently being processed are as follows. (The classes used for editor label analysis are in parentheses.)
 
 - `UnityEngine.PlayerSettings` (`UnityEditor.PlayerSettingsEditor`)
 - `UnityEditor.EditorUserBuildSettings`
 
-## 現在の設定値の取得
+## Getting Current Settings
 
-プロジェクトの現在の設定値が取得できる場合は、Configuration型に対し`BuildMagicEditor.IProjectSettingApplier`の実装を生成します。
+If the current settings of the project can be obtained, an implementation of `BuildMagicEditor.IProjectSettingApplier` is generated for the BuildConfiguration type.
 
-## 生成ルール
+## Generation Rules
 
-### 処理対象に関するルール
+### Rules for Processed Targets
 
-- `static`かつ`public`かつジェネリックでないメソッド・プロパティのみを処理します。
-- `set`アクセサのないプロパティは無視します。
-- メソッド名の先頭が`Set`でないメソッドは無視します。
-- パラメータ型にシリアライズできない型が含まれる項目は原則として無視します。
-    - [一部、例外的に対応している型があります。](#シリアライズできない型の例外的対応)
-- その項目が`[Obsolete]`である場合は、生成されるタスク型にも`[Obsolete]`属性が付与されます。
-    - ただし、`[Obsolete(IsError: true)]`の項目は無視します。
-- ネスト型がある場合は、そのネスト型のメンバーも処理します。
-- `appsettings.json`で`Ignored`に指定されている項目は無視します。
+- Only static, public, and non-generic methods and properties are processed.
+- Properties without a `set` accessor are ignored.
+- Methods whose names do not start with `Set` are ignored.
+- Items with parameter types that cannot be serialized are generally ignored.
+    - [Some types that cannot be serialized are handled exceptionally.](#exceptional-behavior-for-unserializable-types)
+- If the item is `[Obsolete]`, the generated task type will also have the `[Obsolete]` attribute.
+    - However, items with `[Obsolete(IsError: true)]` are ignored.
+- If there are nested types, the members of those nested types are also processed.
+- Items specified in `appsettings.json` under `Ignored` are ignored.
 
-### バージョン互換性に関するルール
+### Rules for Version Compatibility
 
-- 処理対象のUnityバージョンのうち、その項目が初めて登場したバージョンの時点で`[Obsolete]`な項目は無視します。
-- 同じ名前で`[Obsolete]`ではない項目が複数存在する場合（オーバーロードなど）は、それ以前のバージョンですでに登場している項目を優先します。
-    - それでも優先できる項目がなければ、その名前の項目に対する処理はスキップします。
+- Items that are `[Obsolete]` at the time they first appear in the Unity version being processed are ignored.
+- If there are multiple items with the same name that are not `[Obsolete]` (e.g., overloads), the item that appeared earlier in a previous version is given priority.
+    - If there is still no item that can be prioritized, processing for that item is skipped.
 
-### `IProjectSettingApplier`実装に関するルール
+### Rules for `IProjectSettingApplier` Implementation
 
-- プロパティに`get`アクセサがある場合は、それを使用します。
-- メソッド`SetHoge()`に対して`GetHoge()`が存在する場合は、それを使用します。
-    - 引数の型と戻り値の型をみてオーバーロードのマッチングを行います。マッチングできない場合はスキップします。
+- If there is a `get` accessor in the property, it is used.
+- If there is a `GetHoge()` method for the `SetHoge()` method, it is used.
+    - Matching is done based on the types of the arguments and return values. If no match is found, it is skipped.
 
-### タスクパラメータ型に関するルール
+### Rules for Task Parameter Types
 
-- プロパティ・メソッドの引数をパラメータとして扱います。
-- パラメータが複数存在する場合は、タプルとして扱います。
-- `IProjectSettingApplier`で使用するゲッターにおいて入力すべきパラメータは、タスクパラメータ型においてディクショナリ (`IReadOnlyDictionary<,>`) のキーとして扱い、その他のパラメータをバリューとして扱います。
-  - キーとなるパラメータが複数存在する場合は、`appsettings.json`の[`DictionaryKeyTypes`](#dictionarykeytypes)に指定された順番にキーを選択します。
-  - タスク実行時には、それぞれのキーに対して値を設定します。
-  - バリューとなるパラメータが複数存在する場合は、タプルとして扱います。
+- The arguments of properties and methods are treated as parameters.
+- If there are multiple parameters, they are treated as a tuple.
+- In the `IProjectSettingApplier` getter to be used, the parameters to be entered are treated as dictionary keys in the task parameter type (`IReadOnlyDictionary<,>`) and the other parameters are treated as values.
+    - If there are multiple key parameters, the keys are selected in the order specified in `DictionaryKeyTypes` in `appsettings.json`.
+    - At runtime, values are set for each key.
+    - If there are multiple value parameters, they are treated as a tuple.
 
-#### シリアライズできない型の例外的対応
+#### Exceptional Behavior for Unserializable Types
 
-- 一部、直接的にはシリアライズできないが、他のシリアライズ可能な型との相互型変換が行える型については、その型をパラメータ型として扱います。
-    - 変換が可能な型のペアは`BuiltinSerializationWrapperRegistry.cs`にハードコードされています。
+- For some types that cannot be serialized directly but can be converted to and from other serializable types, the type is treated as a parameter type.
+    - The pairs of convertible types are hardcoded in `BuiltinSerializationWrapperRegistry.cs`.
 
 
-## 設定
-`appsettings.json`を編集して、コード生成の詳細な設定を行えます。
+## Configuration
+
+By editing `appsettings.json`, you can make detailed settings for code generation.
 
 ```json
 {
@@ -128,13 +132,13 @@ Unity 2022.3.0f1以降のリリース(`f`)バージョンを処理対象とし�
 
 ### `Apis`
 
-各APIごとの設定を行います。
+Here, you can configure each API.
 
-キーには[解析結果のキャッシュ](#解析結果のキャッシュ)のJSONファイルに記載されている`SetterExpression`を指定します。  
-また、オーバーロードを一意に定めるため、`ParameterTypes`に各パラメータ型のフルネームを指定する必要があります。こちらも同じく解析結果のキャッシュから正しい型表現が得られます。
+The key is "SetterExpression" of the [analysis result cache](#caching-of-analysis-results) JSON file.  
+To uniquely determine overloads, you need to specify the full names of each parameter type in `ParameterTypes`. The correct type representation can also be obtained from the analysis result cache.
 
 > [!IMPORTANT]
-> `SetterExpression`は、実装上の都合により、先頭の`global::`を除いたものを指定する必要があります。
+> `SetterExpression` must be specified without the leading `global::` for implementation reasons.
 
 ```json
 {
@@ -153,17 +157,17 @@ Unity 2022.3.0f1以降のリリース(`f`)バージョンを処理対象とし�
 
 #### `Ignored`
 
-`true`を指定すると、生成対象から除外されます。
+If `true` is specified, the target is excluded from generation.
 
 #### `OverrideDisplayName`
 
-生成されるタスク型の表示名を上書きします。
+Overrides the display name of the task type generated for the API.
 
 ### `DictionaryKeyTypes`
 
-これは、パラメータ型のうち、ディクショナリのキーとして扱う型の優先順位を指定します。
+This specifies the priority of types to be treated as dictionary keys among the parameter types.
 
-例えば、`PlayerSettings.SetIcons(NamedBuildTarget, Texture2D[], IconKind)`のようなAPIでは、タスクパラメータの型は次のような構造になります。
+For example, the type structure of task parameters for an API like `PlayerSettings.SetIcons(NamedBuildTarget, Texture2D[], IconKind)` would be as follows.
 
 ```ts
 type PlayerSettingsSetIconsParameters = {
@@ -175,7 +179,7 @@ type PlayerSettingsSetIconsParameters = {
 };
 ```
 
-これに対し、`DictionaryKeyTypes`を指定することで、ネストの順番を入れ替えられます。
+You can change the order of nesting by specifying `DictionaryKeyTypes`.
 
 ```json
 {

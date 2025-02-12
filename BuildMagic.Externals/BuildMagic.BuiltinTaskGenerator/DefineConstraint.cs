@@ -16,8 +16,7 @@ public abstract class DefineConstraint
         typeof(DefineConstraintSymbol)
     };
 
-    // DefineConstraintのToString()を行う際に、意図した評価順にするために演算子の優先度を考慮して括弧をつける必要があり、その判定に使用する
-
+    // priority is used to determine the order of evaluation of the operator when calling DefineConstraint.ToString()
     private int? _priority;
     public int Priority => _priority ??= Array.IndexOf(Precedence, GetType());
 

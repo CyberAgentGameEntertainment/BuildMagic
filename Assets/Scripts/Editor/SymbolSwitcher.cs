@@ -32,7 +32,7 @@ public class SymbolSwitcher : EditorWindow
 
         EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 
-        // プラットフォーム列
+        // platform column
         using (new GUILayout.VerticalScope())
         {
             var layoutOption = GUILayout.MinWidth(MinColumnSize);
@@ -41,7 +41,7 @@ public class SymbolSwitcher : EditorWindow
                 EditorGUILayout.LabelField(targetPlatform.Name, layoutOption);
         }
 
-        // チェックボックス列
+        // toggle column
         foreach (var symbol in Symbols)
             using (new GUILayout.VerticalScope())
             {
@@ -85,7 +85,7 @@ public class SymbolSwitcher : EditorWindow
             SymbolStatus[(targetPlatform, symbol)] = enabled;
         }
 
-        // プラットフォーム列 + チェックボックス列 + 余白
+        // platform column + toggle column + margin
         maxSize = new Vector2(MinColumnSize + MinColumnSize * Symbols.Length + MinColumnSize,
                               300);
         minSize = new Vector2(MinColumnSize + MinColumnSize * Symbols.Length + MinColumnSize,

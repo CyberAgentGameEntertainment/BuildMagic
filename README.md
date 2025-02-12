@@ -3,187 +3,191 @@ BuildMagic
 
 [![](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![](https://img.shields.io/badge/PR-welcome-green.svg)](https://github.com/CyberAgentGameEntertainment/BuildMagic/pulls)
-[![](https://img.shields.io/badge/Unity-2022.3-green.svg)](#インストール)
+[![](https://img.shields.io/badge/Unity-2022.3-green.svg)](#installation)
 
-BuildMagicは、開発・本番などの複数の設定を管理し、ビルドパイプラインの構築をサポートするビルドユーティリティです。
-ユーザーフレンドリーなインターフェイスを提供し、特にUnityのアプリビルドでよく必要になるビルドタスクをビルトインで提供します。
+Japanese: [README.ja.md](./README.ja.md)
+
+BuildMagic is a build utility that manages multiple configurations such as development and production, and supports building pipelines.
+It provides a user-friendly interface and offers built-in task implementaions that are often needed, especially for Unity app builds.
 
 <!-- TOC -->
 * [BuildMagic](#buildmagic)
-  * [モチベーション](#モチベーション)
-  * [機能](#機能)
-    * [Unity の Build Profiles との相違点](#unity-の-build-profiles-との相違点)
-  * [BuildMagicの構成](#buildmagicの構成)
+  * [Motivation](#motivation)
+  * [Concept](#concept)
+  * [Features](#features)
+    * [Differences from Unity's Build Profiles](#differences-from-unitys-build-profiles)
   * [Quick Start](#quick-start)
-    * [インストール](#インストール)
-    * [ビルドスキームの作成](#ビルドスキームの作成)
-    * [ビルドコンフィギュレーションの追加と編集](#ビルドコンフィギュレーションの追加と編集)
-    * [ビルドスキームの切り替え](#ビルドスキームの切り替え)
-    * [UI上からのビルド](#ui上からのビルド)
-    * [ビルドスキームの継承](#ビルドスキームの継承)
-  * [コマンドラインインターフェイス（CLI）からアプリをビルドする](#コマンドラインインターフェイスcliからアプリをビルドする)
-    * [ビルド時のビルドコンフィギュレーションの上書き](#ビルド時のビルドコンフィギュレーションの上書き)
-  * [ビルドタスク](#ビルドタスク)
-    * [独自のビルドタスクを実装する](#独自のビルドタスクを実装する)
-    * [プロジェクトの設定をビルドコンフィギュレーションに反映する](#プロジェクトの設定をビルドコンフィギュレーションに反映する)
-    * [ビルトインのビルドコンフィギュレーション](#ビルトインのビルドコンフィギュレーション)
+    * [Installation](#installation)
+    * [Creating a Build Scheme](#creating-a-build-scheme)
+    * [Adding and Editing Build Configurations](#adding-and-editing-build-configurations)
+  * [Switching Build Schemes](#switching-build-schemes)
+    * [Building from the UI](#building-from-the-ui)
+    * [Build Scheme Inheritance](#build-scheme-inheritance)
+  * [Building the player from the CLI](#building-the-player-from-the-cli)
+    * [Overriding Build Configuration at Build Time](#overriding-build-configuration-at-build-time)
+  * [Build Tasks](#build-tasks)
+    * [Implementing Custom Build Tasks](#implementing-custom-build-tasks)
+    * [Reflecting Project Settings in Build Configurations](#reflecting-project-settings-in-build-configurations)
+    * [Built-in Build Configurations](#built-in-build-configurations)
 <!-- TOC -->
 
-## モチベーション
+## Motivation
 
-Unityのアプリをビルドする際、開発時や本番時などで異なる設定を適用する必要があります。
+When building a Unity app, you need to apply different settings for different purposes such as development, production, etc.
 
-例えば、`PlayerSettings` などのUnity標準のAPIに対する設定もあれば、アプリケーションの接続先サーバーのURLや導入したSDKの設定など、プロジェクト独自の設定もあります。
+For example, there are settings for `PlayerSettings` and other Unity standard APIs, as well as settings for the URL of the application's connection server and the configuration of the introduced SDK, etc., which are project-specific settings.
 
-Build Magicは複数のビルド設定を効率よく管理し、設定を適用するためのUI/CIインターフェースを提供します。
+BuildMagic efficiently manages multiple sets of build settings and provides an interface to apply settings from UI and CI.
 
-PlayerSettings や EditorUserBuildSettings などのUnity標準の全てのAPIについては、標準の設定画面にないものも含めてノーコードで設定の変更を行えるようになっているため、設定の負担が軽減されています。
+For all major Unity APIs, including `PlayerSettings` and `EditorUserBuildSettings`, you can change settings without code, even for settings that are not available in the standard settings screen, reducing the burden of settings.
 
-また、プロジェクト固有の設定については、拡張APIを使用することで同じUI上で管理できます。
+For project-specific settings, you can manage them on the same UI by using the extension API.
 
-BuildMagicではビルドパイプラインの実行やアプリビルドのためのCLIを標準で用意しているため、GitHub ActionsやJenkins上でのアプリビルドを簡単に行うことができます。
+BuildMagic provides a CLI for executing the build pipeline and building the app, making it easy to build apps on GitHub Actions or Jenkins.
 
-Unity上のUIを通してビルド設定を管理できるようにすることで、CI側の管理負担を減らすことができます。コマンドライン引数によってパラメータを部分的にオーバーライドすることも可能なので、CIによるアドホックなビルド設定の変更も可能です。
+By allowing you to manage build settings through the UI in Unity, you can reduce the management burden on CI. It is also possible to partially override parameters by command-line arguments, allowing you to make ad hoc changes to build settings in CI.
 
-## BuildMagicの構成
+## Concept
 
-BuildMagicでは、開発・本番などの設定を **ビルドスキーム (Build Scheme)** という単位で管理します。
+In BuildMagic, build settings are managed in units called **Build Schemes**.
 
-ビルドスキームは複数の **ビルドコンフィギュレーション (Build Configuration)** を持ちます。
+A Build Scheme can have multiple **Build Configurations**.
 
-ビルドコンフィギュレーションは、バンドルIDの設定やアプリケーションアイコンの設定を行う **ビルドタスク** と、実際にどのような値を設定するかのパラメーターを保持しています。
+A Build Configuration provides a **Build Task**, which is an actual implementation to set settings such as the bundle ID and application icon, and parameters that are passed to the Build Task.
 
-以下の図に、ビルドスキーム、ビルドコンフィギュレーション、ビルドタスクの関係を示します。
+The following diagram shows the relationship between Build Schemes, Build Configurations, and Build Tasks.
 
 ![](./Documentation~/structure-buildmagic.png)
 
-## 機能
+## Features
 
-- **複数のビルドスキームの管理** : 複数のビルドスキームを保持することができ、開発・本番などの設定の切り替えを簡単に行うことができます。
-- **ビルトインのビルドコンフィギュレーションの提供** : `PlayerSettings` や `EditorUserBuildSettings` の操作など、よく必要になるビルドコンフィギュレーションをビルトインで提供します。
-- **独自のビルドコンフィギュレーションの実装**: 独自のビルドコンフィギュレーションを用意することで、容易にビルドパイプラインを拡張することができます。
-- **コマンドラインのサポート**: CI/CDツールからの利用を想定し、コマンドライン経由での設定の切り替えや、ビルドの実行をサポートします。
+- **Manage multiple build schemes**: You can manage multiple build schemes such as "development" and "production", and easily switch between them.
+- **Provide built-in build configurations**: Provides frequently needed build configurations such as `PlayerSettings` and `EditorUserBuildSettings`.
+- **Implement custom build configurations**: By implementing custom build configurations, you can easily extend the build pipeline.
+- **CLI support**: Supports switching schemes and building player via the CLI, making it easy to use from CI/CD workflows.
 
-### Unity の Build Profiles との相違点
+### Differences from Unity's Build Profiles
 
-Unity 6 以降では、Build Profilesという標準機能によって複数のビルド設定を切り替えてビルドできるようになりました。
+Build Profiles, which is a built-in feature since Unity 6, allows you to switch build settings and build apps.
 
-BuildMagic は Build Profiles とは異なり、ビルド設定だけではなくそれを包括するビルドパイプラインとして、より抽象的な概念を提供します。
+BuildMagic provides a more abstract concept than Build Profiles, as it provides a build pipeline that includes build settings.
 
-また、次のような機能上の差異があります。
+In addition, there are the following functional differences:
 
-- **部分的な設定の適用**: Build ProfilesではPlayerSettings等の適用を一括で行いますが、BuildMagicでは各設定項目ごとにビルドコンフィギュレーションが定義されており、個別の項目のみをオーバーライドできます。
-- **拡張性**: BuildMagicではビルドコンフィギュレーションを独自に実装することで、プロジェクト固有の設定を管理できます。
-- **管理性**: BuildMagicのビルドスキームは、人間にも読みやすいJSON形式でシリアライズされます。
+- **Partial setting application**: Build Profiles apply settings such as PlayerSettings in bulk, but BuildMagic defines build configurations for each setting item, allowing you to override individual items.
+- **Extensibility**: By implementing build configurations in BuildMagic, you can manage project-specific settings.
+- **Manageability**: Build schemes in BuildMagic are serialized in a human-readable JSON format.
 
 ## Quick Start
 
-### インストール
+### Installation
 
-Unity 2022.3.12f1以降に対応しています。
+BuildMagic supports Unity 2022.3.12f1 and later.
 
-Package Managerから以下の git URL を追加してください：
+Add the following git URL to the Package Manager:
 
 ```
 https://github.com/CyberAgentGameEntertainment/BuildMagic.git?path=/Packages/jp.co.cyberagent.buildmagic
 ```
 
-### ビルドスキームの作成
+### Creating a Build Scheme
 
-新しいビルドスキームを追加するには、BuildMagicウインドウを利用します。
+To add a new build scheme, use the BuildMagic window.
 
-「メニュー > Window > Build Magic」を選択し、「BuildMagic」ウィンドウを開きます。
+Select `Menu > Window > Build Magic` to open the `BuildMagic` window.
 
 ![](./Documentation~/configure-build-scheme.png)
 
-次に、BuildMagicウインドウの左上にある「Menu」をクリックしてでプルダウンメニューを展開し、「Create a build scheme」を選択します。
+Next, click the `Menu` in the upper left corner of the BuildMagic window to expand the dropdown menu and select `Create a build scheme`.
 
 ![](./Documentation~/create-build-scheme.png)
 
-すると、「Build Scheme Creator」ウインドウが開きます。
-ここで「Name」フィールドに新しいビルドスキームの名前を入力し、「Create」ボタンをクリックすることで新しいビルドスキームを作成できます。
+The `Build Scheme Creator` window will open.  
+Enter the name of the new build scheme in the `Name` field and click the `Create` button to create a new build scheme.
 
 ![](./Documentation~/create-build-scheme-window.png)
 
-なお、「Copy from」を指定することで、指定したスキームを元に新たなビルドスキームを作成することも可能です。
+You can also create a new build scheme based on another build scheme by specifying `Copy from`.
 
 ![](./Documentation~/create-build-scheme-with-base.png)
 
 > [!NOTE]
-> **Base** については、[ビルドスキームの継承](#ビルドスキームの継承)をご覧ください。
+> See [Build Scheme Inheritance](#build-scheme-inheritance) for more information on **Base**.
 
-### ビルドコンフィギュレーションの追加と編集
+### Adding and Editing Build Configurations
 
-まず、「BuildMagic」ウィンドウを開き、左側のペインから編集対象のビルドスキームを選択します。
+First, open the `BuildMagic` window and select the build scheme you want to edit from the left pane.
 
 ![](./Documentation~/configure-build-scheme-add-configuration.png)
 
-新たなビルドコンフィギュレーションを追加するためには、右側のペインの左上にある「Add Configuration」をクリックします。
+To add a new build configuration, click `Add Configuration` in the upper left of the right pane.
 
-次に、下図のように表示されるドロップダウンメニューから、追加したいビルドコンフィギュレーションを選択します。
+Next, select the build configuration you want to add from the dropdown menu that appears as shown below.
 
 ![](./Documentation~/configure-build-scheme-add-configuration-select-configuration.png)
 
-選択後、BuildMagicウィンドウの右側のペインにビルドコンフィギュレーションが追加されます。ここで、その設定値を編集します。
+After selecting, the build configuration will be added to the right pane of the BuildMagic window. Edit the configuration values here.
 
-ビルドコンフィギュレーションには、実行されるタイミングに応じて「PreBuild」、「PostBuild」の2つのフェーズがあります。
-フェーズの詳細については[コマンドラインインターフェイス（CLI）からアプリをビルドする](#コマンドラインインターフェイスcliからアプリをビルドする)
-に記載しています。
+Build configurations have two phases, `PreBuild` and `PostBuild`, depending on when they are executed.  
+For more information on the phases, see [Building an App from the CLI](#building-an-app-from-the-cli).
 
-ビルドコンフィギュレーションを削除する場合は、削除対象のビルドコンフィギュレーション上で右クリックし、「Remove the configuration」を選択します。
+To delete a build configuration, right-click on the build configuration to be deleted and select `Remove the configuration`.
 
 ![](./Documentation~/configure-build-scheme-add-configuration-remove-configuration.png)
 
-プロジェクトの設定をビルドコンフィギュレーションに反映させる場合は、反映対象のビルドコンフィギュレーション上で右クリックし、「Collect a project setting」を選択します。
+To reflect project settings in a build configuration, right-click on the build configuration to be reflected and select `Collect a project setting`.
 
 ![](./Documentation~/configure-build-scheme-collect-project-setting.png)
 
-設定の編集が完了したら、「Save」ボタンをクリックして設定を保存します。
+After editing the settings, click the `Save` button to save the settings.
 
 ![](./Documentation~/configure-build-scheme-save.png)
 
-### ビルドスキームの切り替え
+## Switching Build Schemes
 
-Unityプロジェクトの設定を選択したビルドスキームのものに切り替えるには、左ペインで反映させたいビルドスキームを選択します。
-その後、BuildMagicウインドウの画面左上にある「Menu」をクリックしてプルダウンメニューを開き、「Switch selected build scheme」を選択します。
+To switch the Unity project settings to those of the selected build scheme, select the build scheme you want to apply in the left pane.
+
+Then, click the `Menu` in the upper left corner of the BuildMagic window to expand the dropdown menu and select `Switch selected build scheme`.
 
 ![](./Documentation~/configure-build-scheme-switch.png)
 
-### UI上からのビルド
+### Building from the UI
 
-BuildMagicウインドウの画面左上にある「Menu」をクリックしてプルダウンメニューを開き、「Build with selected scheme」を選択することでアプリをビルドできます。
+To build the app, click the `Menu` in the upper left corner of the BuildMagic window to expand the dropdown menu and select `Build with selected scheme`.
 
 ![](./Documentation~/configure-build-scheme-build.png)
 
-### ビルドスキームの継承
+### Build Scheme Inheritance
 
-あるビルドスキームを継承し、設定の追加または上書きをすることができます。
+You can inherit a build scheme and add or override each build configurations.
 
-ビルドスキームを作成する際、継承元となるビルドスキームを **Base** として指定してください。
-他のビルドスキームを継承して作成したビルドスキームをUI上で選択すると、**Derived** という項目に継承元のビルドスキームに含まれるビルドコンフィギュレーションが表示されます。
-設定の追加・上書きは**ビルドコンフィギュレーション単位**で行われます。
+When creating a build scheme, specify the build scheme to inherit from as **Base**.
 
-> [!WARNING]
-> あるビルドスキームを継承したビルドスキームを、さらに継承することはできません。
+When selecting a build scheme that inherits from another build scheme on the UI, the build configurations included in the inherited build scheme are displayed in the **Derived** section.  
+Settings are added or overridden on a **build configuration basis**.
+
+You can also change the structure of inheritance by drag and drop build schemes on the tree view after the build scheme is created. Derived build schemes are located under the base build scheme in the tree view.
 
 ![](./Documentation~/configure-build-scheme-override.png)
 
-## コマンドラインインターフェイス（CLI）からアプリをビルドする
+## Building the player from the CLI
 
-BuildMagicは、コマンドライン経由での実行をサポートしています。
+BuildMagic supports execution via the command line.
 
-コマンドラインでのアプリビルドは、「PreBuildフェーズ」と「PostBuildフェーズ」の2つのフェーズに分かれています。
+Building the player from the command line is divided into two phases: the `PreBuild` phase and the `PostBuild` phase.
 
-- PreBuildフェーズ:
-    - プラットフォームの切り替えと、BuildMagicが管理するビルド設定をプロジェクトに適用するフェーズです。
-    - このフェーズで、Define Symbolsの更新やアセット、ソースコードの物理削除を行います。
-- PostBuildフェーズ:
-    - `BuildPipeline.BuildPlayer` を介してUnityアプリをビルドした後に実行されるフェーズです
+- PreBuild phase:
+    - A phase that switches the platform and applies build settings managed by BuildMagic to the project.
+    - Updates to Define Symbols and physical deletion of assets and source code have to be performed in this phase.
+- PostBuild phase:
+    - A phase that is executed after building the Unity app.
 
-このアプローチを採用しているのは、コマンドライン経由のバッチモード実行ではドメインリロードができないためです。
-プラットフォームやDefine Symbolsの更新を行った同じプロセスでビルドを実行すると、コードの再コンパイルが正常に行われず、期待したビルドが得られない可能性があります。
+Executing via the command line involves running the PreBuild phase, restarting Unity, then building the player and running PostBuild phase.
 
-参考: [Unity - Manual: Custom scripting symbols](https://docs.unity3d.com/Manual/CustomScriptingSymbols.html)
+This approach is adopted because domain reloads cannot be performed in batch mode execution via the command line.
+If you switch platforms and apply build settings in the same process as building, code recompilation may not be performed correctly, resulting in unexpected builds.
+
+Reference: [Unity - Manual: Custom scripting symbols](https://docs.unity3d.com/Manual/CustomScriptingSymbols.html)
 
 > So, for example, if you use this method in an Editor script, then immediately call BuildPipeline.BuildPlayer on the
 > following line in the same script, at that point Unity is still running your Editor scripts with the old set of
@@ -191,53 +195,53 @@ BuildMagicは、コマンドライン経由での実行をサポートしてい�
 > This means if you have Editor scripts which run as part of your BuildPlayer execution,
 > they run with the old scripting symbols and your player might not build as you expected.
 
-以下は、macOS上でCLIを利用してビルドを実行する例です。
+The following is an example of building from the CLI on macOS.
 
 ```shell
-# プレビルドフェーズの実行
+# Running PreBuild phase
 /Path/to/Unity -projectPath /Path/To/Project -quit -batchmode -executeMethod BuildMagicCLI.PreBuild \
   -scheme ${BUILD_MAGIC_SCHEME_NAME} \
   -override KEY1=VALUE1 -override KEY2=VALUE2
 
-# ビルドフェーズの実行
+# Building the player and running PostBuild phase
 /Path/to/Unity -projectPath /Path/To/Project -quit -batchmode -executeMethod BuildMagicCLI.Build \
   -scheme ${BUILD_MAGIC_SCHEME_NAME} \
   -override KEY1=VALUE1 -override KEY2=VALUE2
 ```
 
-コマンドラインのオプション引数は下記のとおりです。
+The command-line options are as follows:
 
-| オプション引数     | 説明                                     | 型           |
-|:------------|:---------------------------------------|:------------|
-| `-scheme`   | 適用するビルドスキームの名前を指定します。                  | string      |
-| `-override` | ビルドコンフィギュレーションの値を上書きします。               | string      |
-| `-strict`   | ビルド中に一つでもエラーログ出力があれば、ビルド結果に関わらず失敗とします。 | bool (flag) |
+| Option       | Description                                                                                                          | Type         |
+|:------------|:---------------------------------------------------------------------------------------------------------------------|:------------|
+| `-scheme`   | Specifies the name of the build scheme to apply.                                                                     | string      |
+| `-override` | Overrides the value of the build configuration.                                                                      | string      |
+| `-strict`   | When enabled, if there is any error log output during the build, the build will fail regardless of the build result. | bool (flag) |
 
-コマンドラインの戻り値は、下記のとおりです。
+The return values from the command line are as follows:
 
-| 戻り値   | 説明                              |
-|:------|:--------------------------------|
-| `0`   | ビルドが正常に完了した際に返却されます。            |
-| `0以外` | ビルド中に例外が投げられるなどで異常終了した際に返却されます。 |
+| Return value | Description                           |
+|:------------|:--------------------------------------|
+| `0`         | Returned when the build is successfully completed. |
+| `Non-zero`  | Returned when an exception is thrown during the build, etc. |
 
-### ビルド時のビルドコンフィギュレーションの上書き
+### Overriding Build Configuration at Build Time
 
-ビルドコンフィギュレーションの各設定値は、CLI実行時に `-override` オプションを指定することで上書きが可能です。`-override` は、`KEY=VALUE` の形式で指定します。
+Each setting value of the build configuration can be overridden at build time by specifying the `-override` option when executing the CLI.
+`-override` is specified in the form of `KEY=VALUE`.
 
-KEYには、書き換えたいビルドスキームのキー値を指定します。
-このキー値は、`BuildTaskBase<T>` を継承するクラスにつけた `GenerateBuildTaskAccessories` 属性の `PropertyName` で指定した値になります。
+The KEY specifies the key value of the build scheme, which is the value specified in the `PropertyName` of the `GenerateBuildTaskAccessories` attribute attached to the class that inherits `BuildTaskBase<T>`.
 
-実際のキー値は、下図のようにBuildMagicウインドウでビルドスキームカーソルを合わせて右クリックし、「Copy the configuration key」を選択することでクリップボードにコピーできます。
+The actual key value can be copied to the clipboard by right-clicking on the build scheme cursor in the BuildMagic window and selecting "Copy the configuration key".
 
 ![](./Documentation~/copy-configuration-key.png)
 
-また、指定したビルドスキーム内に該当するビルドコンフィギュレーションが存在しない場合は、新たにビルドコンフィギュレーションが作成されビルドタスクが実行されます。
+If there is no build configuration corresponding to the specified build scheme, a new build configuration will be created and the build task will be executed
 
-## ビルドタスク
+## Build Tasks
 
-BuildMagicでは、 `BuildTaskBase<T>` を用いてビルドタスクを定義します。
+In BuildMagic, build tasks are defined using `BuildTaskBase<T>`.
 
-例えば、アプリケーションの名前を設定するためのビルトインタスク `PlayerSettingsSetProductNameTask` は、次のように `BuildTaskBase<T>` を継承して実装されています。
+For example, the built-in task `PlayerSettingsSetProductNameTask` to set the application name is implemented by inheriting `BuildTaskBase<T>` as follows.
 
 ```csharp
 [BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Product Name", PropertyName = @"PlayerSettings.ProductName")]
@@ -256,24 +260,24 @@ public class PlayerSettingsSetProductNameTask : BuildMagicEditor.BuildTaskBase<B
 }
 ```
 
-型パラメータ `T` は、このタスクがどのフェーズで実行されるかを表すコンテキスト型です。
+The type parameter `T` of `BuildTaskBase<T>` is the context type that represents the phase in which the task is executed.
 
-BuildMagicでは、ビルドタスクを実行するフェーズを以下の3つに分けています。
+In BuildMagic, build tasks are divided into the following three phases.
 
 | Phase     | Description                           | ContextType         |
 |:----------|:--------------------------------------|:--------------------|
-| PreBuild  | プロジェクトへ設定を適用するフェーズ。ビルドフェーズの手前に実行されます。 | `IPreBuildConetxt`  | 
-| PostBuild | ビルドプレイヤーによるアプリケーションのビルド後に実行されるフェーズ。   | `IPostBuildContext` | 
+| PreBuild  | A phase to apply settings to the project. Executed before the build phase. | `IPreBuildContext`  |
+| PostBuild | A phase executed after the application is built by the build player.   | `IPostBuildContext` |
 
-「PreBuildフェーズでは、Unityプロジェクトへの各種設定の反映、Script Define Symbolsの適用、および物理的なコードの除外などによるC#コードの更新を行います。
+In the PreBuild phase, settings are applied to the Unity project, such as reflecting various settings, applying Script Define Symbols, and updating C# code by excluding physical code.
 
-「PostBuild」フェーズでは、ビルドされたアプリケーションやプロジェクトに対して追加の処理を実行します。
+In the PostBuild phase, additional processing is performed on the built application or project.
 
-### 独自のビルドタスクを実装する
+### Implementing Custom Build Tasks
 
-BuildMagicでは、独自のビルドタスクを定義することで、プロジェクト固有の設定を保持・反映することができます。
+By defining custom build tasks, you can maintain and reflect project-specific settings.
 
-例えば、次のような `SampleApiSetting` という設定があるとします。
+For example, suppose you have a setting called `SampleApiSetting`.
 
 ```csharp
 using System;
@@ -291,24 +295,24 @@ public class SampleApiSetting : ScriptableObject
 }
 ```
 
-この設定をBuildMagicにより管理・反映するためのビルドタスクは、次のように実装します。
+To manage and reflect this setting with BuildMagic, you can implement a build task as follows.
 
 ```csharp
 using BuildMagicEditor;
 using UnityEditor;
 
-// ビルドタスクを管理するために必要な属性の定義
+// required to generate a build configuration, etc.
 [GenerateBuildTaskAccessories(
-    // displayNameはBuildMagicウインドウで表示されるビルドコンフィギュレーションの名前
+    // display name in the UI
     "Sample Api Setting",
-    // PropertyNameは後述するCLI実行でのビルド時のオーバーライドのキーとして利用する
+    // property name used for the key of CLI override
     PropertyName = "SampleApiSetting")]
 public class SampleApiSettingBuildTask : BuildTaskBase<IPreBuildContext>
 {
     private readonly string _url;
     private readonly int _port;
 
-    // この設定で更新で必要な値は、すべてタスクのコンストラクタ引数をとるようにする
+    // All required values for updating with this setting are taken as constructor arguments
     public SampleApiSettingBuildTask(string url, int port)
     {
         _url = url;
@@ -317,7 +321,7 @@ public class SampleApiSettingBuildTask : BuildTaskBase<IPreBuildContext>
 
     public override void Run(IPreBuildContext context)
     {
-        // 保持している設定をプロジェクトに反映する実装をRun内に記述する
+        // Implement the process of reflecting the settings you have on the project in Run
         var setting = AssetDatabase.LoadAssetAtPath<SampleApiSetting>(
             "Assets/Settings/SampleApiSettings.asset");
         if (setting != null)
@@ -330,41 +334,37 @@ public class SampleApiSettingBuildTask : BuildTaskBase<IPreBuildContext>
 }
 ```
 
-ビルドタスクは `BuildTaskBase<T>`を継承して実装し、`T`には適用されるフェーズのコンテキスト型を指定します。
-上記の実装では `IPreBuildContext` を指定しているため、プレビルドフェーズで実行されるビルドタスクとなります。
+The build task inherits `BuildTaskBase<T>` and specifies the context type applied to the phase in `T`. In the above implementation, `IPreBuildContext` is specified, so it is a build task executed in the pre-build phase.
 
-また、ビルドコンフィギュレーションの自動生成のために、`GenerateBuildTaskAccessories` 属性および `BuildConfiguration` 属性を付与します。
-このビルドタスクに必要な設定値は、すべてコンストラクタ引数として受け取るように実装します。
+To generate a build configuration and automatically generate build task accessories, add the `GenerateBuildTaskAccessories` attribute and the `BuildConfiguration` attribute.  
+All required settings for this build task are taken as constructor arguments.
 
-実際のビルドタスクの処理は、`Run(T context)` メソッド内に記述します。
+The actual build task processing is described in the `Run(T context)` method.
 
-このような実装を行うことで、以下のようにBuildMagicに独自のビルドコンフィギュレーションを追加することができます。
+By implementing a build task in this way, you can add custom build configurations to BuildMagic as shown below.
 
 ![](./Documentation~/custom-build-task.png)
 
-### プロジェクトの設定をビルドコンフィギュレーションに反映する
+### Reflecting Project Settings in Build Configurations
 
-生成されたビルドコンフィギュレーションに対して `IProjectSettingApplier` を実装することで、
-プロジェクト側の設定をビルドコンフィギュレーションに反映することができます。
+By implementing `IProjectSettingApplier` for the generated build configuration, you can reflect project settings in the build configuration.
 
-以下に、`SampleApiSettingBuildTaskConfiguration` に対する `IProjectSettingApplier` の実装例を示します。
+The following is an example of implementing `IProjectSettingApplier` for `SampleApiSettingBuildTaskConfiguration`.
 
 ```csharp
-// SampleApiSettingBuildTaskというビルドタスクに対して、
-// SampleApiSettingBuildTaskConfigurationという名前のビルドコンフィギュレーションが自動生成される
-// このクラスはpartialで定義されているので、下記のようにpartialでIPorjectSettingApplierを実装する
+// SampleApiSettingBuildTaskConfiguration automatically generates a build configuration named SampleApiSettingBuildTaskConfiguration.
+// This class is defined as partial, so implement IPorjectSettingApplier as follows.
 public partial class SampleApiSettingBuildTaskConfiguration : IProjectSettingApplier
 {
     void IProjectSettingApplier.ApplyProjectSetting()
     {
-        // プロジェクト側の設定値を参照する
+        // Refer to the project-side setting value
         var setting = AssetDatabase.LoadAssetAtPath<SampleApiSetting>("Assets/Settings/SampleApiSettings.asset");
         if (setting != null)
         {
-            // Valueというプロパティに設定値を反映させる
-            // SampleApiSettingBuildTaskに対して、
-            // SampleApiSettingBuildTaskParametersというパラメータークラスが自動生成されるので
-            // この値を設定することでビルドコンフィギュレーション側に設定値を反映させることができる
+            // Reflect the setting value in the Value property.
+            // SampleApiSettingBuildTaskParameters is automatically generated for SampleApiSettingBuildTask.
+            // By setting this value, the setting value is reflected in the build configuration.
             Value = new SampleApiSettingBuildTaskParameters
             {
                 port = setting.Port,
@@ -376,12 +376,12 @@ public partial class SampleApiSettingBuildTaskConfiguration : IProjectSettingApp
 
 ```
 
-### ビルトインのビルドコンフィギュレーション
+### Built-in Build Configurations
 
-以下のビルドコンフィギュレーションは、BuildMagicにビルトインで提供されています。
+The following build configurations are provided by BuildMagic:
 
-* プレビルドフェーズに適用されるビルドコンフィギュレーション
-    * [PlayerSettings](https://docs.unity3d.com/ja/2022.3/ScriptReference/PlayerSettings.html)
-    * [EditorUserBuildSettings](https://docs.unity3d.com/ja/2022.3/ScriptReference/EditorUserBuildSettings.html)
-* ビルドフェーズに適用されるビルドコンフィギュレーション
-    * [BuildPlayerOptions](https://docs.unity3d.com/ja/2022.3/ScriptReference/BuildPlayerOptions.html)
+- Build configurations applied in the pre-build phase
+    - [PlayerSettings](https://docs.unity3d.com/ja/2022.3/ScriptReference/PlayerSettings.html)
+    - [EditorUserBuildSettings](https://docs.unity3d.com/ja/2022.3/ScriptReference/EditorUserBuildSettings.html)
+- Build configurations applied in the build phase
+    - [BuildPlayerOptions](https://docs.unity3d.com/ja/2022.3/ScriptReference/BuildPlayerOptions.html)

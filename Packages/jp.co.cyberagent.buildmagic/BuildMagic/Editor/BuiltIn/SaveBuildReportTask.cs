@@ -26,11 +26,11 @@ namespace BuildMagicEditor.BuiltIn
 
         public override void Run(IPostBuildContext context)
         {
-            // context.BuildReportはInternalEditorUtilityでセーブできないので、Library/LastBuild.buildreportをコピーする
+            // context.BuildReport cannot be saved with InternalEditorUtility, so copy Library/LastBuild.buildreport
 
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(_outputPath)));
 
-            // LastBuild.buildreportはバイナリなのでYAMLにする場合は一旦ロードする
+            // LastBuild.buildreport is binary, so load it first if we want to convert it to YAML
             if (_useYaml)
             {
                 var objects = InternalEditorUtility.LoadSerializedFileAndForget(LastBuildReportPath);
@@ -41,7 +41,7 @@ namespace BuildMagicEditor.BuiltIn
                 File.Copy(LastBuildReportPath, _outputPath, true);
             }
 
-            // Assets下に出力した場合はリフレッシュする
+            // AssetDatabase.Refresh if output under Assets/
 
             var relativePath = Path.GetRelativePath(".", _outputPath);
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace BuildMagic.BuiltinTaskGenerator;
 
 /// <summary>
-///      カテゴリごとのAPIリスト
+///     A list of APIs by category
 /// </summary>
 public class ApiCategory
 {

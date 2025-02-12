@@ -8,14 +8,14 @@ using System.Linq;
 namespace BuildMagic.BuiltinTaskGenerator;
 
 /// <summary>
-///     Unityのバージョン範囲（単一の区間）を表す
+///     Represents a range of Unity versions (a single segment)
 /// </summary>
 /// <param name="Since"></param>
 /// <param name="Until"></param>
 public record UnityVersionRangeSegment(UnityVersion Since, UnityVersion Until) // both inclusive
 {
     /// <summary>
-    ///     可能な場合は範囲を結合する
+    ///     Try to union the ranges if possible
     /// </summary>
     /// <param name="other"></param>
     /// <param name="result"></param>
@@ -39,7 +39,7 @@ public record UnityVersionRangeSegment(UnityVersion Since, UnityVersion Until) /
 }
 
 /// <summary>
-///     Unityのバージョン範囲（複数の区間）を表す
+///     Represents a range of Unity versions (multiple segments)
 /// </summary>
 public class UnityVersionRange
 {
@@ -57,7 +57,7 @@ public class UnityVersionRange
     public IEnumerable<UnityVersionRangeSegment> Segments => _segments;
 
     /// <summary>
-    ///     和集合をとる
+    ///     Union the ranges if possible
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
