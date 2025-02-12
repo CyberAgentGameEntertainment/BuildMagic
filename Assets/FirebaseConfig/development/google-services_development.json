@@ -1,0 +1,11 @@
+{
+  "client": [
+    {
+      "client_info": {
+        "android_client_info": {
+          "package_name": "com.example.app.dev"
+        }
+      }
+    }
+  ]
+}
