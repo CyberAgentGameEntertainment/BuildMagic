@@ -5,7 +5,7 @@
 namespace BuildMagic.BuiltinTaskGenerator;
 
 /// <summary>
-///     AnalysisResult / ApiDataにおけるAPIのパラメータ
+///     Represents a parameter of an API in the AnalysisResult / ApiData
 /// </summary>
 /// <param name="typeExpression"></param>
 /// <param name="name"></param>
@@ -13,15 +13,15 @@ namespace BuildMagic.BuiltinTaskGenerator;
 public class ParameterData(string typeExpression, string name, bool isOutput)
 {
     /// <summary>
-    ///     型を表すC#コードの式
+    ///     C# expression representing the type
     /// </summary>
     public string TypeExpression { get; } = typeExpression;
 
     public string Name { get; } = name;
 
     /// <summary>
-    ///     Getterが返す値
-    ///     IsOutput=falseのパラメータは、ディクショナリのキーとしてシリアライズする
+    ///     "out" parameter of a method or value parameter of a proprety 
+    ///     ParameterData with IsOutput=false will be serialized as a key in the dictionary
     /// </summary>
     public bool IsOutput { get; } = isOutput;
 }

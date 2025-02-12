@@ -15,7 +15,7 @@ namespace BuildMagicEditor.BuiltIn
     {
         [ThreadStatic] private static int depth;
 
-        // 現在のビルドがBuildMagicによるものかを判定する
+        // Determine if the current build is triggered by BuildMagic
         public static bool IsCurrentThreadBuildingPlayer => depth > 0;
 
         public override void Run(IBuildPlayerContext context)

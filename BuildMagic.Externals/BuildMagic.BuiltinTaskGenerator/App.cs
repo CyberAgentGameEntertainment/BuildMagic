@@ -94,12 +94,12 @@ public class App(ILogger<App> logger, IOptions<AppSettings> options, UnityApiAna
                     ApiData? selectedApiInCurrentVersion;
                     try
                     {
-                        // このバージョンにおいてObsoleteではないAPIが一つなら、それを採用する
+                        // If there is only one non-obsolete API in this version, use it
                         selectedApiInCurrentVersion = apiGrouping.SingleOrDefault(a => !a.IsObsolete);
                     }
                     catch (InvalidOperationException)
                     {
-                        // empty=全部obsoleteの場合
+                        // empty=all obsolete
                         selectedApiInCurrentVersion = null;
                     }
 
@@ -109,7 +109,7 @@ public class App(ILogger<App> logger, IOptions<AppSettings> options, UnityApiAna
                     TaskData? matchedTask;
                     if (selectedApiInCurrentVersion == null)
                     {
-                        // 既知のタスクのうち、シグネチャに互換性があって最も新しいものを選択する
+                        // We select the most recent entry that matches the signature among known tasks
                         matchedTask = tasks.Where(t =>
                         {
                             return apiGrouping.Any(a => t.MatchesParameterSignature(a.Parameters));
@@ -117,7 +117,7 @@ public class App(ILogger<App> logger, IOptions<AppSettings> options, UnityApiAna
 
                         if (matchedTask == null)
                         {
-                            // 特殊対応：NamedBuildTargetをパラメータにもつものは優先的に採用する
+                            // Special case: prefer the one with NamedBuildTarget in parameters
                             if (apiGrouping.Any(d => !d.IsObsolete))
                             {
                                 ApiData? singleWithNamedBuildTarget;
@@ -154,17 +154,17 @@ public class App(ILogger<App> logger, IOptions<AppSettings> options, UnityApiAna
                     }
 
                     if (matchedTask != null)
-                        // 既知のタスクとシグネチャに互換性があれば、そこに織り込む
+                        // If the task has compatible signature with the known task, incorporate it
                         matchedTask.VisitNewerVersion(version, selectedApiInCurrentVersion);
                     else
-                        // 新設
+                        // Otherwise, create a new task
                         tasks.Add(new TaskData(version, selectedApiInCurrentVersion,
                             options.Value.GetApiOptions(selectedApiInCurrentVersion)));
                 }
             }
         }
 
-        // 生成
+        // Generate source files
         UnityVersionDefineConstraintBuilder defineConstraintBuilder = new(knownVersions);
 
         foreach (var (categoryName, category) in knownTasksForCategories)

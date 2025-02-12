@@ -15,7 +15,7 @@ using ZLogger;
 namespace BuildMagic.BuiltinTaskGenerator;
 
 /// <summary>
-///     解析結果のキャッシュを管理する
+///     Manages the cache of the result of analysis
 /// </summary>
 public class AnalysisLibrary
 {

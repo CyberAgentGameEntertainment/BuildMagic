@@ -40,7 +40,7 @@ public static class BuildMagicCLI
     /// </summary>
     public static void PreBuild()
     {
-        // TODO: System.Commandline ライクな実装に仕上げたいが後回し
+        // TODO: System.Commandline-like implementation
         RunCommand(context =>
         {
             var configurations =
@@ -63,7 +63,7 @@ public static class BuildMagicCLI
     /// </summary>
     public static void Build()
     {
-        // TODO: System.Commandline ライクな実装に仕上げたいが後回し
+        // TODO: System.Commandline-like implementation
         RunCommand(context =>
         {
             var internalPrepareTasks = CreateInternalPrepareTasks(context);
@@ -125,8 +125,7 @@ public static class BuildMagicCLI
 
     private static int InvokeCommand(Action<Context> command)
     {
-        // NOTE: いったん固定でUnityのコンソールログに吐き出す
-        //       もしログを別で書き出したい場合はここを変えられるようにする
+        // NOTE: output to Unity's console log for now (we may have to make it possible to output to a different log)
         var logger = Debug.unityLogger;
 
         try
@@ -204,7 +203,7 @@ public static class BuildMagicCLI
 
         public BuildTaskBuilderProvider TaskBuilderProvider { get; }
 
-        // NOTE: ロガーは、BuildMagic用に一枚ラップしてもよい（タグやプレフィックスの指定が面倒なので）
+        // NOTE: logger may be wrapped for BuildMagic (since specifying tags and prefixes is cumbersome)
         public ILogger Logger { get; }
 
         public static Context Create(ILogger logger)

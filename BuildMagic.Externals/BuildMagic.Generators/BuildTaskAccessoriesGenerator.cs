@@ -56,7 +56,7 @@ public class BuildTaskAccessoriesGenerator : IIncrementalGenerator
         foreach (var sourceContext in sourceContexts)
         {
             if (sourceContext.TargetSymbol is not INamedTypeSymbol typeSymbol) continue;
-            if (typeSymbol.IsGenericType) continue; // TODO: ジェネリクス対応
+            if (typeSymbol.IsGenericType) continue; // TODO: support generics
 
             var constructors = GetTargetConstructor(typeSymbol);
             if (constructors.Length != 1) return;

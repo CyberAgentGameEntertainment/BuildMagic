@@ -10,7 +10,7 @@ using ZLogger;
 namespace BuildMagic.BuiltinTaskGenerator;
 
 /// <summary>
-///     リポジトリのクローンを行う
+///     Clones the repository
 /// </summary>
 public class RepositoryStore
 {

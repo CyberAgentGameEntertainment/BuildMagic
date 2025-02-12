@@ -5,9 +5,11 @@
 using BuildMagicEditor;
 using UnityEditor;
 
-// ビルドタスクを設定で管理するために必要な属性の定義
+// required to generate a build configuration, etc.
 [GenerateBuildTaskAccessories(
+    // display name in the UI
     "Sample Api Setting",
+    // property name used for the key of CLI override
     PropertyName = "SampleApiSetting")]
 [BuildConfiguration("SampleApiSetting")]
 public class SampleApiSettingBuildTask : BuildTaskBase<IPreBuildContext>
@@ -15,7 +17,7 @@ public class SampleApiSettingBuildTask : BuildTaskBase<IPreBuildContext>
     private readonly string _url;
     private readonly int _port;
 
-    // この設定で更新で必要な値は、すべてタスクのコンストラクタ引数をとるようにしてください
+    // All required values for updating with this setting are taken as constructor arguments
     public SampleApiSettingBuildTask(string url, int port)
     {
         _url = url;
@@ -24,7 +26,7 @@ public class SampleApiSettingBuildTask : BuildTaskBase<IPreBuildContext>
 
     public override void Run(IPreBuildContext context)
     {
-        // 保持している設定をプロジェクトに反映する実装をRun内に記述する
+        // Implement the process of reflecting the settings you have on the project in Run
         var setting = AssetDatabase.LoadAssetAtPath<SampleApiSetting>("Assets/Settings/SampleApiSettings.asset");
         if (setting != null)
         {

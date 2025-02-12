@@ -32,7 +32,7 @@ public class UnityApiAnalyzer(
     private CancellationTokenSource _cts;
 
     /// <summary>
-    ///     各バージョンのUnityCsReferenceからAPIの抽出を行う
+    ///     Extract APIs from UnityCsReference for each version
     /// </summary>
     /// <param name="netfxBcl"></param>
     /// <param name="versionFilter"></param>
@@ -43,9 +43,8 @@ public class UnityApiAnalyzer(
     {
         if (!string.IsNullOrEmpty(netfxBcl)) logger.ZLogInformation($"Using .NET Framework BCL: {netfxBcl}");
 
-        // Unity 2021以前のUnityCsReferenceに含まれるcsprojは.NET Framework 4.7.1 Development Packを要求してくる
-        // .NET Framework Development PackはWindows向けにしか提供されていないが、このようにプロジェクトのプロパティをオーバーライドして
-        // Mono等のBCLを指定することで、Windows以外でも解析を通すことができる
+        // csproj files in UnityCsReference prior to Unity 2021 require .NET Framework 4.7.1 Development Pack
+        // .NET Framework Development Pack is only provided for Windows, but it can be replaced with Mono or other BCL in this way
         using var workspace = string.IsNullOrEmpty(netfxBcl)
             ? MSBuildWorkspace.Create()
             : MSBuildWorkspace.Create(new Dictionary<string, string>
@@ -207,9 +206,9 @@ public class UnityApiAnalyzer(
                         {
                             if (setterMethod.MethodKind is MethodKind.PropertyGet or MethodKind.PropertySet ||
                                 setterMethod.IsGenericMethod ||
-                                !setterMethod.Name.StartsWith("Set")) continue; // メソッドはSetで始まるもののみ
+                                !setterMethod.Name.StartsWith("Set")) continue; // methods starts with "Set" are included
 
-                            // 全てのパラメータがシリアライズ可能か
+                            // Is all the parameters serializable?
                             if (setterMethod.Parameters.Any(p =>
                                     !p.Type.BuiltinSerializationWrapperExists(out _) &&
                                     !TypeUtils.IsSerializableFieldType(p.Type))) continue;
@@ -313,7 +312,7 @@ public class UnityApiAnalyzer(
                             if (property.IsIndexer) continue;
                             if (property.Type is INamedTypeSymbol named && named.IsGenericType) continue;
 
-                            // シリアライズ可能か
+                            // is it serializable?
                             if (!property.Type.BuiltinSerializationWrapperExists(out _) &&
                                 !TypeUtils.IsSerializableFieldType(property.Type)) continue;
 
@@ -373,7 +372,7 @@ public class UnityApiAnalyzer(
     }
 
     /// <summary>
-    ///     先頭だけ大文字にする
+    ///     Makes the first letter of the string uppercase
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
