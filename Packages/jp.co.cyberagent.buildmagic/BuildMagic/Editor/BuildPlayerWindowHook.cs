@@ -59,15 +59,18 @@ namespace BuildMagicEditor
 
                 var overrideOptions = internalPrepareTasks.GenerateBuildPlayerOptions();
 
+                // Apply default options such as AutoRunPlayer
+                overrideOptions.options |= options.options;
+
                 if (!PickBuildLocation(overrideOptions.targetGroup, overrideOptions.target, overrideOptions.subtarget,
                         overrideOptions.options, out var updateExistingBuild))
                     throw new OperationCanceledException();
 
                 if (updateExistingBuild)
-                    options.options |= BuildOptions.AcceptExternalModificationsToPlayer;
+                    overrideOptions.options |= BuildOptions.AcceptExternalModificationsToPlayer;
 
                 // reflect the result of PickBuildLocation
-                options.locationPathName = EditorUserBuildSettings.GetBuildLocation(overrideOptions.target);
+                overrideOptions.locationPathName = EditorUserBuildSettings.GetBuildLocation(overrideOptions.target);
 
                 return overrideOptions;
             });
