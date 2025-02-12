@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0]
+
+### Added
+
+- Build scheme can be inherited in multiple levels.
+- Add a task to copy Firebase configuration file.
+- Boolean parameters are now supported by `-override`.
+
+### Changed
+
+- Build report is now saved by default.
+- English comments and READMEs.
+
+### Fixed
+
+- Fixed equal sign `=` in `-override` parameter is not correctly parsed.
+- Fixed output path isn't set correctly when built through Build Settings window
+
 ## [1.5.1]
 
 - エディタがビルド時にクラッシュする場合があるのを回避するため、`BuildOptions.DetailedBuildReport` を `BUILDMAGIC_NO_DETAILED_BUILD_REPORT` シンボルで無効化できるようにしました。
