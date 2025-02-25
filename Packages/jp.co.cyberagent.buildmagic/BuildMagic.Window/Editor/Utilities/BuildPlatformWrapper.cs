@@ -9,7 +9,7 @@ using System.Reflection;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace BuildMagic.Window.Editor.Elements
+namespace BuildMagic.Window.Editor.Utilities
 {
     internal readonly struct BuildPlatformWrapper : IEquatable<BuildPlatformWrapper>
     {

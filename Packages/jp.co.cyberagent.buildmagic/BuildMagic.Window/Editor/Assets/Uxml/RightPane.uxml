@@ -11,7 +11,7 @@
             <ui:Foldout text="Pre-build" name="pre-build-configuration-foldout" class="configuration-list-foldout">
                 <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="PreBuild" class="configuration-list-view-root" />
             </ui:Foldout>
-            <ui:Foldout text="Internal Prepare" name="internal-prepare-configuration-foldout" class="configuration-list-foldout">
+            <ui:Foldout text="Just before the build" name="internal-prepare-configuration-foldout" class="configuration-list-foldout">
                 <BuildMagic.Window.Editor.Elements.ConfigurationListView configuration-type="InternalPrepare" class="configuration-list-view-root" />
             </ui:Foldout>
             <ui:Foldout text="Post-build" name="post-build-configuration-foldout" class="configuration-list-foldout">

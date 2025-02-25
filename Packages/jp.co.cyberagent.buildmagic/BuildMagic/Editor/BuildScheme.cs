@@ -12,7 +12,7 @@ namespace BuildMagicEditor
     ///     The build scheme.
     /// </summary>
     [Serializable]
-    public class BuildScheme : IBuildScheme
+    public class BuildScheme : IBuildScheme, ISerializationCallbackReceiver
     {
         [SerializeField] private string _name;
         [SerializeReference] private List<IBuildConfiguration> _postBuildConfigurations = new();
@@ -71,6 +71,23 @@ namespace BuildMagicEditor
         internal void RemovePostBuildConfiguration(int index)
         {
             _postBuildConfigurations.RemoveAt(index);
+        }
+
+        public void OnBeforeSerialize()
+        {
+            RemoveNulls();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            RemoveNulls();
+        }
+
+        private void RemoveNulls()
+        {
+            _postBuildConfigurations.RemoveAll(configuration => configuration == null);
+            _internalPrepareConfigurations.RemoveAll(configuration => configuration == null);
+            _preBuildConfigurations.RemoveAll(configuration => configuration == null);
         }
     }
 }

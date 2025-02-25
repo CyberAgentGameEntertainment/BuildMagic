@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using BuildMagic.Window.Editor.Utilities;
 using BuildMagicEditor;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -30,14 +32,25 @@ namespace BuildMagic.Window.Editor.SubWindows
             
             var root = new AdvancedDropdownItem("Configuration Type");
 
+            List<AdvancedDropdownItem> rootItems = new();
+
             var preBuildParent = new AdvancedDropdownItem("Pre Build");
             root.AddChild(preBuildParent);
-#if BUILDMAGIC_DEVELOPER
+            rootItems.Add(preBuildParent);
+
+            var enableInternalPrepareEditor = UserSettings.EnableInternalPrepareEditor.Value;
+
             var internalPrepareParent = new AdvancedDropdownItem("Internal Prepare");
-            root.AddChild(internalPrepareParent);
-#endif
+
+            if (enableInternalPrepareEditor)
+            {
+                root.AddChild(internalPrepareParent);
+                rootItems.Add(internalPrepareParent);
+            }
+
             var postBuildParent = new AdvancedDropdownItem("Post Build");
             root.AddChild(postBuildParent);
+            rootItems.Add(postBuildParent);
 
             var targetTypes = TypeCache.GetTypesDerivedFrom(typeof(IBuildConfiguration))
                                        .Where(t => t.Assembly.FullName.Contains("Tests") == false)
@@ -49,9 +62,7 @@ namespace BuildMagic.Window.Editor.SubWindows
                                        .ToArray();
 
             var preBuildContextType = typeof(IPreBuildContext);
-#if BUILDMAGIC_DEVELOPER
             var internalPrepareContextType = typeof(IInternalPrepareContext);
-#endif
             var postBuildContextType = typeof(IPostBuildContext);
 
             foreach (var type in targetTypes)
@@ -63,10 +74,8 @@ namespace BuildMagic.Window.Editor.SubWindows
 
                 if (preBuildContextType.IsAssignableFrom(contextType))
                     AddNestedItem(preBuildParent, ConfigurationType.PreBuild, type);
-#if BUILDMAGIC_DEVELOPER
-                else if (internalPrepareContextType.IsAssignableFrom(contextType))
+                else if (enableInternalPrepareEditor && internalPrepareContextType.IsAssignableFrom(contextType))
                     AddNestedItem(internalPrepareParent, ConfigurationType.InternalPrepare, type);
-#endif
                 else if (postBuildContextType.IsAssignableFrom(contextType))
                     AddNestedItem(postBuildParent, ConfigurationType.PostBuild, type);
             }
@@ -75,14 +84,7 @@ namespace BuildMagic.Window.Editor.SubWindows
             Comparison<AdvancedDropdownItem> comparison = Compare;
             var parameters = new object[] {comparison, true};
 
-            foreach (var parent in new[]
-                     {
-                         preBuildParent,
-#if BUILDMAGIC_DEVELOPER
-                         internalPrepareParent,
-#endif
-                         postBuildParent
-                     })
+            foreach (var parent in rootItems)
             {
                 sortChildrenMethod!.Invoke(parent, parameters);
                 if (parent.children.Any())

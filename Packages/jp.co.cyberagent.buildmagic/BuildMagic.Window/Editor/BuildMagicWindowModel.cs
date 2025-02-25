@@ -222,11 +222,9 @@ namespace BuildMagic.Window.Editor
                 case ConfigurationType.PreBuild:
                     _selected.Self.AddPreBuildConfiguration(configuration);
                     break;
-#if BUILDMAGIC_DEVELOPER
                 case ConfigurationType.InternalPrepare:
-                    _selected.AddInternalPrepareConfiguration(configuration);
+                    _selected.Self.AddInternalPrepareConfiguration(configuration);
                     break;
-#endif
                 case ConfigurationType.PostBuild:
                     _selected.Self.AddPostBuildConfiguration(configuration);
                     break;
@@ -250,9 +248,7 @@ namespace BuildMagic.Window.Editor
             var targetList = configurationType switch
             {
                 ConfigurationType.PreBuild => _selected.Self.PreBuildConfigurations,
-#if BUILDMAGIC_DEVELOPER
                 ConfigurationType.InternalPrepare => _selected.Self.InternalPrepareConfigurations,
-#endif
                 ConfigurationType.PostBuild => _selected.Self.PostBuildConfigurations,
                 _ => throw new ArgumentOutOfRangeException(nameof(configurationType), configurationType, null)
             };
@@ -263,11 +259,9 @@ namespace BuildMagic.Window.Editor
                 case ConfigurationType.PreBuild:
                     _selected.Self.RemovePreBuildConfiguration(index);
                     break;
-#if BUILDMAGIC_DEVELOPER
                 case ConfigurationType.InternalPrepare:
                     _selected.Self.RemovePrepareBuildPlayerConfiguration(index);
                     break;
-#endif
                 case ConfigurationType.PostBuild:
                     _selected.Self.RemovePostBuildConfiguration(index);
                     break;
@@ -290,9 +284,7 @@ namespace BuildMagic.Window.Editor
 
             var list = new List<Type>();
             list.AddRange(_selected.Self.PreBuildConfigurations.Select(c => c.GetType()));
-#if BUILDMAGIC_DEVELOPER
-            list.AddRange(_selected.InternalPrepareConfigurations.Select(c => c.GetType()));
-#endif
+            list.AddRange(_selected.Self.InternalPrepareConfigurations.Select(c => c.GetType()));
             list.AddRange(_selected.Self.PostBuildConfigurations.Select(c => c.GetType()));
             return list.ToHashSet();
         }
