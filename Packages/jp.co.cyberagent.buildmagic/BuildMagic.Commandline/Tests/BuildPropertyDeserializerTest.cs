@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace BuildMagicEditor.Commandline.Tests
 {
-    public class SerializableTypeBuildPropertyDeserializerTest
+    public partial class SerializableTypeBuildPropertyDeserializerTest
     {
         [Test]
         public void SerializableTypeBuildPropertyDeserializer_WillProcess()
@@ -26,42 +26,6 @@ namespace BuildMagicEditor.Commandline.Tests
 
             Assert.AreEqual(typeof(SerializableClass), deserializedValue.GetType());
             Assert.AreEqual(123, ((SerializableClass)deserializedValue).value);
-        }
-
-        [Test]
-        public void IntBuildPropertyDeserializer_WillProcess()
-        {
-            var deserializer = new IntBuildPropertyDeserializer();
-            Assert.IsTrue(deserializer.WillProcess(typeof(int)));
-            Assert.IsFalse(deserializer.WillProcess(typeof(string)));
-        }
-
-        [Test]
-        public void IntBuildPropertyDeserializer_Deserialize()
-        {
-            var deserializer = new IntBuildPropertyDeserializer();
-            var deserializedValue = deserializer.Deserialize("345", typeof(int));
-
-            Assert.AreEqual(typeof(int), deserializedValue.GetType());
-            Assert.AreEqual(345, (int)deserializedValue);
-        }
-
-        [Test]
-        public void SingleBuildPropertyDeserializer_WillProcess()
-        {
-            var deserializer = new SingleBuildPropertyDeserializer();
-            Assert.IsTrue(deserializer.WillProcess(typeof(float)));
-            Assert.IsFalse(deserializer.WillProcess(typeof(string)));
-        }
-
-        [Test]
-        public void SingleBuildPropertyDeserializer_Deserialize()
-        {
-            var deserializer = new SingleBuildPropertyDeserializer();
-            var deserializedValue = deserializer.Deserialize("12.5", typeof(float));
-
-            Assert.AreEqual(typeof(float), deserializedValue.GetType());
-            Assert.AreEqual(12.5f, (float)deserializedValue);
         }
 
         [Test]
