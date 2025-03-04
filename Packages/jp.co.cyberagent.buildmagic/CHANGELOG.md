@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.7.0]
+
+### Added
+
+- Make internal prepare phase visible with an option.
+- `-override` now supports numbers other than `int` and `float`.
+
+### Fixed
+
+- Fix API updater runs on built-in task sources and causes compilation errors.
+
 ## [1.6.0]
 
 ### Added
