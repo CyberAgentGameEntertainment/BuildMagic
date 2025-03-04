@@ -23,7 +23,9 @@ It provides a user-friendly interface and offers built-in task implementaions th
   * [Switching Build Schemes](#switching-build-schemes)
     * [Building from the UI](#building-from-the-ui)
     * [Build Scheme Inheritance](#build-scheme-inheritance)
-  * [Building the player from the CLI](#building-the-player-from-the-cli)
+  * [Build Phases](#build-phases)
+    * ["Just before the build" phase](#just-before-the-build-phase)
+  * [Command-line Arguments](#command-line-arguments)
     * [Overriding Build Configuration at Build Time](#overriding-build-configuration-at-build-time)
   * [Build Tasks](#build-tasks)
     * [Implementing Custom Build Tasks](#implementing-custom-build-tasks)
@@ -128,7 +130,7 @@ Next, select the build configuration you want to add from the dropdown menu that
 
 After selecting, the build configuration will be added to the right pane of the BuildMagic window. Edit the configuration values here.
 
-Build configurations have two phases, `PreBuild` and `PostBuild`, depending on when they are executed.  
+Build configurations have two phases, `Pre-build` and `Post-build`, depending on when they are executed.  
 For more information on the phases, see [Building an App from the CLI](#building-an-app-from-the-cli).
 
 To delete a build configuration, right-click on the build configuration to be deleted and select `Remove the configuration`.
@@ -170,19 +172,19 @@ You can also change the structure of inheritance by drag and drop build schemes 
 
 ![](./Documentation~/configure-build-scheme-override.png)
 
-## Building the player from the CLI
+## Build Phases
 
 BuildMagic supports execution via the command line.
 
-Building the player from the command line is divided into two phases: the `PreBuild` phase and the `PostBuild` phase.
+Building the player from the command line is divided into two phases: the `Pre-build` phase and the `Post-build` phase.
 
-- PreBuild phase:
+- Pre-build phase:
     - A phase that switches the platform and applies build settings managed by BuildMagic to the project.
     - Updates to Define Symbols and physical deletion of assets and source code have to be performed in this phase.
-- PostBuild phase:
+- Post-build phase:
     - A phase that is executed after building the Unity app.
 
-Executing via the command line involves running the PreBuild phase, restarting Unity, then building the player and running PostBuild phase.
+Executing via the command line involves running the Pre-build phase, restarting Unity, then building the player and running Post-build phase.
 
 This approach is adopted because domain reloads cannot be performed in batch mode execution via the command line.
 If you switch platforms and apply build settings in the same process as building, code recompilation may not be performed correctly, resulting in unexpected builds.
@@ -195,15 +197,24 @@ Reference: [Unity - Manual: Custom scripting symbols](https://docs.unity3d.com/M
 > This means if you have Editor scripts which run as part of your BuildPlayer execution,
 > they run with the old scripting symbols and your player might not build as you expected.
 
+### "Just before the build" phase
+
+For advanced users, "Just before the build" phase is also available. It is useful to apply settings that are cleared when Unity is restarted.  
+To enable this phase, select "Enable Just before the build phase (advanced)" menu in the BuildMagic settings.
+
+![](https://github.com/user-attachments/assets/f08cdff2-96a8-4399-9a87-ac36da6c9f16)
+
+## Command-line Arguments
+
 The following is an example of building from the CLI on macOS.
 
 ```shell
-# Running PreBuild phase
+# Running Pre-build phase
 /Path/to/Unity -projectPath /Path/To/Project -quit -batchmode -executeMethod BuildMagicCLI.PreBuild \
   -scheme ${BUILD_MAGIC_SCHEME_NAME} \
   -override KEY1=VALUE1 -override KEY2=VALUE2
 
-# Building the player and running PostBuild phase
+# Building the player and running Post-build phase
 /Path/to/Unity -projectPath /Path/To/Project -quit -batchmode -executeMethod BuildMagicCLI.Build \
   -scheme ${BUILD_MAGIC_SCHEME_NAME} \
   -override KEY1=VALUE1 -override KEY2=VALUE2
@@ -264,14 +275,15 @@ The type parameter `T` of `BuildTaskBase<T>` is the context type that represents
 
 In BuildMagic, build tasks are divided into the following three phases.
 
-| Phase     | Description                           | ContextType         |
-|:----------|:--------------------------------------|:--------------------|
-| PreBuild  | A phase to apply settings to the project. Executed before the build phase. | `IPreBuildContext`  |
-| PostBuild | A phase executed after the application is built by the build player.   | `IPostBuildContext` |
+| Phase                                                                     | Description                           | ContextType         |
+|:--------------------------------------------------------------------------|:--------------------------------------|:--------------------|
+| Pre-build                                                                 | A phase to apply settings to the project. Executed before the build phase. | `IPreBuildContext`  |
+| Just before the build [(hidden by default)](#just-before-the-build-phase) | A phase executed just before the build (after restarting Unity when using CLI)   | `IInternalPrepareContext` |
+| Post-build                                                                | A phase executed after the application is built by the build player.   | `IPostBuildContext` |
 
-In the PreBuild phase, settings are applied to the Unity project, such as reflecting various settings, applying Script Define Symbols, and updating C# code by excluding physical code.
+In the Pre-build phase, settings are applied to the Unity project, such as reflecting various settings, applying Script Define Symbols, and updating C# code by excluding physical code.
 
-In the PostBuild phase, additional processing is performed on the built application or project.
+In the Post-build phase, additional processing is performed on the built application or project.
 
 ### Implementing Custom Build Tasks
 

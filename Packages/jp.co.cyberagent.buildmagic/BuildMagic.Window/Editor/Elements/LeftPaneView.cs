@@ -4,6 +4,7 @@
 
 using System;
 using BuildMagic.Window.Editor.SubWindows;
+using BuildMagic.Window.Editor.Utilities;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.Assertions;
@@ -34,12 +35,21 @@ namespace BuildMagic.Window.Editor.Elements
             toolbarMenu.menu.AppendAction("Remove the selected build scheme",
                 _ => RemoveRequested?.Invoke(string.Empty),
                 OnMenuActionStatus);
-            toolbarMenu.menu.AppendAction("Switch to the selected build scheme", _ => PreBuildRequested?.Invoke(),
+            toolbarMenu.menu.AppendAction("Run Pre-build phase of the selected build scheme",
+                _ => PreBuildRequested?.Invoke(),
                 OnMenuActionStatus);
             toolbarMenu.menu.AppendAction("Build with the selected scheme", _ => BuildRequested?.Invoke(),
                 OnMenuActionStatus);
             toolbarMenu.menu.AppendSeparator();
             toolbarMenu.menu.AppendAction("Open diff window", _ => DiffWindow.Open());
+            toolbarMenu.menu.AppendAction("Enable \"Just before the build\" phase (advanced)", _ =>
+                {
+                    var v = UserSettings.EnableInternalPrepareEditor;
+                    v.Value = !v.Value;
+                },
+                _ => UserSettings.EnableInternalPrepareEditor.Value
+                    ? DropdownMenuAction.Status.Checked
+                    : DropdownMenuAction.Status.Normal);
 
             _treeView = this.Q<LeftPaneTreeView>();
             Assert.IsNotNull(_treeView);
