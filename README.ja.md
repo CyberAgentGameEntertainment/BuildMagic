@@ -23,7 +23,9 @@ BuildMagicは、開発・本番などの複数の設定を管理し、ビルド�
     * [ビルドスキームの切り替え](#ビルドスキームの切り替え)
     * [UI上からのビルド](#ui上からのビルド)
     * [ビルドスキームの継承](#ビルドスキームの継承)
-  * [コマンドラインインターフェイス（CLI）からアプリをビルドする](#コマンドラインインターフェイスcliからアプリをビルドする)
+  * [ビルドフェーズ](#ビルドフェーズ)
+    * [「Just before the build」フェーズ](#just-before-the-buildフェーズ)
+  * [コマンドライン引数](#コマンドライン引数)
     * [ビルド時のビルドコンフィギュレーションの上書き](#ビルド時のビルドコンフィギュレーションの上書き)
   * [ビルドタスク](#ビルドタスク)
     * [独自のビルドタスクを実装する](#独自のビルドタスクを実装する)
@@ -128,7 +130,7 @@ https://github.com/CyberAgentGameEntertainment/BuildMagic.git?path=/Packages/jp.
 
 選択後、BuildMagicウィンドウの右側のペインにビルドコンフィギュレーションが追加されます。ここで、その設定値を編集します。
 
-ビルドコンフィギュレーションには、実行されるタイミングに応じて「PreBuild」、「PostBuild」の2つのフェーズがあります。
+ビルドコンフィギュレーションには、実行されるタイミングに応じて「Pre-build」、「Post-build」の2つのフェーズがあります。
 フェーズの詳細については[コマンドラインインターフェイス（CLI）からアプリをビルドする](#コマンドラインインターフェイスcliからアプリをビルドする)
 に記載しています。
 
@@ -169,19 +171,19 @@ BuildMagicウインドウの画面左上にある「Menu」をクリックして
 
 ![](./Documentation~/configure-build-scheme-override.png)
 
-## コマンドラインインターフェイス（CLI）からアプリをビルドする
+## ビルドフェーズ
 
 BuildMagicは、コマンドライン経由での実行をサポートしています。
 
-BuildMagicにおけるビルドタスクの実行は「PreBuildフェーズ」と「PostBuildフェーズ」の2つのフェーズに分かれています。
+BuildMagicにおけるビルドタスクの実行は「Pre-buildフェーズ」と「Post-buildフェーズ」の2つのフェーズに分かれています。
 
-- PreBuildフェーズ:
+- Pre-buildフェーズ:
     - プラットフォームの切り替えと、BuildMagicが管理するビルド設定をプロジェクトに適用するフェーズです。
     - Define Symbolsの更新やアセット、ソースコードの物理削除はこのフェースで行います。
-- PostBuildフェーズ:
+- Post-buildフェーズ:
     - Unityアプリをビルドした後に実行されるフェーズです
 
-コマンドライン経由の実行では、PreBuildフェーズを実行してからUnityを再起動し、アプリビルド・PostBuildフェーズを実行します。
+コマンドライン経由の実行では、Pre-buildフェーズを実行してからUnityを再起動し、アプリビルド・Post-buildフェーズを実行します。
 
 このアプローチを採用しているのは、コマンドライン経由のバッチモード実行ではドメインリロードができないためです。
 プラットフォームやDefine Symbolsの更新を行った同じプロセスでビルドを実行すると、コードの再コンパイルが正常に行われず、期待したビルドが得られない可能性があります。
@@ -193,6 +195,15 @@ BuildMagicにおけるビルドタスクの実行は「PreBuildフェーズ」�
 > scripting symbols, because they have not yet been recompiled with the new symbols.
 > This means if you have Editor scripts which run as part of your BuildPlayer execution,
 > they run with the old scripting symbols and your player might not build as you expected.
+
+### 「Just before the build」フェーズ
+
+上級者向けの機能として「Just before the build」フェーズも利用できます。これはプレイヤービルドの直前に実行されるフェーズで、CLI 上で実行した際、Pre-build フェーズ後の Unity の再起動によって揮発してしまうような設定項目を適用するのに便利です。  
+これを有効化するには、BuildMagic ウィンドウの「Menu」から「Enable Just before the build phase (advanced)」を選択してください。
+
+![](https://github.com/user-attachments/assets/f08cdff2-96a8-4399-9a87-ac36da6c9f16)
+
+## コマンドライン引数
 
 以下は、macOS上でCLIを利用してビルドを実行する例です。
 
@@ -265,12 +276,13 @@ BuildMagicでは、ビルドタスクを実行するフェーズを以下の3つ
 
 | Phase     | Description                           | ContextType         |
 |:----------|:--------------------------------------|:--------------------|
-| PreBuild  | プロジェクトへ設定を適用するフェーズ。ビルドフェーズの手前に実行されます。 | `IPreBuildConetxt`  | 
-| PostBuild | ビルドプレイヤーによるアプリケーションのビルド後に実行されるフェーズ。   | `IPostBuildContext` | 
+| Pre-build  | プロジェクトへ設定を適用するフェーズ。ビルドフェーズの手前に実行されます。 | `IPreBuildConetxt`  | 
+| Just before the build [(デフォルトで非表示)](#just-before-the-buildフェーズ)  | ビルドの直前に実行されます（CLI使用時はUnityの再起動後）。 | `IInternalPrepareContext`  | 
+| Post-build | ビルドプレイヤーによるアプリケーションのビルド後に実行されるフェーズ。   | `IPostBuildContext` | 
 
-「PreBuildフェーズでは、Unityプロジェクトへの各種設定の反映、Script Define Symbolsの適用、および物理的なコードの除外などによるC#コードの更新を行います。
+「Pre-buildフェーズでは、Unityプロジェクトへの各種設定の反映、Script Define Symbolsの適用、および物理的なコードの除外などによるC#コードの更新を行います。
 
-「PostBuild」フェーズでは、ビルドされたアプリケーションやプロジェクトに対して追加の処理を実行します。
+「Post-build」フェーズでは、ビルドされたアプリケーションやプロジェクトに対して追加の処理を実行します。
 
 ### 独自のビルドタスクを実装する
 
