@@ -199,14 +199,63 @@ public class UnityApiAnalyzer(
                             // obsolete with error=true
                             continue;
 
+                        // Parse UnityUpgradable
+                        // (UnityUpgradable) -> [<Assembly (optional)>] <Member>
+                        UnityUpgradableData? unityUpgradableData = null;
+                        if (obsoleteAttribute is { ConstructorArguments: [{ Value: string message }, ..] })
+                        {
+                            const string hint = "(UnityUpgradable) -> ";
+                            var index = message.IndexOf(hint, StringComparison.OrdinalIgnoreCase);
+                            if (index != -1)
+                            {
+                                var content = message.AsSpan()[index..][hint.Length..];
+                                string? assemblyName = null;
+                                if (content.Length > 0 && content[0] == '[')
+                                {
+                                    // parse assembly name
+                                    var closer = content.IndexOf(']');
+                                    if (closer == -1) goto BREAK;
+                                    assemblyName = content[1..closer].ToString();
+                                    content = content[closer..][1..];
+
+                                    // NOTE: We have to ignore APIs moved to platform dependent assemblies because they may cause compilation errors.
+                                    // It is done heuristically by checking if the assembly name starts with "UnityEditor." and ends with ".Extensions".
+                                    if (assemblyName.StartsWith("UnityEditor.", StringComparison.Ordinal) &&
+                                        assemblyName.EndsWith(".Extensions")) continue;
+                                }
+
+                                var memberName = content.Trim().ToString().Replace('/', '.');
+
+                                unityUpgradableData = new UnityUpgradableData(assemblyName, memberName);
+                            }
+
+                            BREAK: ;
+                        }
+
                         var isObsolete = isTypeObsolete || obsoleteAttribute != null;
+
+                        // API updater-applied member info
+                        string appliedMemberName;
+                        if (unityUpgradableData?.MemberName is { } upgradedMemberName)
+                        {
+                            if (upgradedMemberName?.Contains('.', StringComparison.Ordinal) ?? false)
+                                // fullname
+                                appliedMemberName = $"global::{upgradedMemberName}";
+                            else
+                                appliedMemberName = $"{typeExpression}.{upgradedMemberName}";
+                        }
+                        else
+                        {
+                            appliedMemberName = $"{typeExpression}.{member.Name}";
+                        }
 
                         ApiData data;
                         if (member is IMethodSymbol setterMethod)
                         {
                             if (setterMethod.MethodKind is MethodKind.PropertyGet or MethodKind.PropertySet ||
                                 setterMethod.IsGenericMethod ||
-                                !setterMethod.Name.StartsWith("Set")) continue; // methods starts with "Set" are included
+                                !setterMethod.Name.StartsWith("Set"))
+                                continue; // methods starts with "Set" are included
 
                             // Is all the parameters serializable?
                             if (setterMethod.Parameters.Any(p =>
@@ -214,7 +263,7 @@ public class UnityApiAnalyzer(
                                     !TypeUtils.IsSerializableFieldType(p.Type))) continue;
 
                             var setterExpression =
-                                $"{typeExpression}.{setterMethod.Name}({string.Join(", ", Enumerable.Range(0, setterMethod.Parameters.Length).Select(n => $"{{{n}}}"))});";
+                                $"{appliedMemberName}({string.Join(", ", Enumerable.Range(0, setterMethod.Parameters.Length).Select(n => $"{{{n}}}"))});";
 
                             // getter expression
                             // find getter method
@@ -316,12 +365,12 @@ public class UnityApiAnalyzer(
                             if (!property.Type.BuiltinSerializationWrapperExists(out _) &&
                                 !TypeUtils.IsSerializableFieldType(property.Type)) continue;
 
-                            var setterExpression = $"{typeExpression}.{property.Name} = {{0}};";
+                            var setterExpression = $"{appliedMemberName} = {{0}};";
                             var resultPropertyName = $"{propertyName}.{ToTitleCase(member.Name)}";
 
                             var getterExpression = property.GetMethod == null
                                 ? null
-                                : $"{{0}} = {typeExpression}.{property.Name};";
+                                : $"{{0}} = {appliedMemberName};";
 
                             if (!editorGuiAnalyzer.LoweredPropertyNameAndLabel.TryGetValue(
                                     member.Name.ToLowerInvariant(), out var labelName))

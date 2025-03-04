@@ -39,12 +39,12 @@ public class BuildTaskAccessoriesGenerator : IIncrementalGenerator
         var (sourceContexts, compilation) = tuple;
         if (compilation.AssemblyName != Consts.BuildMagicEditorAssemblyName) return;
 
-
         StringBuilder sourceBuilder = new();
-
 
         sourceBuilder.AppendLine(
 /*  lang=c# */"""
+              #pragma warning disable CS0612 // ignore obsolete member access
+              #pragma warning disable CS0618 // ignore obsolete member access
               namespace BuildMagicEditor
               {
                   partial class BuildTaskBuilderProvider
@@ -165,6 +165,8 @@ public class BuildTaskAccessoriesGenerator : IIncrementalGenerator
         var ns = typeSymbol.ContainingNamespace;
 
         var name = typeSymbol.Name;
+        var isObsolete = typeSymbol.GetAttributes().Any(attr =>
+            attr.AttributeClass.MatchFullMetadataName("System.ObsoleteAttribute"));
 
         string fullName;
         if (typeSymbol.ContainingType != null)
@@ -283,6 +285,9 @@ public class BuildTaskAccessoriesGenerator : IIncrementalGenerator
                       }))})"))}}]
                       """);
 
+            if (isObsolete)
+                sourceBuilder.AppendLine("[global::System.Obsolete]");
+
             sourceBuilder.AppendLine(
 /*  lang=c# */$$"""
                 [global::System.Serializable]
@@ -296,6 +301,9 @@ public class BuildTaskAccessoriesGenerator : IIncrementalGenerator
 
         if (generationTargets.HasFlag(BuildTaskAccessories.Parameters) && needDedicatedParameterType)
         {
+            if (isObsolete)
+                sourceBuilder.AppendLine("[global::System.Obsolete]");
+
             sourceBuilder.AppendLine(
 /*  lang=c# */$$"""
 
@@ -326,6 +334,9 @@ public class BuildTaskAccessoriesGenerator : IIncrementalGenerator
 
         if (generationTargets.HasFlag(BuildTaskAccessories.Builder))
         {
+            if (isObsolete)
+                sourceBuilder.AppendLine("[global::System.Obsolete]");
+
             if (typeSymbol.ContainingAssembly.Name != "BuildMagic.Editor")
                 sourceBuilder.AppendLine(
                     /*  lang=c# */
