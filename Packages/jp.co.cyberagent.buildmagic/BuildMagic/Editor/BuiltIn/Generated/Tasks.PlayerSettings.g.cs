@@ -274,6 +274,9 @@ partial class PlayerSettingsSetRunInBackgroundTaskConfiguration : global::BuildM
 }
 // [2022.3.0f1 - (latest)]
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Capture Single Screen", PropertyName = @"PlayerSettings.CaptureSingleScreen")]
+#if UNITY_6000_0_OR_NEWER && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsSetCaptureSingleScreenTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetCaptureSingleScreenTask(global::System.Boolean captureSingleScreen)
@@ -388,7 +391,7 @@ partial class PlayerSettingsSetBakeCollisionMeshesTaskConfiguration : global::Bu
     }
 }
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Mac App Store Validation", PropertyName = @"PlayerSettings.UseMacAppStoreValidation")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Use Mac App Store Validation", PropertyName = @"PlayerSettings.UseMacAppStoreValidation")]
 public class PlayerSettingsSetUseMacAppStoreValidationTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetUseMacAppStoreValidationTask(global::System.Boolean useMacAppStoreValidation)
@@ -2515,7 +2518,11 @@ public class PlayerSettingsAndroidSetResizableWindowTask : global::BuildMagicEdi
 
     public override void Run(global::BuildMagicEditor.IPreBuildContext context)
     {
+	    #if !UNITY_6000_0_OR_NEWER || UNITY_6000_0_3 || UNITY_6000_0_2 || UNITY_6000_0_1 || UNITY_6000_0_0
         global::UnityEditor.PlayerSettings.Android.resizableWindow = this.resizableWindow;
+	    #elif UNITY_6000_0_OR_NEWER && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0
+        global::UnityEditor.PlayerSettings.Android.resizeableActivity = this.resizableWindow;
+	    #endif
     }
     private readonly global::System.Boolean resizableWindow;
 }
@@ -2523,8 +2530,13 @@ partial class PlayerSettingsAndroidSetResizableWindowTaskConfiguration : global:
 {
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
+#if !UNITY_6000_0_OR_NEWER || UNITY_6000_0_3 || UNITY_6000_0_2 || UNITY_6000_0_1 || UNITY_6000_0_0
         var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.resizableWindow;
         this.Value = __BUILDMAGIC__0;
+#elif UNITY_6000_0_OR_NEWER && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.resizeableActivity;
+        this.Value = __BUILDMAGIC__0;
+#endif
     }
 }
 #endif
@@ -3031,7 +3043,11 @@ public class PlayerSettingsAndroidSetUseAPKExpansionFilesTask : global::BuildMag
 
     public override void Run(global::BuildMagicEditor.IPreBuildContext context)
     {
+	    #if !UNITY_2023_1_OR_NEWER
         global::UnityEditor.PlayerSettings.Android.useAPKExpansionFiles = this.useAPKExpansionFiles;
+	    #elif UNITY_2023_1_OR_NEWER
+        global::UnityEditor.PlayerSettings.Android.splitApplicationBinary = this.useAPKExpansionFiles;
+	    #endif
     }
     private readonly global::System.Boolean useAPKExpansionFiles;
 }
@@ -3039,8 +3055,13 @@ partial class PlayerSettingsAndroidSetUseAPKExpansionFilesTaskConfiguration : gl
 {
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
+#if !UNITY_2023_1_OR_NEWER
         var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.useAPKExpansionFiles;
         this.Value = __BUILDMAGIC__0;
+#elif UNITY_2023_1_OR_NEWER
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.splitApplicationBinary;
+        this.Value = __BUILDMAGIC__0;
+#endif
     }
 }
 // [2022.3.0f1 - (latest)]
@@ -4311,7 +4332,7 @@ partial class PlayerSettingsMacOSSetMicrophoneUsageDescriptionTaskConfiguration 
     }
 }
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.MacOS: Bluetooth Usage Description*", PropertyName = @"PlayerSettings.MacOS.BluetoothUsageDescription")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.MacOS: Bluetooth Usage Description", PropertyName = @"PlayerSettings.MacOS.BluetoothUsageDescription")]
 public class PlayerSettingsMacOSSetBluetoothUsageDescriptionTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsMacOSSetBluetoothUsageDescriptionTask(global::System.String bluetoothUsageDescription)
@@ -10779,6 +10800,106 @@ partial class PlayerSettingsWSASetSyncCapabilitiesTaskConfiguration : global::Bu
     }
 }
 #endif
+// [2022.3.49f1 - (2022.3 latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Audio Spatial Experience", PropertyName = @"PlayerSettings.AudioSpatialExperience")]
+public class PlayerSettingsSetAudioSpatialExperienceTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetAudioSpatialExperienceTask(global::UnityEngine.AudioSpatialExperience audioSpatialExperience)
+    {
+        this.audioSpatialExperience = audioSpatialExperience;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.audioSpatialExperience = this.audioSpatialExperience;
+    }
+    private readonly global::UnityEngine.AudioSpatialExperience audioSpatialExperience;
+}
+partial class PlayerSettingsSetAudioSpatialExperienceTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.audioSpatialExperience;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [2022.3.54f1 - (2022.3 latest)], [6000.0.0f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_53 && !UNITY_2022_3_52 && !UNITY_2022_3_51 && !UNITY_2022_3_50 && !UNITY_2022_3_49 && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.IOS: Simulator Sdk Architecture", PropertyName = @"PlayerSettings.IOS.SimulatorSdkArchitecture")]
+public class PlayerSettingsIOSSetSimulatorSdkArchitectureTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsIOSSetSimulatorSdkArchitectureTask(global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture)
+    {
+        this.simulatorSdkArchitecture = simulatorSdkArchitecture;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.iOS.simulatorSdkArchitecture = this.simulatorSdkArchitecture;
+    }
+    private readonly global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture;
+}
+partial class PlayerSettingsIOSSetSimulatorSdkArchitectureTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.iOS.simulatorSdkArchitecture;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [2022.3.54f1 - (2022.3 latest)], [2023.2.0f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_53 && !UNITY_2022_3_52 && !UNITY_2022_3_51 && !UNITY_2022_3_50 && !UNITY_2022_3_49 && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_2023_2_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Switch: Disable HTCSPlayer Connection", PropertyName = @"PlayerSettings.Switch.DisableHTCSPlayerConnection")]
+public class PlayerSettingsSwitchSetDisableHTCSPlayerConnectionTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSwitchSetDisableHTCSPlayerConnectionTask(global::System.Boolean disableHTCSPlayerConnection)
+    {
+        this.disableHTCSPlayerConnection = disableHTCSPlayerConnection;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Switch.disableHTCSPlayerConnection = this.disableHTCSPlayerConnection;
+    }
+    private readonly global::System.Boolean disableHTCSPlayerConnection;
+}
+partial class PlayerSettingsSwitchSetDisableHTCSPlayerConnectionTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Switch.disableHTCSPlayerConnection;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [2022.3.54f1 - (2022.3 latest)], [6000.0.0f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_53 && !UNITY_2022_3_52 && !UNITY_2022_3_51 && !UNITY_2022_3_50 && !UNITY_2022_3_49 && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.TvOS: Simulator Sdk Architecture", PropertyName = @"PlayerSettings.TvOS.SimulatorSdkArchitecture")]
+public class PlayerSettingsTvOSSetSimulatorSdkArchitectureTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsTvOSSetSimulatorSdkArchitectureTask(global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture)
+    {
+        this.simulatorSdkArchitecture = simulatorSdkArchitecture;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.tvOS.simulatorSdkArchitecture = this.simulatorSdkArchitecture;
+    }
+    private readonly global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture;
+}
+partial class PlayerSettingsTvOSSetSimulatorSdkArchitectureTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.tvOS.simulatorSdkArchitecture;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
 // [2023.1.0f1 - (latest)]
 #if UNITY_2023_1_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Static Batching For Platform", PropertyName = @"PlayerSettings.SetStaticBatchingForPlatform()")]
@@ -11142,31 +11263,6 @@ partial class PlayerSettingsQNXSetGraphicConfPathTaskConfiguration : global::Bui
 #endif
 // [2023.2.0f1 - (latest)]
 #if UNITY_2023_2_OR_NEWER
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Switch: Disable HTCSPlayer Connection", PropertyName = @"PlayerSettings.Switch.DisableHTCSPlayerConnection")]
-public class PlayerSettingsSwitchSetDisableHTCSPlayerConnectionTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
-{
-    public PlayerSettingsSwitchSetDisableHTCSPlayerConnectionTask(global::System.Boolean disableHTCSPlayerConnection)
-    {
-        this.disableHTCSPlayerConnection = disableHTCSPlayerConnection;
-    }
-
-    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
-    {
-        global::UnityEditor.PlayerSettings.Switch.disableHTCSPlayerConnection = this.disableHTCSPlayerConnection;
-    }
-    private readonly global::System.Boolean disableHTCSPlayerConnection;
-}
-partial class PlayerSettingsSwitchSetDisableHTCSPlayerConnectionTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
-{
-    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
-    {
-        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Switch.disableHTCSPlayerConnection;
-        this.Value = __BUILDMAGIC__0;
-    }
-}
-#endif
-// [2023.2.0f1 - (latest)]
-#if UNITY_2023_2_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.WebGL: Enable Web GPU", PropertyName = @"PlayerSettings.WebGL.EnableWebGPU")]
 public class PlayerSettingsWebGLSetEnableWebGPUTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
@@ -11286,56 +11382,6 @@ partial class PlayerSettingsAndroidSetPredictiveBackSupportTaskConfiguration : g
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
         var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.predictiveBackSupport;
-        this.Value = __BUILDMAGIC__0;
-    }
-}
-#endif
-// [6000.0.0f1 - (latest)]
-#if UNITY_6000_0_OR_NEWER
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.IOS: Simulator Sdk Architecture", PropertyName = @"PlayerSettings.IOS.SimulatorSdkArchitecture")]
-public class PlayerSettingsIOSSetSimulatorSdkArchitectureTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
-{
-    public PlayerSettingsIOSSetSimulatorSdkArchitectureTask(global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture)
-    {
-        this.simulatorSdkArchitecture = simulatorSdkArchitecture;
-    }
-
-    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
-    {
-        global::UnityEditor.PlayerSettings.iOS.simulatorSdkArchitecture = this.simulatorSdkArchitecture;
-    }
-    private readonly global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture;
-}
-partial class PlayerSettingsIOSSetSimulatorSdkArchitectureTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
-{
-    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
-    {
-        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.iOS.simulatorSdkArchitecture;
-        this.Value = __BUILDMAGIC__0;
-    }
-}
-#endif
-// [6000.0.0f1 - (latest)]
-#if UNITY_6000_0_OR_NEWER
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.TvOS: Simulator Sdk Architecture", PropertyName = @"PlayerSettings.TvOS.SimulatorSdkArchitecture")]
-public class PlayerSettingsTvOSSetSimulatorSdkArchitectureTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
-{
-    public PlayerSettingsTvOSSetSimulatorSdkArchitectureTask(global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture)
-    {
-        this.simulatorSdkArchitecture = simulatorSdkArchitecture;
-    }
-
-    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
-    {
-        global::UnityEditor.PlayerSettings.tvOS.simulatorSdkArchitecture = this.simulatorSdkArchitecture;
-    }
-    private readonly global::UnityEditor.AppleMobileArchitectureSimulator simulatorSdkArchitecture;
-}
-partial class PlayerSettingsTvOSSetSimulatorSdkArchitectureTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
-{
-    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
-    {
-        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.tvOS.simulatorSdkArchitecture;
         this.Value = __BUILDMAGIC__0;
     }
 }

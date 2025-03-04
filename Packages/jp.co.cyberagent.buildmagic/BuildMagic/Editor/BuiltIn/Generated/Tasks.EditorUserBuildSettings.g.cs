@@ -24,11 +24,9 @@ partial class EditorUserBuildSettingsSetSelectedBuildTargetGroupTaskConfiguratio
         this.Value = __BUILDMAGIC__0;
     }
 }
-// [2022.3.0f1 - (latest)]
+// [2022.3.0f1 - (2023.2 latest)]
+#if !UNITY_6000_0_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Selected Qnx Os Version", PropertyName = @"EditorUserBuildSettings.SelectedQnxOsVersion")]
-#if UNITY_6000_0_OR_NEWER
-[global::System.Obsolete]
-#endif
 public class EditorUserBuildSettingsSetSelectedQnxOsVersionTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public EditorUserBuildSettingsSetSelectedQnxOsVersionTask(global::UnityEditor.QNXOsVersion selectedQnxOsVersion)
@@ -50,11 +48,10 @@ partial class EditorUserBuildSettingsSetSelectedQnxOsVersionTaskConfiguration : 
         this.Value = __BUILDMAGIC__0;
     }
 }
-// [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Selected Qnx Architecture", PropertyName = @"EditorUserBuildSettings.SelectedQnxArchitecture")]
-#if UNITY_6000_0_OR_NEWER
-[global::System.Obsolete]
 #endif
+// [2022.3.0f1 - (2023.2 latest)]
+#if !UNITY_6000_0_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Selected Qnx Architecture", PropertyName = @"EditorUserBuildSettings.SelectedQnxArchitecture")]
 public class EditorUserBuildSettingsSetSelectedQnxArchitectureTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public EditorUserBuildSettingsSetSelectedQnxArchitectureTask(global::UnityEditor.QNXArchitecture selectedQnxArchitecture)
@@ -76,11 +73,10 @@ partial class EditorUserBuildSettingsSetSelectedQnxArchitectureTaskConfiguration
         this.Value = __BUILDMAGIC__0;
     }
 }
-// [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Selected Embedded Linux Architecture", PropertyName = @"EditorUserBuildSettings.SelectedEmbeddedLinuxArchitecture")]
-#if UNITY_6000_0_OR_NEWER
-[global::System.Obsolete]
 #endif
+// [2022.3.0f1 - (2023.2 latest)]
+#if !UNITY_6000_0_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Selected Embedded Linux Architecture", PropertyName = @"EditorUserBuildSettings.SelectedEmbeddedLinuxArchitecture")]
 public class EditorUserBuildSettingsSetSelectedEmbeddedLinuxArchitectureTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public EditorUserBuildSettingsSetSelectedEmbeddedLinuxArchitectureTask(global::UnityEditor.EmbeddedLinuxArchitecture selectedEmbeddedLinuxArchitecture)
@@ -102,6 +98,7 @@ partial class EditorUserBuildSettingsSetSelectedEmbeddedLinuxArchitectureTaskCon
         this.Value = __BUILDMAGIC__0;
     }
 }
+#endif
 // [2022.3.0f1 - (latest)]
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Remote Device Info", PropertyName = @"EditorUserBuildSettings.RemoteDeviceInfo")]
 public class EditorUserBuildSettingsSetRemoteDeviceInfoTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
@@ -1620,7 +1617,11 @@ public class EditorUserBuildSettingsSetSwitchRedirectWritesToHostMountTask : glo
 
     public override void Run(global::BuildMagicEditor.IPreBuildContext context)
     {
+	    #if !UNITY_6000_0_OR_NEWER
         global::UnityEditor.EditorUserBuildSettings.switchRedirectWritesToHostMount = this.switchRedirectWritesToHostMount;
+	    #elif UNITY_6000_0_OR_NEWER
+        global::UnityEditor.EditorUserBuildSettings.switchEnableHostIO = this.switchRedirectWritesToHostMount;
+	    #endif
     }
     private readonly global::System.Boolean switchRedirectWritesToHostMount;
 }
@@ -1628,8 +1629,13 @@ partial class EditorUserBuildSettingsSetSwitchRedirectWritesToHostMountTaskConfi
 {
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
+#if !UNITY_6000_0_OR_NEWER
         var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.switchRedirectWritesToHostMount;
         this.Value = __BUILDMAGIC__0;
+#elif UNITY_6000_0_OR_NEWER
+        var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.switchEnableHostIO;
+        this.Value = __BUILDMAGIC__0;
+#endif
     }
 }
 // [2022.3.0f1 - (latest)]
@@ -1797,6 +1803,56 @@ partial class EditorUserBuildSettingsSetSwitchWaitForMemoryTrackerOnStartupTaskC
     }
 }
 #endif
+// [2022.3.49f1 - (2022.3 latest)], [6000.0.0f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Switch NVNAftermath", PropertyName = @"EditorUserBuildSettings.SwitchNVNAftermath")]
+public class EditorUserBuildSettingsSetSwitchNVNAftermathTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public EditorUserBuildSettingsSetSwitchNVNAftermathTask(global::System.Boolean switchNVNAftermath)
+    {
+        this.switchNVNAftermath = switchNVNAftermath;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.EditorUserBuildSettings.switchNVNAftermath = this.switchNVNAftermath;
+    }
+    private readonly global::System.Boolean switchNVNAftermath;
+}
+partial class EditorUserBuildSettingsSetSwitchNVNAftermathTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.switchNVNAftermath;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [2022.3.57f1 - (2022.3 latest)], [6000.0.33f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_56 && !UNITY_2022_3_55 && !UNITY_2022_3_54 && !UNITY_2022_3_53 && !UNITY_2022_3_52 && !UNITY_2022_3_51 && !UNITY_2022_3_50 && !UNITY_2022_3_49 && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER && !UNITY_6000_0_32 && !UNITY_6000_0_31 && !UNITY_6000_0_30 && !UNITY_6000_0_29 && !UNITY_6000_0_28 && !UNITY_6000_0_27 && !UNITY_6000_0_26 && !UNITY_6000_0_25 && !UNITY_6000_0_24 && !UNITY_6000_0_23 && !UNITY_6000_0_22 && !UNITY_6000_0_21 && !UNITY_6000_0_20 && !UNITY_6000_0_19 && !UNITY_6000_0_18 && !UNITY_6000_0_17 && !UNITY_6000_0_16 && !UNITY_6000_0_15 && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Switch Enable Unpublishable Errors", PropertyName = @"EditorUserBuildSettings.SwitchEnableUnpublishableErrors")]
+public class EditorUserBuildSettingsSetSwitchEnableUnpublishableErrorsTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public EditorUserBuildSettingsSetSwitchEnableUnpublishableErrorsTask(global::System.Boolean switchEnableUnpublishableErrors)
+    {
+        this.switchEnableUnpublishableErrors = switchEnableUnpublishableErrors;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.EditorUserBuildSettings.switchEnableUnpublishableErrors = this.switchEnableUnpublishableErrors;
+    }
+    private readonly global::System.Boolean switchEnableUnpublishableErrors;
+}
+partial class EditorUserBuildSettingsSetSwitchEnableUnpublishableErrorsTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.switchEnableUnpublishableErrors;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
 // [2023.1.10f1 - (latest)]
 #if UNITY_2023_1_OR_NEWER && !UNITY_2023_1_9 && !UNITY_2023_1_8 && !UNITY_2023_1_7 && !UNITY_2023_1_6 && !UNITY_2023_1_5 && !UNITY_2023_1_4 && !UNITY_2023_1_3 && !UNITY_2023_1_2 && !UNITY_2023_1_1 && !UNITY_2023_1_0
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Windows Build And Run Deploy Target", PropertyName = @"EditorUserBuildSettings.WindowsBuildAndRunDeployTarget")]
@@ -1868,31 +1924,6 @@ partial class EditorUserBuildSettingsSetWebGLClientBrowserTypeTaskConfiguration 
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
         var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.webGLClientBrowserType;
-        this.Value = __BUILDMAGIC__0;
-    }
-}
-#endif
-// [6000.0.0f1 - (latest)]
-#if UNITY_6000_0_OR_NEWER
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Switch NVNAftermath", PropertyName = @"EditorUserBuildSettings.SwitchNVNAftermath")]
-public class EditorUserBuildSettingsSetSwitchNVNAftermathTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
-{
-    public EditorUserBuildSettingsSetSwitchNVNAftermathTask(global::System.Boolean switchNVNAftermath)
-    {
-        this.switchNVNAftermath = switchNVNAftermath;
-    }
-
-    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
-    {
-        global::UnityEditor.EditorUserBuildSettings.switchNVNAftermath = this.switchNVNAftermath;
-    }
-    private readonly global::System.Boolean switchNVNAftermath;
-}
-partial class EditorUserBuildSettingsSetSwitchNVNAftermathTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
-{
-    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
-    {
-        var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.switchNVNAftermath;
         this.Value = __BUILDMAGIC__0;
     }
 }
