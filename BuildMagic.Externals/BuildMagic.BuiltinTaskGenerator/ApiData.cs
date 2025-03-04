@@ -17,6 +17,7 @@ public class ApiData(
     string propertyName,
     string displayName,
     bool isObsolete,
+    UnityUpgradableData? unityUpgradableData,
     string setterExpression,
     string? getterExpression)
 {
@@ -36,6 +37,11 @@ public class ApiData(
     ///     Whether it is obsolete (not listed at all if the error flag is set）
     /// </summary>
     public bool IsObsolete { get; set; } = isObsolete;
+
+    /// <summary>
+    ///     Directive for API Updater if it is obsolete
+    /// </summary>
+    public UnityUpgradableData? UnityUpgradableData { get; set; } = unityUpgradableData;
 
     /// <summary>
     ///     C# expression to set the value

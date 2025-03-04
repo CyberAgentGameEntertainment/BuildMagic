@@ -11,7 +11,7 @@ namespace BuildMagic.BuiltinTaskGenerator;
 /// </summary>
 public class AnalysisResult
 {
-    public static readonly int CurrentSerializedVersion = 4;
+    public static readonly int CurrentSerializedVersion = 5;
 
     public int SerializedVersion { get; set; } = CurrentSerializedVersion;
     public Dictionary<string, ApiCategory> Categories { get; set; } = new();
