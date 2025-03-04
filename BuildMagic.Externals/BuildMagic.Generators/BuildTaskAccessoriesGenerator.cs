@@ -43,8 +43,8 @@ public class BuildTaskAccessoriesGenerator : IIncrementalGenerator
 
         sourceBuilder.AppendLine(
 /*  lang=c# */"""
-              #pragma warning disable CS0612
-              #pragma warning disable CS0618
+              #pragma warning disable CS0612 // ignore obsolete member access
+              #pragma warning disable CS0618 // ignore obsolete member access
               namespace BuildMagicEditor
               {
                   partial class BuildTaskBuilderProvider

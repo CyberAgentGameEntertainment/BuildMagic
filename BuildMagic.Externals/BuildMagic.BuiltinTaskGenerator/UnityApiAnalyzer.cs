@@ -218,7 +218,8 @@ public class UnityApiAnalyzer(
                                     assemblyName = content[1..closer].ToString();
                                     content = content[closer..][1..];
 
-                                    // we have to ignore platform dependent apis because they may cause compilation errors
+                                    // NOTE: We have to ignore APIs moved to platform dependent assemblies because they may cause compilation errors.
+                                    // It is done heuristically by checking if the assembly name starts with "UnityEditor." and ends with ".Extensions".
                                     if (assemblyName.StartsWith("UnityEditor.", StringComparison.Ordinal) &&
                                         assemblyName.EndsWith(".Extensions")) continue;
                                 }
@@ -233,6 +234,7 @@ public class UnityApiAnalyzer(
 
                         var isObsolete = isTypeObsolete || obsoleteAttribute != null;
 
+                        // API updater-applied member info
                         string appliedMemberName;
                         if (unityUpgradableData?.MemberName is { } upgradedMemberName)
                         {
@@ -342,7 +344,7 @@ public class UnityApiAnalyzer(
                                 labelName = Utils.ToNiceLabelName(setterMethod.Name.AsSpan()[3..]);
 
                             data = new ApiData($"{expectedName}{ToTitleCase(member.Name)}", resultPropertyName,
-                                $"{propertyName}: {labelName}", isObsolete, unityUpgradableData,
+                                $"{propertyName}: {labelName}", isObsolete,
                                 setterExpression, getterExpression);
 
                             for (var i = 0; i < setterMethod.Parameters.Length; i++)
@@ -398,7 +400,7 @@ public class UnityApiAnalyzer(
                             }
 
                             data = new ApiData($"{expectedName}Set{ToTitleCase(member.Name)}", resultPropertyName,
-                                $"{propertyName}: {labelName}", isObsolete, unityUpgradableData,
+                                $"{propertyName}: {labelName}", isObsolete,
                                 setterExpression, getterExpression);
                             data.Parameters.Add(
                                 new ParameterData(property.Type.ToDisplayString(DisplayFormatForType), property.Name,
