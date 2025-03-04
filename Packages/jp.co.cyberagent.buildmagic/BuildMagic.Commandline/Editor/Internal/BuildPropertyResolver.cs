@@ -71,11 +71,19 @@ namespace BuildMagicEditor.Commandline.Internal
             return new IBuildPropertyDeserializer[]
             {
                 new BoolBuildPropertyDeserializer(),
-                new IntBuildPropertyDeserializer(),
-                new SingleBuildPropertyDeserializer(),
                 new EnumBuildPropertyDeserializer(),
                 new StringBuildPropertyDeserializer(),
-                new SerializableTypeBuildPropertyDeserializer()
+                new SerializableTypeBuildPropertyDeserializer(),
+                new ByteBuildPropertyDeserializer(),
+                new SByteBuildPropertyDeserializer(),
+                new UInt16BuildPropertyDeserializer(),
+                new Int16BuildPropertyDeserializer(),
+                new UInt32BuildPropertyDeserializer(),
+                new Int32BuildPropertyDeserializer(),
+                new UInt64BuildPropertyDeserializer(),
+                new Int64BuildPropertyDeserializer(),
+                new SingleBuildPropertyDeserializer(),
+                new DoubleBuildPropertyDeserializer()
             };
         }
 

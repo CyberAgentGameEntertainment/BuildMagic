@@ -1,0 +1,63 @@
+// --------------------------------------------------------------
+// Copyright 2025 CyberAgent, Inc.
+// --------------------------------------------------------------
+<#@ template language="C#" #>
+<#@ import namespace="System.CodeDom" #>
+<#@ import namespace="Microsoft.CSharp" #>
+<#
+    var values = new object[]
+    {
+        (byte)123,
+        (sbyte)-123,
+        (ushort)123,
+        (short)-123,
+        (uint)123,
+        (int)-123,
+        (ulong)123,
+        (long)-123,
+        (float)12.3,
+        (double)12.3,
+    };
+#>
+
+using System;
+using BuildMagicEditor.Commandline.Internal;
+using NUnit.Framework;
+
+namespace BuildMagicEditor.Commandline.Tests
+{
+    partial class SerializableTypeBuildPropertyDeserializerTest
+    {
+<#
+    var compiler = new CSharpCodeProvider();
+
+    foreach (var value in values)
+    {
+        var type = value.GetType();
+        var typeName = type.Name;
+        var deserializerName = $"{typeName}BuildPropertyDeserializer";
+        var cSharpTypeName = compiler.GetTypeOutput(new CodeTypeReference(type));
+#>
+        [Test]
+        public void <#= typeName #>BuildPropertyDeserializer_WillProcess()
+        {
+            var deserializer = new <#= deserializerName #>();
+            Assert.IsTrue(deserializer.WillProcess(typeof(<#= cSharpTypeName #>)));
+            Assert.IsFalse(deserializer.WillProcess(typeof(string)));
+        }
+
+        [Test]
+        public void <#= typeName #>BuildPropertyDeserializer_Deserialize()
+        {
+            var deserializer = new <#= deserializerName #>();
+            var deserializedValue = deserializer.Deserialize("<#= value #>", typeof(<#= cSharpTypeName #>));
+
+            Assert.AreEqual(typeof(<#= cSharpTypeName #>), deserializedValue.GetType());
+            Assert.AreEqual((<#= cSharpTypeName #>)<#= value #>, (<#= cSharpTypeName #>)deserializedValue);
+        }
+
+<#
+    }
+#>
+    }
+}
