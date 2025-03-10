@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.1]
+
+### Fixed
+
+- Fixed the issue that derived configurations and "Just before the build" configurations may be ignored in some situations.
+
 ## [1.7.0]
 
 ### Added
