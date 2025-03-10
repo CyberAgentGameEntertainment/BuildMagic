@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BuildMagicEditor.BuiltIn;
 using BuildMagicEditor.Extensions;
@@ -47,15 +48,19 @@ namespace BuildMagicEditor
                 // memorize the scheme to run OnPostProcessBuild
                 _hookedScheme = scheme;
 
+                var allSchemes = BuildSchemeLoader.LoadAll<BuildScheme>().ToArray();
+
                 var preBuildTask =
-                    BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(scheme.PreBuildConfigurations);
+                    BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(
+                        BuildSchemeUtility.EnumerateComposedConfigurations<IPreBuildContext>(scheme, allSchemes));
                 BuildPipeline.PreBuild(preBuildTask);
 
                 var internalPrepareTasks = new List<IBuildTask<IInternalPrepareContext>>();
                 internalPrepareTasks.Add(new BuildPlayerOptionsApplyEditorSettingsTask());
                 internalPrepareTasks.AddRange(
                     BuildTaskBuilderUtility.CreateBuildTasks<IInternalPrepareContext>(
-                        scheme.InternalPrepareConfigurations));
+                        BuildSchemeUtility
+                            .EnumerateComposedConfigurations<IInternalPrepareContext>(scheme, allSchemes)));
 
                 var overrideOptions = internalPrepareTasks.GenerateBuildPlayerOptions();
 
@@ -88,11 +93,14 @@ namespace BuildMagicEditor
             var scheme = _hookedScheme;
             _hookedScheme = null;
 
+            var allSchemes = BuildSchemeLoader.LoadAll<BuildScheme>();
+
             if (BuildPlayerTask.IsCurrentThreadBuildingPlayer)
                 return;
 
             var postBuildTasks =
-                BuildTaskBuilderUtility.CreateBuildTasks<IPostBuildContext>(scheme.PostBuildConfigurations);
+                BuildTaskBuilderUtility.CreateBuildTasks<IPostBuildContext>(
+                    BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(scheme, allSchemes));
 
             foreach (var task in postBuildTasks)
                 task.Run(PostBuildContext.Create(report));

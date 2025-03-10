@@ -36,7 +36,11 @@ namespace BuildMagicEditor
                     yield return ancestor;
             }
 
-            return LoadBaseSchemesCore(scheme, allSchemes, new HashSet<BuildScheme>());
+            // If we return IEnumerable directly, it may cause "circular inheritance detected" when we evaluate it multiple times because the HashSet instance is shared.
+            foreach (var item in LoadBaseSchemesCore(scheme, allSchemes, new HashSet<BuildScheme>()))
+            {
+                yield return item;
+            }
         }
 
         public static IEnumerable<IBuildConfiguration> EnumerateComposedConfigurations<TContext>(

@@ -130,7 +130,8 @@ namespace BuildMagic.Window.Editor
             internalPrepareTasks.Add(new BuildPlayerOptionsApplyEditorSettingsTask());
             internalPrepareTasks.AddRange(
                 BuildTaskBuilderUtility.CreateBuildTasks<IInternalPrepareContext>(
-                    _selected.Self.InternalPrepareConfigurations));
+                    BuildSchemeUtility.EnumerateComposedConfigurations<IInternalPrepareContext>(_selected.Self,
+                        _schemes)));
 
             var configurations =
                 BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(_selected.Self, _schemes);

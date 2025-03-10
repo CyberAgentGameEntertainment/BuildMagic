@@ -107,11 +107,17 @@ public static class BuildMagicCLI
         var setConfigurationPathTaskBuilder =
             context.TaskBuilderProvider.GetBuilder(setLocationPathConfiguration.TaskType, property.ValueType);
 
+        var configurations =
+            BuildSchemeUtility.EnumerateComposedConfigurations<IInternalPrepareContext>(context
+                .InheritanceTreeFromLeafToRoot);
+
         List<IBuildTask<IInternalPrepareContext>> tasks = new()
         {
             new BuildPlayerOptionsApplyEditorSettingsTask(),
             setConfigurationPathTaskBuilder.Build(property.Value) as IBuildTask<IInternalPrepareContext>
         };
+
+        tasks.AddRange(BuildTaskBuilderUtility.CreateBuildTasks<IInternalPrepareContext>(configurations));
 
         tasks.AddRange(GetUnresolvedOverrideProperties(context).OfType<IBuildTask<IInternalPrepareContext>>());
 
