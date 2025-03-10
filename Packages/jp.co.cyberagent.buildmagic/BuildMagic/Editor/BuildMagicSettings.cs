@@ -51,7 +51,10 @@ namespace BuildMagicEditor
                 if (scheme == null)
                     return;
 
-                var preBuildTask = BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(scheme.PreBuildConfigurations);
+                var preBuildTask = BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(
+                    BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(scheme,
+                        BuildSchemeLoader.LoadAll<BuildScheme>()));
+
                 BuildPipeline.PreBuild(preBuildTask);
             };
         }
