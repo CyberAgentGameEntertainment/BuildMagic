@@ -61,22 +61,19 @@ namespace BuildMagic.Window.Editor.SubWindows
                                        .OrderBy(t => t.FullName)
                                        .ToArray();
 
-            var preBuildContextType = typeof(IPreBuildContext);
-            var internalPrepareContextType = typeof(IInternalPrepareContext);
-            var postBuildContextType = typeof(IPostBuildContext);
-
             foreach (var type in targetTypes)
             {
                 var baseType = type.BaseType;
                 var taskType = baseType!.GenericTypeArguments[0];
-                var taskBaseType = taskType!.BaseType;
-                var contextType = taskBaseType!.GenericTypeArguments[0];
 
-                if (preBuildContextType.IsAssignableFrom(contextType))
+                if (typeof(IBuildTask<IPreBuildContext>).IsAssignableFrom(taskType))
                     AddNestedItem(preBuildParent, ConfigurationType.PreBuild, type);
-                else if (enableInternalPrepareEditor && internalPrepareContextType.IsAssignableFrom(contextType))
+
+                if (enableInternalPrepareEditor &&
+                    typeof(IBuildTask<IInternalPrepareContext>).IsAssignableFrom(taskType))
                     AddNestedItem(internalPrepareParent, ConfigurationType.InternalPrepare, type);
-                else if (postBuildContextType.IsAssignableFrom(contextType))
+
+                if (typeof(IBuildTask<IPostBuildContext>).IsAssignableFrom(taskType))
                     AddNestedItem(postBuildParent, ConfigurationType.PostBuild, type);
             }
             
