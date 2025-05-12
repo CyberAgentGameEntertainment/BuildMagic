@@ -59,18 +59,19 @@ namespace BuildMagic.Window.Editor.Drawers
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            return CreatePropertyGUI(property, fieldInfo);
+            return CreatePropertyGUI(property, fieldInfo, preferredLabel);
         }
 
-        public static VisualElement CreatePropertyGUI(SerializedProperty property, FieldInfo fieldInfo)
+        public static VisualElement CreatePropertyGUI(SerializedProperty property, FieldInfo fieldInfo, string label)
         {
             var keyType = fieldInfo.FieldType.GenericTypeArguments[0];
             var method = typeof(SerializableDictionaryDrawer)
                 .GetMethod(nameof(CreatePropertyGUI), 1, BindingFlags.NonPublic | BindingFlags.Static,
-                    Type.DefaultBinder, new[] { typeof(SerializedProperty) }, Array.Empty<ParameterModifier>())
+                    Type.DefaultBinder, new[] { typeof(SerializedProperty), typeof(string) },
+                    Array.Empty<ParameterModifier>())
                 .MakeGenericMethod(keyType);
 
-            return (VisualElement)method.Invoke(null, new object[] { property });
+            return (VisualElement)method.Invoke(null, new object[] { property, label });
         }
 
         private static IReadOnlyList<int> GetValidEnumValues<T>()
@@ -81,8 +82,12 @@ namespace BuildMagic.Window.Editor.Drawers
                 .Select(field => field.GetRawConstantValue()).Cast<int>().ToList();
         }
 
-        private static VisualElement CreatePropertyGUI<TKey>(SerializedProperty property)
+        private static VisualElement CreatePropertyGUI<TKey>(SerializedProperty property, string label)
         {
+            var root = new VisualElement();
+            var labelElement = new Label(label);
+            labelElement.AddToClassList("serializable-dictionary-label");
+            root.Add(labelElement);
             var provider = SerializableDictionaryTabViewKeyProviderRegistry<TKey>.Provider;
 
             if (typeof(TKey).IsEnum)
@@ -112,12 +117,14 @@ namespace BuildMagic.Window.Editor.Drawers
                     );
                 }
 
-                return new SerializableDictionaryTabView<int>(property, enumProvider);
+                root.Add(new SerializableDictionaryTabView<int>(property, enumProvider));
+                return root;
             }
 
-            if (provider == null) return new PropertyField(property);
+            if (provider == null) return new PropertyField(property, label);
 
-            return new SerializableDictionaryTabView<TKey>(property, provider);
+            root.Add(new SerializableDictionaryTabView<TKey>(property, provider));
+            return root;
         }
     }
 

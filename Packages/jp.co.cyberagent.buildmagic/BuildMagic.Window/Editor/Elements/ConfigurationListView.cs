@@ -38,9 +38,7 @@ namespace BuildMagic.Window.Editor.Elements
             _listView.AddToClassList("hide-size");
             _listView.AddToClassList("hide-empty");
             _listView.AddToClassList("configuration-list");
-            _listView.style.marginBottom = 20f;
-            _label.style.marginTop = 10f;
-            _label.style.marginBottom = 5f;
+            _label.AddToClassList("configuration-list-derived-label");
         }
 
         public ConfigurationListView(ConfigurationType type) : this()
@@ -86,6 +84,7 @@ namespace BuildMagic.Window.Editor.Elements
             listView.bindItem = (e, index) => BindConfiguration(e, index, listView.itemsSource, Type, filter);
             listView.unbindItem = (e, _) => UnbindConfiguration(e);
             listView.reorderable = !isDerived;
+            listView.EnableInClassList("configuration-list-derived", isDerived);
             listView.Rebuild();
 
             hasAny = buildSchemeContainerProp.FindPropertyRelative(relativeBindingPath).arraySize > 0;

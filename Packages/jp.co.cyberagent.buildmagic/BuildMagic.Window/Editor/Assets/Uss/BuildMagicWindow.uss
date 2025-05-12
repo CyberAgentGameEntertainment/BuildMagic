@@ -6,8 +6,38 @@ ListView.hide-empty .unity-list-view__empty-label {
     display: none;
 }
 
+ConfigurationListView {
+    margin: 15px 0;
+}
+
+.configuration-list {
+    border-left-width: 1px;
+    border-left-color: var(--unity-colors-default-border);
+    padding-left: 10px;
+}
+
+.configuration-list-derived-label {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.unity-list-view__reorderable-handle {
+    padding-top: 10px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.unity-list-view__reorderable-item__container {
+    padding-left: 0;
+}
+
+.configuration-list-derived {
+    padding-left: 27px;
+}
+
 .configuration-list-foldout > #unity-content {
-    margin-left: 24px;
+    margin-left: 20px;
 }
 
 Label.left-entry {
@@ -31,10 +61,7 @@ Label.left-entry {
     padding-top: 4px;
     padding-bottom: 4px;
     background-color: var(--unity-colors-box-background);
-    margin-right: 0;
-    margin-left: 0;
-    margin-top: 0;
-    margin-bottom: 8px;
+    margin: 0;
 }
 
 Label.configuration-name {
@@ -44,7 +71,7 @@ Label.configuration-name {
 }
 
 .configuration-list-foldout {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     margin-top: 0;
 }
 
@@ -76,4 +103,14 @@ Label.configuration-name {
 
 LeftPaneListEntryView {
     flex-grow: 1;
+}
+
+.unity-group-box {
+    border-radius: 5px;
+    padding: 5px 15px;
+    margin: 5px 0;
+}
+
+.serializable-dictionary-label {
+    margin: 3px 0;
 }
