@@ -106,7 +106,7 @@ namespace BuildMagic.Window.Editor.Elements
                         // when self-nested SerializableDictionary`2 is serialized, the property type of enum key field turns to integer due to the Unity's bug.
                         // and it is not processed by our SerializableDictionaryDrawer, so we need to handle it here. 
                         // https://issuetracker.unity3d.com/issues/public-enum-located-in-generic-class-is-displayed-as-int-field-instead-of-drop-down-inside-inspector
-                        contentContainer.Add(SerializableDictionaryDrawer.CreatePropertyGUI(valueProp, fieldInfo));
+                        contentContainer.Add(SerializableDictionaryDrawer.CreatePropertyGUI(valueProp, fieldInfo, valueProp.displayName));
                     else
                         contentContainer.Add(new FlattenedPropertyField(valueProp));
                 }

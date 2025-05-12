@@ -9,21 +9,8 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal sealed class ConfigurationEntryView : BindableElement
+    internal sealed class ConfigurationEntryView : PropertyField
     {
-        private readonly PropertyField _valueField;
-
-        public ConfigurationEntryView()
-        {
-            var visualTree = AssetLoader.LoadUxml("ConfigurationEntry");
-            Assert.IsNotNull(visualTree);
-            visualTree.CloneTree(this);
-            
-            _valueField = this.Q<PropertyField>("value-field");
-            Assert.IsNotNull(_valueField);
-            _valueField.bindingPath = "_value";
-        }
-        
         public ConfigurationType Type { get; private set; }
         public int Index { get; private set; }
 
@@ -35,15 +22,15 @@ namespace BuildMagic.Window.Editor.Elements
             Type = type;
             Index = index;
             Configuration = configuration;
-            _valueField.label = configuration?.GetDisplayName() ?? configuration?.PropertyName ?? "Missing";
+            label = configuration?.GetDisplayName() ?? configuration?.PropertyName ?? "Missing";
         }
-        
+
         public void CollectProjectSetting()
         {
             Assert.IsTrue(Configuration is IProjectSettingApplier);
-            ((IProjectSettingApplier) Configuration).ApplyProjectSetting();
+            ((IProjectSettingApplier)Configuration).ApplyProjectSetting();
         }
-        
+
         public new class UxmlFactory : UxmlFactory<ConfigurationEntryView, UxmlTraits>
         {
         }
