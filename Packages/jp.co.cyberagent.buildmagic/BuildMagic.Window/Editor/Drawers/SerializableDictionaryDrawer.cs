@@ -84,11 +84,13 @@ namespace BuildMagic.Window.Editor.Drawers
 
         private static VisualElement CreatePropertyGUI<TKey>(SerializedProperty property, string label)
         {
+            var provider = SerializableDictionaryTabViewKeyProviderRegistry<TKey>.Provider;
+            if (provider == null) return new PropertyField(property, label);
+
             var root = new VisualElement();
             var labelElement = new Label(label);
             labelElement.AddToClassList("serializable-dictionary-label");
             root.Add(labelElement);
-            var provider = SerializableDictionaryTabViewKeyProviderRegistry<TKey>.Provider;
 
             if (typeof(TKey).IsEnum)
             {
@@ -120,8 +122,6 @@ namespace BuildMagic.Window.Editor.Drawers
                 root.Add(new SerializableDictionaryTabView<int>(property, enumProvider));
                 return root;
             }
-
-            if (provider == null) return new PropertyField(property, label);
 
             root.Add(new SerializableDictionaryTabView<TKey>(property, provider));
             return root;
