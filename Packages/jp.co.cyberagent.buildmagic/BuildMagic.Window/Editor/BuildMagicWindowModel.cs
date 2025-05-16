@@ -290,6 +290,12 @@ namespace BuildMagic.Window.Editor
             return list.ToHashSet();
         }
 
+        public string GetBaseSchemeName(string schemeName)
+        {
+            var scheme = _schemes.FirstOrDefault(s => s.Name == schemeName);
+            return scheme == null ? string.Empty : scheme.BaseSchemeName;
+        }
+
         private static class UndoRedoEventName
         {
             public const string Create = "Create scheme";
