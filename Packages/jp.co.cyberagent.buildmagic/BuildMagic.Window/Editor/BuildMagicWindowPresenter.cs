@@ -96,7 +96,8 @@ namespace BuildMagic.Window.Editor
 
         private void CopyCreate(string copyFromName)
         {
-            var context = new CreateSchemeModalWindow.Context(copyFromName, "", _model.SchemeNamesWithTemplate,
+            var baseSchemeName = _model.GetBaseSchemeName(copyFromName);
+            var context = new CreateSchemeModalWindow.Context(copyFromName, baseSchemeName, _model.SchemeNamesWithTemplate,
                 _model.RootSchemeNames, _model.Create);
             CreateSchemeModalWindow.OpenModal(context);
         }
