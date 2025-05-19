@@ -22,23 +22,14 @@ namespace BuildMagic.Window.Editor.Elements
         public LeftPaneTreeView()
         {
             hierarchy.Add(_currentTracker = new VisualElement());
+
             makeItem = () =>
             {
                 var item = new LeftPaneListEntryView();
                 item.AddManipulator(new ContextualMenuManipulator(ev =>
                 {
-                    ev.menu.AppendAction("Create a build scheme copy from this",
-                        _ => CopyCreateRequested?.Invoke(item.Value));
-                    ev.menu.AppendAction("Create a build scheme inherit this",
-                        _ => InheritCreateRequested?.Invoke(item.Value),
-                        item.Inheritable ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
-                    ev.menu.AppendAction("Remove this", _ => RemoveRequested?.Invoke(item.Value));
-                    ev.menu.AppendAction("Switch to this", _ => PreBuildRequestedByName?.Invoke(item.Value));
-                    ev.menu.AppendAction("Set as primary build scheme",
-                        _ => BuildMagicSettings.instance.PrimaryBuildScheme = item.Value,
-                        _ => item.Value == BuildMagicSettings.instance.PrimaryBuildScheme
-                            ? DropdownMenuAction.Status.Disabled
-                            : DropdownMenuAction.Status.Normal);
+                    var actions = ContextualActionsFactory?.Create(() => item.Value);
+                    IBuildSchemeContextualActions.PopulateMenu(() => actions, "", ev.menu);
                 }));
                 return item;
             };
@@ -74,10 +65,8 @@ namespace BuildMagic.Window.Editor.Elements
             };
         }
 
-        public event Action<string> CopyCreateRequested;
-        public event Action<string> InheritCreateRequested;
-        public event Action<string> RemoveRequested;
-        public event Action<string> PreBuildRequestedByName;
+        public IBuildSchemeContextualActionsFactory ContextualActionsFactory { private get; set; }
+
         public event Action<int> OnSelectionChanged;
 
         public void SelectIndex(int index)
