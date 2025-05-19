@@ -51,9 +51,12 @@ namespace BuildMagic.Window.Editor
             contextualOptionsFactory.BuildRequested += Build;
             contextualOptionsFactory.SetAsPrimaryRequested += SetAsPrimary;
             contextualOptionsFactory.UnsetPrimaryRequested += UnsetPrimary;
+            contextualOptionsFactory.IsPrimary = schemeName =>
+                BuildMagicSettings.instance.PrimaryBuildScheme == schemeName;
 
             _view.LeftPaneView.ContextualActionsFactory = contextualOptionsFactory;
-            _view.LeftPaneView.ContextualActionsForSelectedScheme = contextualOptionsFactory.Create(() => _model.SelectedBuildSchemeName);
+            _view.LeftPaneView.ContextualActionsForSelectedScheme =
+                contextualOptionsFactory.Create(() => _model.SelectedBuildSchemeName);
             _view.LeftPaneView.OnSelectionChanged += OnSelectionChanged;
             _view.LeftPaneView.SaveRequested += Save;
             _view.LeftPaneView.NewBuildSchemeRequested += NewScheme;
@@ -187,6 +190,7 @@ namespace BuildMagic.Window.Editor
             public event Action<string> BuildRequested;
             public event Action<string> SetAsPrimaryRequested;
             public event Action<string> UnsetPrimaryRequested;
+            public Func<string, bool> IsPrimary { private get; set; }
 
             public IBuildSchemeContextualActions Create(Func<string> getSchemeName)
             {
@@ -241,7 +245,7 @@ namespace BuildMagic.Window.Editor
                     _factory.UnsetPrimaryRequested?.Invoke(_getSchemeName());
                 }
 
-                public bool IsPrimary => _getSchemeName() == BuildMagicSettings.instance.PrimaryBuildScheme;
+                public bool IsPrimary => _factory.IsPrimary(_getSchemeName());
             }
         }
     }
