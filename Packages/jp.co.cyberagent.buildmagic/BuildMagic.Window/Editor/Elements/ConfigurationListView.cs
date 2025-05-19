@@ -184,7 +184,6 @@ namespace BuildMagic.Window.Editor.Elements
         {
             var entry = element as ConfigurationEntryView;
             Assert.IsNotNull(entry);
-            entry.Bind(ConfigurationType.None, -1, null);
             entry.Unbind();
         }
 

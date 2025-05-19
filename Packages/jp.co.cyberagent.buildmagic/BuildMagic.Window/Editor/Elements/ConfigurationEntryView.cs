@@ -25,6 +25,14 @@ namespace BuildMagic.Window.Editor.Elements
             label = configuration?.GetDisplayName() ?? configuration?.PropertyName ?? "Missing";
         }
 
+        public void Unbind()
+        {
+            Type = ConfigurationType.None;
+            Index = -1;
+            Configuration = null;
+            BindingExtensions.Unbind(this);
+        }
+
         public void CollectProjectSetting()
         {
             Assert.IsTrue(Configuration is IProjectSettingApplier);
