@@ -197,7 +197,6 @@ namespace BuildMagic.Window.Editor
                 return new BuildSchemeContextualActions(getSchemeName, this);
             }
 
-
             private class BuildSchemeContextualActions : IBuildSchemeContextualActions
             {
                 private readonly Func<string> _getSchemeName;
@@ -245,6 +244,7 @@ namespace BuildMagic.Window.Editor
                     _factory.UnsetPrimaryRequested?.Invoke(_getSchemeName());
                 }
 
+                public bool IsActive => !string.IsNullOrEmpty(_getSchemeName());
                 public bool IsPrimary => _factory.IsPrimary(_getSchemeName());
             }
         }
