@@ -32,8 +32,8 @@ namespace BuildMagic.Window.Editor.Elements
             Assert.IsNotNull(toolbarMenu);
 
             toolbarMenu.menu.AppendAction("New Build Scheme...", _ => NewBuildSchemeRequested?.Invoke());
-            IBuildSchemeContextualActions.PopulateMenu(() => ContextualActionsForSelectedScheme,
-                "Selected Build Scheme/", toolbarMenu.menu);
+            IBuildSchemeContextualActions.PopulateMenu(() => ContextualActionsForSelectedScheme, toolbarMenu.menu,
+                "Selected Build Scheme");
             toolbarMenu.menu.AppendSeparator();
             toolbarMenu.menu.AppendAction("Show Diff...", _ => DiffWindow.Open());
             toolbarMenu.menu.AppendAction("Enable \"Just before the build\" Phase (advanced)", _ =>

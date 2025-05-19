@@ -29,7 +29,7 @@ namespace BuildMagic.Window.Editor.Elements
                 item.AddManipulator(new ContextualMenuManipulator(ev =>
                 {
                     var actions = ContextualActionsFactory?.Create(() => item.Value);
-                    IBuildSchemeContextualActions.PopulateMenu(() => actions, "", ev.menu);
+                    IBuildSchemeContextualActions.PopulateMenu(() => actions, ev.menu);
                 }));
                 return item;
             };
