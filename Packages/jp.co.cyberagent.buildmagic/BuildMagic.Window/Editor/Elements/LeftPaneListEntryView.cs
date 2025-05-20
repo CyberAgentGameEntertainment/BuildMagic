@@ -24,29 +24,26 @@ namespace BuildMagic.Window.Editor.Elements
             _label = this.Q<Label>("name-label");
             Assert.IsNotNull(_label);
             _label.bindingPath = "_name";
-            
+
             _autoMark = this.Q<VisualElement>("auto-mark");
             Assert.IsNotNull(_autoMark);
         }
 
         public string Value => _label.text;
-        public bool Inheritable { get; private set; }
 
         public void CustomBind(SerializedProperty property)
         {
             using var scope = new DebugLogDisabledScope();
             this.BindProperty(property);
-            Inheritable = property.FindPropertyRelative("_baseSchemeName").stringValue == string.Empty;
             BuildMagicSettings.instance.PrimaryBuildSchemeChanged += OnAutoPreBuildTargetChanged;
         }
-        
+
         public void CustomUnbind()
         {
             this.Unbind();
-            Inheritable = false;
             BuildMagicSettings.instance.PrimaryBuildSchemeChanged -= OnAutoPreBuildTargetChanged;
         }
-        
+
         private void OnAutoPreBuildTargetChanged(string target)
         {
             _autoMark.style.visibility = Value == target ? Visibility.Visible : Visibility.Hidden;

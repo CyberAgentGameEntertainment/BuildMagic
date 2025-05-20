@@ -31,6 +31,8 @@ namespace BuildMagic.Window.Editor
 
         [SerializeField] private ObservableProperty<int> _selectedIndex = new(DefaultSelectedIndex);
 
+        public string SelectedBuildSchemeName => _selected?.Self.Name;
+
         public IReadOnlyObservableProperty<int> SelectedIndex => _selectedIndex;
 
         public ICollection<string> SchemeNamesWithTemplate =>
@@ -106,7 +108,7 @@ namespace BuildMagic.Window.Editor
             PreBuildInternal(_selected.Self);
         }
 
-        public void PreBuildByName(string targetSchemeName)
+        public void PreBuild(string targetSchemeName)
         {
             var targetScheme = _schemes.FirstOrDefault(s => s.Name == targetSchemeName);
             Assert.IsNotNull(targetScheme, $"{targetSchemeName} is not found");
@@ -122,19 +124,27 @@ namespace BuildMagic.Window.Editor
             BuildPipeline.PreBuild(BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(configurations));
         }
 
-        public void Build(string buildPath)
+        public void Build(string targetSchemeName, string buildPath)
         {
-            Assert.IsNotNull(_selected, "No selected scheme");
+            var targetScheme = _schemes.FirstOrDefault(s => s.Name == targetSchemeName);
+            Assert.IsNotNull(targetScheme, $"{targetSchemeName} is not found");
+
+            Build(targetScheme, buildPath);
+        }
+
+        public void Build(BuildScheme targetScheme, string buildPath)
+        {
+            Assert.IsNotNull(targetScheme, "Scheme is null");
 
             var internalPrepareTasks = new List<IBuildTask<IInternalPrepareContext>>();
             internalPrepareTasks.Add(new BuildPlayerOptionsApplyEditorSettingsTask());
             internalPrepareTasks.AddRange(
                 BuildTaskBuilderUtility.CreateBuildTasks<IInternalPrepareContext>(
-                    BuildSchemeUtility.EnumerateComposedConfigurations<IInternalPrepareContext>(_selected.Self,
+                    BuildSchemeUtility.EnumerateComposedConfigurations<IInternalPrepareContext>(targetScheme,
                         _schemes)));
 
             var configurations =
-                BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(_selected.Self, _schemes);
+                BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(targetScheme, _schemes);
 
             var postBuildTasks = BuildTaskBuilderUtility
                 .CreateBuildTasks<IPostBuildContext>(configurations).ToList();

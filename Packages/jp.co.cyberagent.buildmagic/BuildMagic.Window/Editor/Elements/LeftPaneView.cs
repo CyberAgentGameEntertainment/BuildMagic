@@ -16,6 +16,7 @@ namespace BuildMagic.Window.Editor.Elements
     {
         private readonly VisualTreeAsset _listEntryTemplate;
         private readonly LeftPaneTreeView _treeView;
+        private IBuildSchemeContextualActionsFactory _contextualActionsFactory;
 
         public LeftPaneView()
         {
@@ -30,19 +31,12 @@ namespace BuildMagic.Window.Editor.Elements
             var toolbarMenu = this.Q<ToolbarMenu>();
             Assert.IsNotNull(toolbarMenu);
 
-            toolbarMenu.menu.AppendAction("Create a build scheme", _ => CopyCreateRequested?.Invoke(string.Empty));
+            toolbarMenu.menu.AppendAction("New Build Scheme...", _ => NewBuildSchemeRequested?.Invoke());
+            IBuildSchemeContextualActions.PopulateMenu(() => ContextualActionsForSelectedScheme, toolbarMenu.menu,
+                "Selected Build Scheme");
             toolbarMenu.menu.AppendSeparator();
-            toolbarMenu.menu.AppendAction("Remove the selected build scheme",
-                _ => RemoveRequested?.Invoke(string.Empty),
-                OnMenuActionStatus);
-            toolbarMenu.menu.AppendAction("Run Pre-build phase of the selected build scheme",
-                _ => PreBuildRequested?.Invoke(),
-                OnMenuActionStatus);
-            toolbarMenu.menu.AppendAction("Build with the selected scheme", _ => BuildRequested?.Invoke(),
-                OnMenuActionStatus);
-            toolbarMenu.menu.AppendSeparator();
-            toolbarMenu.menu.AppendAction("Open diff window", _ => DiffWindow.Open());
-            toolbarMenu.menu.AppendAction("Enable \"Just before the build\" phase (advanced)", _ =>
+            toolbarMenu.menu.AppendAction("Show Diff...", _ => DiffWindow.Open());
+            toolbarMenu.menu.AppendAction("Enable \"Just before the build\" Phase (advanced)", _ =>
                 {
                     var v = UserSettings.EnableInternalPrepareEditor;
                     v.Value = !v.Value;
@@ -53,20 +47,22 @@ namespace BuildMagic.Window.Editor.Elements
 
             _treeView = this.Q<LeftPaneTreeView>();
             Assert.IsNotNull(_treeView);
-            _treeView.CopyCreateRequested += value => CopyCreateRequested(value);
-            _treeView.InheritCreateRequested += value => InheritCreateRequested(value);
-            _treeView.RemoveRequested += value => RemoveRequested(value);
-            _treeView.PreBuildRequestedByName += value => PreBuildRequestedByName(value);
             _treeView.OnSelectionChanged += index => OnSelectionChanged(index);
         }
 
-        public event Action<string> CopyCreateRequested;
-        public event Action<string> InheritCreateRequested;
-        public event Action<string> RemoveRequested;
-        public event Action<string> PreBuildRequestedByName;
+        public IBuildSchemeContextualActionsFactory ContextualActionsFactory
+        {
+            set
+            {
+                _contextualActionsFactory = value;
+                _treeView.ContextualActionsFactory = value;
+            }
+        }
+
+        public IBuildSchemeContextualActions ContextualActionsForSelectedScheme { private get; set; }
+
+        public event Action NewBuildSchemeRequested;
         public event Action<int> OnSelectionChanged;
-        public event Action PreBuildRequested;
-        public event Action BuildRequested;
         public event Action SaveRequested;
 
         public void OnBoundSchemeListChanged(SerializedProperty schemesProp)

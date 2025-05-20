@@ -43,14 +43,23 @@ namespace BuildMagic.Window.Editor
         {
             Undo.undoRedoEvent += OnUndoRedo;
 
-            _view.LeftPaneView.CopyCreateRequested += CopyCreate;
-            _view.LeftPaneView.InheritCreateRequested += InheritCreate;
-            _view.LeftPaneView.RemoveRequested += Remove;
-            _view.LeftPaneView.PreBuildRequested += PreBuild;
-            _view.LeftPaneView.PreBuildRequestedByName += PreBuildByName;
-            _view.LeftPaneView.BuildRequested += Build;
+            var contextualOptionsFactory = new BuildSchemeContextualActionsFactory();
+            contextualOptionsFactory.CopyCreateRequested += CopyCreate;
+            contextualOptionsFactory.InheritCreateRequested += InheritCreate;
+            contextualOptionsFactory.RemoveRequested += Remove;
+            contextualOptionsFactory.PreBuildRequested += PreBuild;
+            contextualOptionsFactory.BuildRequested += Build;
+            contextualOptionsFactory.SetAsPrimaryRequested += SetAsPrimary;
+            contextualOptionsFactory.UnsetPrimaryRequested += UnsetPrimary;
+            contextualOptionsFactory.IsPrimary = schemeName =>
+                BuildMagicSettings.instance.PrimaryBuildScheme == schemeName;
+
+            _view.LeftPaneView.ContextualActionsFactory = contextualOptionsFactory;
+            _view.LeftPaneView.ContextualActionsForSelectedScheme =
+                contextualOptionsFactory.Create(() => _model.SelectedBuildSchemeName);
             _view.LeftPaneView.OnSelectionChanged += OnSelectionChanged;
             _view.LeftPaneView.SaveRequested += Save;
+            _view.LeftPaneView.NewBuildSchemeRequested += NewScheme;
 
             _view.RightPaneView.AddRequested += OnAddRequested;
             _view.RightPaneView.RemoveRequested += RemoveConfiguration;
@@ -63,12 +72,7 @@ namespace BuildMagic.Window.Editor
 
             _view.LeftPaneView.SaveRequested -= Save;
             _view.LeftPaneView.OnSelectionChanged -= OnSelectionChanged;
-            _view.LeftPaneView.BuildRequested -= Build;
-            _view.LeftPaneView.PreBuildRequestedByName -= PreBuildByName;
-            _view.LeftPaneView.PreBuildRequested -= PreBuild;
-            _view.LeftPaneView.RemoveRequested -= Remove;
-            _view.LeftPaneView.InheritCreateRequested -= InheritCreate;
-            _view.LeftPaneView.CopyCreateRequested -= CopyCreate;
+            _view.LeftPaneView.NewBuildSchemeRequested -= NewScheme;
 
             Undo.undoRedoEvent -= OnUndoRedo;
         }
@@ -94,6 +98,11 @@ namespace BuildMagic.Window.Editor
 
         #region EventHandlers
 
+        private void NewScheme()
+        {
+            CopyCreate(string.Empty);
+        }
+
         private void CopyCreate(string copyFromName)
         {
             var baseSchemeName = _model.GetBaseSchemeName(copyFromName);
@@ -101,7 +110,7 @@ namespace BuildMagic.Window.Editor
                 _model.RootSchemeNames, _model.Create);
             CreateSchemeModalWindow.OpenModal(context);
         }
-        
+
         private void InheritCreate(string baseSchemeName)
         {
             var context = new CreateSchemeModalWindow.Context("", baseSchemeName, _model.SchemeNamesWithTemplate,
@@ -114,29 +123,37 @@ namespace BuildMagic.Window.Editor
             _model.Remove(targetSettingName);
         }
 
-        private void PreBuild()
+        private void PreBuild(string targetSchemeName)
         {
-            _model.PreBuild();
-        }
-        
-        private void PreBuildByName(string targetSettingName)
-        {
-            _model.PreBuildByName(targetSettingName);
+            _model.PreBuild(targetSchemeName);
         }
 
-        private void Build()
+        private void Build(string targetSchemeName)
         {
             var buildPath = EditorUtility.SaveFilePanel("Build Application Path", "", "", "");
             if (string.IsNullOrWhiteSpace(buildPath))
                 return;
-            _model.Build(buildPath);
+            _model.Build(targetSchemeName, buildPath);
+        }
+
+        private void SetAsPrimary(string targetSchemeName)
+        {
+            BuildMagicSettings.instance.PrimaryBuildScheme = targetSchemeName;
+        }
+
+        private void UnsetPrimary(string targetSchemeName)
+        {
+            if (BuildMagicSettings.instance.PrimaryBuildScheme != targetSchemeName)
+                return;
+
+            BuildMagicSettings.instance.PrimaryBuildScheme = string.Empty;
         }
 
         private void OnSelectionChanged(int index)
         {
             _model.Select(index);
         }
-        
+
         private void OnAddRequested(Rect rect)
         {
             var existConfigurations = _model.GetConfigurationTypes();
@@ -163,5 +180,73 @@ namespace BuildMagic.Window.Editor
         }
 
         #endregion
+
+        private class BuildSchemeContextualActionsFactory : IBuildSchemeContextualActionsFactory
+        {
+            public event Action<string> CopyCreateRequested;
+            public event Action<string> InheritCreateRequested;
+            public event Action<string> RemoveRequested;
+            public event Action<string> PreBuildRequested;
+            public event Action<string> BuildRequested;
+            public event Action<string> SetAsPrimaryRequested;
+            public event Action<string> UnsetPrimaryRequested;
+            public Func<string, bool> IsPrimary { private get; set; }
+
+            public IBuildSchemeContextualActions Create(Func<string> getSchemeName)
+            {
+                return new BuildSchemeContextualActions(getSchemeName, this);
+            }
+
+            private class BuildSchemeContextualActions : IBuildSchemeContextualActions
+            {
+                private readonly Func<string> _getSchemeName;
+                private readonly BuildSchemeContextualActionsFactory _factory;
+
+                public BuildSchemeContextualActions(Func<string> getSchemeName,
+                    BuildSchemeContextualActionsFactory factory)
+                {
+                    _getSchemeName = getSchemeName;
+                    _factory = factory;
+                }
+
+                public void CopyCreateRequested()
+                {
+                    _factory.CopyCreateRequested?.Invoke(_getSchemeName());
+                }
+
+                public void InheritCreateRequested()
+                {
+                    _factory.InheritCreateRequested?.Invoke(_getSchemeName());
+                }
+
+                public void RemoveRequested()
+                {
+                    _factory.RemoveRequested?.Invoke(_getSchemeName());
+                }
+
+                public void PreBuildRequested()
+                {
+                    _factory.PreBuildRequested?.Invoke(_getSchemeName());
+                }
+
+                public void BuildRequested()
+                {
+                    _factory.BuildRequested?.Invoke(_getSchemeName());
+                }
+
+                public void SetAsPrimaryRequested()
+                {
+                    _factory.SetAsPrimaryRequested?.Invoke(_getSchemeName());
+                }
+
+                public void UnsetPrimaryRequested()
+                {
+                    _factory.UnsetPrimaryRequested?.Invoke(_getSchemeName());
+                }
+
+                public bool IsActive => !string.IsNullOrEmpty(_getSchemeName());
+                public bool IsPrimary => _factory.IsPrimary(_getSchemeName());
+            }
+        }
     }
 }

@@ -8,15 +8,13 @@ namespace BuildMagic.Window.Editor.Elements
 {
     internal interface ILeftPaneView
     {
-        event Action<string> CopyCreateRequested;
-        event Action<string> InheritCreateRequested;
-        event Action<string> RemoveRequested;
-        event Action PreBuildRequested;
-        event Action<string> PreBuildRequestedByName;
-        event Action BuildRequested;
+        public IBuildSchemeContextualActionsFactory ContextualActionsFactory { set; }
+
+        public IBuildSchemeContextualActions ContextualActionsForSelectedScheme { set; }
 
         event Action<int> OnSelectionChanged;
         
         event Action SaveRequested;
+        event Action NewBuildSchemeRequested;
     }
 }
