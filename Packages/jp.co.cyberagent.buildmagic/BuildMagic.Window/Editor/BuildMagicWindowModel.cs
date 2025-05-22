@@ -216,8 +216,11 @@ namespace BuildMagic.Window.Editor
                 _selectedIndex.SetValueAndNotify(_selectedIndex.Value);
             }
         }
+        
+        public void AddConfiguration(ConfigurationType configurationType, Type type) 
+            => AddConfiguration(configurationType, type, null);
 
-        public void AddConfiguration(ConfigurationType configurationType, Type type)
+        public void AddConfiguration(ConfigurationType configurationType, Type type, string json)
         {
             Assert.IsNotNull(_selected, "No selected scheme");
             Assert.IsTrue(configurationType != ConfigurationType.None, "Invalid configuration type");
@@ -227,6 +230,8 @@ namespace BuildMagic.Window.Editor
 
             var configuration = (IBuildConfiguration)Activator.CreateInstance(type);
             Assert.IsNotNull(configuration, "Failed to create configuration");
+            if (json != null)
+                JsonUtility.FromJsonOverwrite(json, configuration);
 
             switch (configurationType)
             {

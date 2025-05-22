@@ -5,6 +5,7 @@
 using System;
 using BuildMagic.Window.Editor.Foundation.TinyRx;
 using BuildMagic.Window.Editor.SubWindows;
+using BuildMagic.Window.Editor.Utilities;
 using BuildMagicEditor;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -61,12 +62,15 @@ namespace BuildMagic.Window.Editor
             _view.LeftPaneView.SaveRequested += Save;
             _view.LeftPaneView.NewBuildSchemeRequested += NewScheme;
 
+            _view.RightPaneView.CanPaste = CanPaste;
             _view.RightPaneView.AddRequested += OnAddRequested;
             _view.RightPaneView.RemoveRequested += RemoveConfiguration;
+            _view.RightPaneView.PasteRequested += PasteConfiguration;
         }
 
         private void CleanupViewEventHandlers()
         {
+            _view.RightPaneView.PasteRequested -= PasteConfiguration;
             _view.RightPaneView.RemoveRequested -= RemoveConfiguration;
             _view.RightPaneView.AddRequested -= OnAddRequested;
 
@@ -164,6 +168,24 @@ namespace BuildMagic.Window.Editor
         private void RemoveConfiguration(ConfigurationType type, int index, IBuildConfiguration configuration)
         {
             _model.RemoveConfiguration(type, index, configuration);
+        }
+
+        private bool CanPaste(ConfigurationType type)
+        {
+            if (ObjectCopyBuffer.Type == null || ObjectCopyBuffer.Json == null)
+                return false;
+
+            var configurationType = ObjectCopyBuffer.Type;
+            var existConfigurations = _model.GetConfigurationTypes();
+            return !existConfigurations.Contains(configurationType);
+        }
+
+        private void PasteConfiguration(ConfigurationType type)
+        {
+            if (CanPaste(type) == false)
+                EditorUtility.DisplayDialog("Paste Configuration", "Cannot Paste Configuration", "OK");
+            
+            _model.AddConfiguration(type, ObjectCopyBuffer.Type, ObjectCopyBuffer.Json);
         }
 
         private void Save()
