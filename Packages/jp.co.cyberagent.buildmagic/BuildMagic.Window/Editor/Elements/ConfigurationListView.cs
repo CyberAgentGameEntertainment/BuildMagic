@@ -6,9 +6,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BuildMagic.Window.Editor.Utilities;
 using BuildMagicEditor;
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
@@ -22,6 +24,8 @@ namespace BuildMagic.Window.Editor.Elements
         private readonly VisualElement _arraySizeTracker;
         private ConfigurationListView _baseView;
         private Action<ConfigurationType, int, IBuildConfiguration> _requestRemove;
+        private Func<ConfigurationType, bool> _canPaste;
+        private Action<ConfigurationType> _requestPaste;
 
         public ConfigurationListView()
         {
@@ -39,6 +43,15 @@ namespace BuildMagic.Window.Editor.Elements
             _listView.AddToClassList("hide-empty");
             _listView.AddToClassList("configuration-list");
             _label.AddToClassList("configuration-list-derived-label");
+            
+            this.AddManipulator(new ContextualMenuManipulator(ev =>
+            {
+                ev.menu.AppendAction("Paste the configuration",
+                    _ => _requestPaste?.Invoke(Type),
+                    _canPaste != null && _canPaste(Type)
+                        ? DropdownMenuAction.Status.Normal
+                        : DropdownMenuAction.Status.Disabled);
+            }));
         }
 
         public ConfigurationListView(ConfigurationType type) : this()
@@ -49,16 +62,23 @@ namespace BuildMagic.Window.Editor.Elements
         public ConfigurationType Type { get; private set; }
 
         public void Bind(SerializedProperty buildSchemeContainerProp,
-            Action<ConfigurationType, int, IBuildConfiguration> requestRemove, out bool hasAny)
+            Action<ConfigurationType, int, IBuildConfiguration> requestRemove,
+            Func<ConfigurationType, bool> canPaste,
+            Action<ConfigurationType> requestPaste
+            , out bool hasAny)
         {
-            Bind(buildSchemeContainerProp, null, out hasAny, false, requestRemove);
+            Bind(buildSchemeContainerProp, null, out hasAny, false, requestRemove, canPaste, requestPaste);
         }
 
         private void Bind(SerializedProperty buildSchemeContainerProp, IConfigurationFilter filter, out bool hasAny,
             bool isDerived = false,
-            Action<ConfigurationType, int, IBuildConfiguration> requestRemove = null)
+            Action<ConfigurationType, int, IBuildConfiguration> requestRemove = null,
+            Func<ConfigurationType, bool> canPaste = null,
+            Action<ConfigurationType> requestPaste = null)
         {
             _requestRemove = requestRemove;
+            _canPaste = canPaste;
+            _requestPaste = requestPaste;
             var listView = _listView;
             bindingPath = buildSchemeContainerProp.propertyPath;
             if (isDerived)
@@ -147,6 +167,21 @@ namespace BuildMagic.Window.Editor.Elements
                     entry.Configuration != null
                         ? DropdownMenuAction.Status.Normal
                         : DropdownMenuAction.Status.Disabled);
+                ev.menu.AppendAction("Copy the configuration values to clipboard as a json",
+                    _ => EditorGUIUtility.systemCopyBuffer = JsonUtility.ToJson(entry.Configuration),
+                    entry.Configuration != null
+                        ? DropdownMenuAction.Status.Normal
+                        : DropdownMenuAction.Status.Disabled);
+                ev.menu.AppendAction("Copy the configuration",
+                    _ => ObjectCopyBuffer.Register(entry.Configuration),
+                    entry.Configuration != null
+                        ? DropdownMenuAction.Status.Normal
+                        : DropdownMenuAction.Status.Disabled);
+                ev.menu.AppendAction("Paste the configuration", 
+                    _ => JsonUtility.FromJsonOverwrite(ObjectCopyBuffer.Json, entry.Configuration),
+                    entry.Configuration != null && entry.Configuration.GetType() == ObjectCopyBuffer.Type
+                        ? DropdownMenuAction.Status.Normal :
+                        DropdownMenuAction.Status.Disabled);
                 ev.menu.AppendAction(
                     "Collect a project setting",
                     _ => entry.CollectProjectSetting(),
