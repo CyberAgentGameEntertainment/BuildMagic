@@ -64,6 +64,7 @@ namespace BuildMagic.Window.Editor.Elements
 
         public event Action<Rect> AddRequested;
         public event Action<ConfigurationType, int, IBuildConfiguration> RemoveRequested;
+        public event Action<ConfigurationType, string> PasteRequested;
 
         public void SetSelected(bool selected)
         {
@@ -81,6 +82,7 @@ namespace BuildMagic.Window.Editor.Elements
             {
                 configurationListView.Bind(selectedSchemeProp,
                     (type, index, configuration) => RemoveRequested?.Invoke(type, index, configuration),
+                    (type, json) => PasteRequested?.Invoke(type, json),
                     out var hasAny);
                 if (configurationListView.Type == ConfigurationType.InternalPrepare)
                     hasAnyInternalPrepareConfigurations = hasAny;

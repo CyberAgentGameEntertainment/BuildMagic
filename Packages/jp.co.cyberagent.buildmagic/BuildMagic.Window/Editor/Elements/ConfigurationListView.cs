@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BuildMagic.Window.Editor.Utilities;
 using BuildMagicEditor;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -22,6 +23,7 @@ namespace BuildMagic.Window.Editor.Elements
         private readonly VisualElement _arraySizeTracker;
         private ConfigurationListView _baseView;
         private Action<ConfigurationType, int, IBuildConfiguration> _requestRemove;
+        private Action<ConfigurationType, string> _requestPaste;
 
         public ConfigurationListView()
         {
@@ -39,6 +41,15 @@ namespace BuildMagic.Window.Editor.Elements
             _listView.AddToClassList("hide-empty");
             _listView.AddToClassList("configuration-list");
             _label.AddToClassList("configuration-list-derived-label");
+            
+            this.AddManipulator(new ContextualMenuManipulator(ev =>
+            {
+                ev.menu.AppendAction("Add the configuration from clipboard",
+                    _ => _requestPaste?.Invoke(Type, EditorGUIUtility.systemCopyBuffer),
+                    string.IsNullOrEmpty(EditorGUIUtility.systemCopyBuffer)
+                        ? DropdownMenuAction.Status.Disabled
+                        : DropdownMenuAction.Status.Normal);
+            }));
         }
 
         public ConfigurationListView(ConfigurationType type) : this()
@@ -49,16 +60,20 @@ namespace BuildMagic.Window.Editor.Elements
         public ConfigurationType Type { get; private set; }
 
         public void Bind(SerializedProperty buildSchemeContainerProp,
-            Action<ConfigurationType, int, IBuildConfiguration> requestRemove, out bool hasAny)
+            Action<ConfigurationType, int, IBuildConfiguration> requestRemove,
+            Action<ConfigurationType, string> requestPaste
+            , out bool hasAny)
         {
-            Bind(buildSchemeContainerProp, null, out hasAny, false, requestRemove);
+            Bind(buildSchemeContainerProp, null, out hasAny, false, requestRemove, requestPaste);
         }
 
         private void Bind(SerializedProperty buildSchemeContainerProp, IConfigurationFilter filter, out bool hasAny,
             bool isDerived = false,
-            Action<ConfigurationType, int, IBuildConfiguration> requestRemove = null)
+            Action<ConfigurationType, int, IBuildConfiguration> requestRemove = null,
+            Action<ConfigurationType, string> requestPaste = null)
         {
             _requestRemove = requestRemove;
+            _requestPaste = requestPaste;
             var listView = _listView;
             bindingPath = buildSchemeContainerProp.propertyPath;
             if (isDerived)
@@ -147,6 +162,33 @@ namespace BuildMagic.Window.Editor.Elements
                     entry.Configuration != null
                         ? DropdownMenuAction.Status.Normal
                         : DropdownMenuAction.Status.Disabled);
+                ev.menu.AppendAction("Copy the configuration to clipboard", 
+                   _ =>
+                   {
+                       var serializable = new SerializableConfiguration(entry.Configuration);
+                       EditorGUIUtility.systemCopyBuffer = serializable.ToJson();
+                   },
+                    entry.Configuration != null
+                        ? DropdownMenuAction.Status.Normal
+                        : DropdownMenuAction.Status.Disabled);
+                ev.menu.AppendAction("Paste the configuration from clipboard", 
+                   _ =>
+                   {
+                       var buffer = EditorGUIUtility.systemCopyBuffer;
+                       try
+                       {
+                           var serializable = SerializableConfiguration.FromJson(buffer);
+                           serializable.OverwriteConfiguration(entry.Configuration);
+                       }
+                       catch (Exception e)
+                       {
+                           EditorUtility.DisplayDialog("Paste Error",
+                               $"Failed to paste configuration from clipboard: {e.Message}", "OK");
+                       }
+                   },
+                    entry.Configuration != null && !string.IsNullOrEmpty(EditorGUIUtility.systemCopyBuffer)
+                        ? DropdownMenuAction.Status.Normal :
+                        DropdownMenuAction.Status.Disabled);
                 ev.menu.AppendAction(
                     "Collect a project setting",
                     _ => entry.CollectProjectSetting(),

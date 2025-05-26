@@ -12,5 +12,6 @@ namespace BuildMagic.Window.Editor.Elements
     {
         event Action<Rect> AddRequested;
         event Action<ConfigurationType, int, IBuildConfiguration> RemoveRequested;
+        event Action<ConfigurationType, string> PasteRequested;
     }
 }

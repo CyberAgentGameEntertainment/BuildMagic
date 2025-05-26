@@ -5,6 +5,7 @@
 using System;
 using BuildMagic.Window.Editor.Foundation.TinyRx;
 using BuildMagic.Window.Editor.SubWindows;
+using BuildMagic.Window.Editor.Utilities;
 using BuildMagicEditor;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -63,10 +64,12 @@ namespace BuildMagic.Window.Editor
 
             _view.RightPaneView.AddRequested += OnAddRequested;
             _view.RightPaneView.RemoveRequested += RemoveConfiguration;
+            _view.RightPaneView.PasteRequested += PasteConfiguration;
         }
 
         private void CleanupViewEventHandlers()
         {
+            _view.RightPaneView.PasteRequested -= PasteConfiguration;
             _view.RightPaneView.RemoveRequested -= RemoveConfiguration;
             _view.RightPaneView.AddRequested -= OnAddRequested;
 
@@ -164,6 +167,29 @@ namespace BuildMagic.Window.Editor
         private void RemoveConfiguration(ConfigurationType type, int index, IBuildConfiguration configuration)
         {
             _model.RemoveConfiguration(type, index, configuration);
+        }
+
+        private void PasteConfiguration(ConfigurationType type, string json)
+        {
+            var existConfigurations = _model.GetConfigurationTypes();
+            
+            try
+            {
+                var serializable = SerializableConfiguration.FromJson(json);
+                if (existConfigurations.Contains(serializable.ConfigurationType))
+                {
+                    EditorUtility.DisplayDialog("Paste Error",
+                                                $"Configuration of type '{serializable.ConfigurationType.Name}' already exists.", "OK");
+                    return;
+                }
+
+                _model.AddConfiguration(type, serializable.ConfigurationType, serializable.ValueJson);
+            }
+            catch (Exception e)
+            {
+                EditorUtility.DisplayDialog("Paste Error",
+                                            $"Failed to paste configuration from clipboard: {e.Message}", "OK");
+            }
         }
 
         private void Save()
