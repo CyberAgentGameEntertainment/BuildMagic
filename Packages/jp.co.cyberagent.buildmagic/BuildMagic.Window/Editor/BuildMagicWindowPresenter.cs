@@ -61,7 +61,7 @@ namespace BuildMagic.Window.Editor
             _view.LeftPaneView.OnSelectionChanged += OnSelectionChanged;
             _view.LeftPaneView.SaveRequested += Save;
             _view.LeftPaneView.NewBuildSchemeRequested += NewScheme;
-            
+
             _view.RightPaneView.AddRequested += OnAddRequested;
             _view.RightPaneView.RemoveRequested += RemoveConfiguration;
             _view.RightPaneView.PasteRequested += PasteConfiguration;
