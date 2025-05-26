@@ -64,8 +64,7 @@ namespace BuildMagic.Window.Editor.Elements
 
         public event Action<Rect> AddRequested;
         public event Action<ConfigurationType, int, IBuildConfiguration> RemoveRequested;
-        public event Action<ConfigurationType> PasteRequested;
-        public Func<ConfigurationType, bool> CanPaste { get; set; }
+        public event Action<ConfigurationType, string> PasteRequested;
 
         public void SetSelected(bool selected)
         {
@@ -83,8 +82,7 @@ namespace BuildMagic.Window.Editor.Elements
             {
                 configurationListView.Bind(selectedSchemeProp,
                     (type, index, configuration) => RemoveRequested?.Invoke(type, index, configuration),
-                    (type) => CanPaste?.Invoke(type) ?? false,
-                    (type) => PasteRequested?.Invoke(type),
+                    (type, json) => PasteRequested?.Invoke(type, json),
                     out var hasAny);
                 if (configurationListView.Type == ConfigurationType.InternalPrepare)
                     hasAnyInternalPrepareConfigurations = hasAny;

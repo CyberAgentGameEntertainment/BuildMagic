@@ -61,8 +61,7 @@ namespace BuildMagic.Window.Editor
             _view.LeftPaneView.OnSelectionChanged += OnSelectionChanged;
             _view.LeftPaneView.SaveRequested += Save;
             _view.LeftPaneView.NewBuildSchemeRequested += NewScheme;
-
-            _view.RightPaneView.CanPaste = CanPaste;
+            
             _view.RightPaneView.AddRequested += OnAddRequested;
             _view.RightPaneView.RemoveRequested += RemoveConfiguration;
             _view.RightPaneView.PasteRequested += PasteConfiguration;
@@ -170,22 +169,27 @@ namespace BuildMagic.Window.Editor
             _model.RemoveConfiguration(type, index, configuration);
         }
 
-        private bool CanPaste(ConfigurationType type)
+        private void PasteConfiguration(ConfigurationType type, string json)
         {
-            if (ObjectCopyBuffer.Type == null || ObjectCopyBuffer.Json == null)
-                return false;
-
-            var configurationType = ObjectCopyBuffer.Type;
             var existConfigurations = _model.GetConfigurationTypes();
-            return !existConfigurations.Contains(configurationType);
-        }
-
-        private void PasteConfiguration(ConfigurationType type)
-        {
-            if (CanPaste(type) == false)
-                EditorUtility.DisplayDialog("Paste Configuration", "Cannot Paste Configuration", "OK");
             
-            _model.AddConfiguration(type, ObjectCopyBuffer.Type, ObjectCopyBuffer.Json);
+            try
+            {
+                var serializable = SerializableConfiguration.FromJson(json);
+                if (existConfigurations.Contains(serializable.ConfigurationType))
+                {
+                    EditorUtility.DisplayDialog("Paste Error",
+                                                $"Configuration of type '{serializable.ConfigurationType.Name}' already exists.", "OK");
+                    return;
+                }
+
+                _model.AddConfiguration(type, serializable.ConfigurationType, serializable.ValueJson);
+            }
+            catch (Exception e)
+            {
+                EditorUtility.DisplayDialog("Paste Error",
+                                            $"Failed to paste configuration from clipboard: {e.Message}", "OK");
+            }
         }
 
         private void Save()
