@@ -80,6 +80,9 @@ BuildMagic は Build Profiles とは異なり、ビルド設定だけではな�
 - **拡張性**: BuildMagicではビルドコンフィギュレーションを独自に実装することで、プロジェクト固有の設定を管理できます。
 - **管理性**: BuildMagicのビルドスキームは、人間にも読みやすいJSON形式でシリアライズされます。
 
+> [!TIP]
+> BuildMagic 内で Build Profile を切り替える `Switch Build Profile` ビルドタスクも提供しているため、BuildMagic と組み合わせて使うことも可能です。
+
 ## Quick Start
 
 ### インストール
