@@ -80,6 +80,9 @@ In addition, there are the following functional differences:
 - **Extensibility**: By implementing build configurations in BuildMagic, you can manage project-specific settings.
 - **Manageability**: Build schemes in BuildMagic are serialized in a human-readable JSON format.
 
+> [!TIP]
+> BuildMagic also provides `Switch Build Profile` task so that you can use BuildMagic in conjunction with Unity's Build Profiles.
+
 ## Quick Start
 
 ### Installation
