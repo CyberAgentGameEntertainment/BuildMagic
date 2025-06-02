@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using BuildMagic.Window.Editor.Foundation.TinyRx;
 using BuildMagic.Window.Editor.SubWindows;
 using BuildMagic.Window.Editor.Utilities;
@@ -25,6 +26,7 @@ namespace BuildMagic.Window.Editor
         private readonly FileSystemWatcher _fileSystemWatcher;
 
         private Action _mainThreadAction;
+        private object _mainThreadActionLock = new object();
 
         public BuildMagicWindowPresenter(BuildMagicWindowModel model, VisualElement rootVisualElement)
         {
@@ -248,25 +250,41 @@ namespace BuildMagic.Window.Editor
 
         private void OnFileSystemChanged(object sender, FileSystemEventArgs e)
         {
-            if (_mainThreadAction != null)
-                return; // If there is already a pending action, ignore this event to avoid multiple dialogs
-                
-            _mainThreadAction = () =>
-                                   {
-                                       var opt = EditorUtility.DisplayDialog("File Changed",
-                                                                             $"The file '{e.Name}' has been changed outside of the editor. Do you want to reload?",
-                                                                             "Reload", "Cancel");
-                                       if (opt)
-                                           Reload();
-                                   };
+            lock (_mainThreadActionLock)
+            {
+                if (_mainThreadAction != null)
+                    return; // If there is already a pending action, ignore this event to avoid multiple dialogs
+
+                _mainThreadAction = () =>
+                {
+                    var opt = EditorUtility.DisplayDialog("File Changed",
+                                                          $"The file '{e.Name}' has been changed outside of the editor. Do you want to reload?",
+                                                          "Reload", "Cancel");
+                    if (opt)
+                        Reload();
+                };
+            }
         }
 
         #endregion
         
         public void Update()
         {
-            _mainThreadAction?.Invoke();
-            _mainThreadAction = null;
+            Action mainThreadAction = null;
+            if (Monitor.TryEnter(_mainThreadActionLock))
+            {
+                try
+                {
+                    mainThreadAction = _mainThreadAction;
+                    _mainThreadAction = null;
+                }
+                finally
+                {
+                    Monitor.Exit(_mainThreadActionLock);
+                }
+            }
+            
+            mainThreadAction?.Invoke();
         }
 
         private class BuildSchemeContextualActionsFactory : IBuildSchemeContextualActionsFactory
