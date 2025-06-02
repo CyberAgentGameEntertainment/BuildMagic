@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+#if UNITY_IOS
 using UnityEditor.iOS.Xcode;
+#endif
 
 namespace BuildMagicEditor.BuiltIn
 {
