@@ -4,12 +4,14 @@
 
 #if UNITY_6000_0_OR_NEWER
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Build.Profile;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = UnityEngine.Object;
 
 namespace BuildMagicEditor.BuiltIn
 {
@@ -17,16 +19,29 @@ namespace BuildMagicEditor.BuiltIn
         PropertyName = "BuildProfile.SetActiveBuildProfile()")]
     public class SwitchBuildProfileTask : BuildTaskBase<IPreBuildContext>
     {
-        private readonly BuildProfile _buildProfile;
+        private readonly IReadOnlyDictionary<BuildTarget, BuildProfile> _buildProfile;
 
-        public SwitchBuildProfileTask(BuildProfileWrapper buildProfile)
+        public SwitchBuildProfileTask(IReadOnlyDictionary<BuildTarget, BuildProfileWrapper> buildProfile)
         {
-            _buildProfile = buildProfile.BuildProfile;
+            _buildProfile = buildProfile.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.BuildProfile);
         }
 
         public override void Run(IPreBuildContext context)
         {
-            BuildProfile.SetActiveBuildProfile(_buildProfile);
+            if (_buildProfile.TryGetValue(context.ActiveBuildTarget, out var buildProfile) && buildProfile)
+            {
+                var buildTarget =
+                    (BuildTarget)typeof(BuildProfile).GetField("m_BuildTarget",
+                        BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(buildProfile);
+
+                if (buildTarget == context.ActiveBuildTarget)
+                {
+                    BuildProfile.SetActiveBuildProfile(buildProfile);
+                    return;
+                }
+            }
+
+            Debug.LogWarning($"Build profile not found for target: {context.ActiveBuildTarget}");
         }
 
         [Serializable]
@@ -53,21 +68,39 @@ namespace BuildMagicEditor.BuiltIn
                 buildProfileContainer.TrackPropertyValue(valueProperty,
                     valueProperty =>
                     {
-                        UpdateBuildProfileGUI(buildProfileContainer, valueProperty.objectReferenceValue,
+                        UpdateBuildProfileGUI(buildProfileContainer, valueProperty.objectReferenceValue as BuildProfile,
                             property.propertyPath);
                     });
 
-                UpdateBuildProfileGUI(buildProfileContainer, valueProperty.objectReferenceValue, property.propertyPath);
-
                 root.Add(objectField);
                 root.Add(buildProfileContainer);
+
+                // ReSharper disable once HeapView.CanAvoidClosure
+                root.RegisterCallback<AttachToPanelEvent>(evt =>
+                {
+                    UpdateBuildProfileGUI(buildProfileContainer, valueProperty.objectReferenceValue as BuildProfile,
+                        property.propertyPath);
+                });
+
                 return root;
             }
 
-            private static void UpdateBuildProfileGUI(VisualElement container, Object value, string viewDataKey)
+            private static void UpdateBuildProfileGUI(VisualElement container, BuildProfile value, string viewDataKey)
             {
                 container.Clear();
                 if (!value) return;
+
+                var buildTarget =
+                    (BuildTarget)typeof(BuildProfile).GetField("m_BuildTarget",
+                        BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(value);
+                if (container.FindAncestorUserData() is BuildTarget tabBuildTarget)
+                    if (tabBuildTarget != buildTarget)
+                    {
+                        container.Add(new HelpBox(
+                            $"The build target of the selected build profile ({buildTarget}) does not match the current tab's build target ({tabBuildTarget}).",
+                            HelpBoxMessageType.Warning));
+                        return;
+                    }
 
                 var editor = Editor.CreateEditor(value);
                 if (!editor) return;

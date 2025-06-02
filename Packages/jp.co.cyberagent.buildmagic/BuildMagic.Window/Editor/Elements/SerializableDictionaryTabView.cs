@@ -9,6 +9,7 @@ using System.Reflection;
 using BuildMagic.Window.Editor.Drawers;
 using BuildMagicEditor;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UIElements;
@@ -93,9 +94,12 @@ namespace BuildMagic.Window.Editor.Elements
                     t.TabButton.IsActive = t == _activeTab;
 
                 contentContainer.Clear();
+                contentContainer.userData = null;
 
                 if (_activeTab != null)
                 {
+                    contentContainer.userData = _keyProvider.GetUserData(_activeTab.KeyProperty);
+
                     var valueProp = _pairsProperty
                         .GetArrayElementAtIndex(_activeTab.Index)?
                         .FindPropertyRelative("value");
@@ -108,7 +112,11 @@ namespace BuildMagic.Window.Editor.Elements
                         // https://issuetracker.unity3d.com/issues/public-enum-located-in-generic-class-is-displayed-as-int-field-instead-of-drop-down-inside-inspector
                         contentContainer.Add(SerializableDictionaryDrawer.CreatePropertyGUI(valueProp, fieldInfo, valueProp.displayName));
                     else
-                        contentContainer.Add(new FlattenedPropertyField(valueProp));
+                    {
+                        var field = new PropertyField(valueProp);
+                        contentContainer.Add(field);
+                        field.Bind(valueProp!.serializedObject);
+                    }
                 }
             }
         }
