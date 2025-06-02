@@ -43,11 +43,11 @@ namespace BuildMagic.Window.Editor
 
         public void Initialize()
         {
-            CollectSchemes();
+            Reload();
             EditorUtility.ClearDirty(this);
         }
 
-        private void CollectSchemes()
+        public void Reload()
         {
             _schemes.Clear();
             _schemes.AddRange(BuildSchemeLoader.LoadAll<BuildScheme>());

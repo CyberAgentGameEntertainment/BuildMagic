@@ -75,5 +75,16 @@ namespace BuildMagicEditor
         }
 
         private static string CreateFileName(string name) => $"{name}.{Extension}";
+
+        public static FileSystemWatcher CreateFileSystemWatcher()
+        {
+            var fullPath = Path.GetFullPath(BuildMagicDirectory);
+            var watcher = new FileSystemWatcher
+            {
+                Path = fullPath,
+                Filter = $"*.{Extension}",
+            };
+            return watcher;
+        }
     }
 }

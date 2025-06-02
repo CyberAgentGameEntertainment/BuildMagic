@@ -3,6 +3,7 @@
 // --------------------------------------------------------------
 
 using System;
+using System.IO;
 using BuildMagic.Window.Editor.Foundation.TinyRx;
 using BuildMagic.Window.Editor.SubWindows;
 using BuildMagic.Window.Editor.Utilities;
@@ -20,16 +21,22 @@ namespace BuildMagic.Window.Editor
         private readonly BuildMagicWindowView _view;
 
         private readonly CompositeDisposable _bindDisposable = new();
+        
+        private readonly FileSystemWatcher _fileSystemWatcher;
+
+        private Action _mainThreadAction;
 
         public BuildMagicWindowPresenter(BuildMagicWindowModel model, VisualElement rootVisualElement)
         {
             _model = model;
             _view = new BuildMagicWindowView(rootVisualElement);
+            _fileSystemWatcher = BuildSchemeLoader.CreateFileSystemWatcher();
         }
 
         public void Dispose()
         {
             CleanupViewEventHandlers();
+            CleanupFileSystemEventHandlers();
             Unbind();
             _view.Dispose();
         }
@@ -37,6 +44,7 @@ namespace BuildMagic.Window.Editor
         public void Setup()
         {
             SetupViewEventHandlers();
+            SetupFileSystemEventHandlers();
             Bind();
         }
 
@@ -66,6 +74,16 @@ namespace BuildMagic.Window.Editor
             _view.RightPaneView.RemoveRequested += RemoveConfiguration;
             _view.RightPaneView.PasteRequested += PasteConfiguration;
         }
+        
+        private void SetupFileSystemEventHandlers()
+        {
+            _fileSystemWatcher.Changed += OnFileSystemChanged;
+            _fileSystemWatcher.Created += OnFileSystemChanged;
+            _fileSystemWatcher.Deleted += OnFileSystemChanged;
+            _fileSystemWatcher.Renamed += OnFileSystemChanged;
+
+            _fileSystemWatcher.EnableRaisingEvents = true;
+        }
 
         private void CleanupViewEventHandlers()
         {
@@ -78,6 +96,16 @@ namespace BuildMagic.Window.Editor
             _view.LeftPaneView.NewBuildSchemeRequested -= NewScheme;
 
             Undo.undoRedoEvent -= OnUndoRedo;
+        }
+        
+        private void CleanupFileSystemEventHandlers()
+        {
+            _fileSystemWatcher.Changed -= OnFileSystemChanged;
+            _fileSystemWatcher.Created -= OnFileSystemChanged;
+            _fileSystemWatcher.Deleted -= OnFileSystemChanged;
+            _fileSystemWatcher.Renamed -= OnFileSystemChanged;
+            
+            _fileSystemWatcher.Dispose();
         }
 
         private void Bind()
@@ -97,6 +125,13 @@ namespace BuildMagic.Window.Editor
         {
             _bindDisposable.Dispose();
             _view.Unbind();
+        }
+
+        private void Reload()
+        {
+            _fileSystemWatcher.EnableRaisingEvents = false;
+            _model.Reload();
+            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         #region EventHandlers
@@ -123,7 +158,9 @@ namespace BuildMagic.Window.Editor
 
         private void Remove(string targetSettingName)
         {
+            _fileSystemWatcher.EnableRaisingEvents = false;
             _model.Remove(targetSettingName);
+            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         private void PreBuild(string targetSchemeName)
@@ -194,18 +231,47 @@ namespace BuildMagic.Window.Editor
 
         private void Save()
         {
+            _fileSystemWatcher.EnableRaisingEvents = false;
             _model.Save();
+            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         private void OnUndoRedo(in UndoRedoInfo info)
         {
+            _fileSystemWatcher.EnableRaisingEvents = false;
             _model.UndoRedo(info);
             if (info.undoName.StartsWith("Modified Selected.") && info.undoName.Contains("Configurations in"))
                 using (new DebugLogDisabledScope())
                     _view.Bind(new SerializedObject(_model)); // HACK: Undo/Redo sorting of list with SerializeReference breaks view, so rebind and force update
+            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         #endregion
+
+        #region FileSystemEventHandlers
+
+        private void OnFileSystemChanged(object sender, FileSystemEventArgs e)
+        {
+            if (_mainThreadAction != null)
+                return; // If there is already a pending action, ignore this event to avoid multiple dialogs
+                
+            _mainThreadAction = () =>
+                                   {
+                                       var opt = EditorUtility.DisplayDialog("File Changed",
+                                                                             $"The file '{e.Name}' has been changed outside of the editor. Do you want to reload?",
+                                                                             "Reload", "Cancel");
+                                       if (opt)
+                                           Reload();
+                                   };
+        }
+
+        #endregion
+        
+        public void Update()
+        {
+            _mainThreadAction?.Invoke();
+            _mainThreadAction = null;
+        }
 
         private class BuildSchemeContextualActionsFactory : IBuildSchemeContextualActionsFactory
         {
