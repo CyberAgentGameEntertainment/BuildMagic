@@ -129,9 +129,8 @@ namespace BuildMagic.Window.Editor
 
         private void Reload()
         {
-            _fileSystemWatcher.EnableRaisingEvents = false;
+            using var scope = new FileWatcherSuspender(_fileSystemWatcher);
             _model.Reload();
-            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         #region EventHandlers
@@ -158,9 +157,8 @@ namespace BuildMagic.Window.Editor
 
         private void Remove(string targetSettingName)
         {
-            _fileSystemWatcher.EnableRaisingEvents = false;
+            using var scope = new FileWatcherSuspender(_fileSystemWatcher);
             _model.Remove(targetSettingName);
-            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         private void PreBuild(string targetSchemeName)
@@ -231,19 +229,17 @@ namespace BuildMagic.Window.Editor
 
         private void Save()
         {
-            _fileSystemWatcher.EnableRaisingEvents = false;
+            using var scope = new FileWatcherSuspender(_fileSystemWatcher);
             _model.Save();
-            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         private void OnUndoRedo(in UndoRedoInfo info)
         {
-            _fileSystemWatcher.EnableRaisingEvents = false;
+            using var scope = new FileWatcherSuspender(_fileSystemWatcher);
             _model.UndoRedo(info);
             if (info.undoName.StartsWith("Modified Selected.") && info.undoName.Contains("Configurations in"))
                 using (new DebugLogDisabledScope())
                     _view.Bind(new SerializedObject(_model)); // HACK: Undo/Redo sorting of list with SerializeReference breaks view, so rebind and force update
-            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         #endregion
