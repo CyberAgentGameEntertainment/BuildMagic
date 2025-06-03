@@ -10,6 +10,7 @@ using BuildMagic.Window.Editor.Elements;
 using BuildMagic.Window.Editor.Utilities;
 using BuildMagicEditor;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using BuildPipeline = UnityEditor.BuildPipeline;
@@ -30,7 +31,9 @@ namespace BuildMagic.Window.Editor.Drawers
                     (prop, value) => prop.FindPropertyRelative("_name").stringValue = value.Name,
                     value => value.Name,
                     value => BuildPlatformWrapper.BuildPlatforms.First(p => p.NamedBuildTarget.TargetName == value.Name)
-                        .SmallIcon
+                        .SmallIcon,
+                    prop => (NamedBuildTarget)new NamedBuildTargetSerializationWrapper(
+                        prop.FindPropertyRelative("_name").stringValue)
                 );
 
             SerializableDictionaryTabViewKeyProviderRegistry<BuildTarget>.EnumProvider =
@@ -42,7 +45,8 @@ namespace BuildMagic.Window.Editor.Drawers
                     value => Enum.GetName(typeof(BuildTarget), value),
                     value => BuildPlatformWrapper.BuildPlatforms.FirstOrDefault(b =>
                         b.NamedBuildTarget.ToBuildTargetGroup() ==
-                        BuildPipeline.GetBuildTargetGroup((BuildTarget)value)).SmallIcon
+                        BuildPipeline.GetBuildTargetGroup((BuildTarget)value)).SmallIcon,
+                    (prop) => (BuildTarget)prop.enumValueIndex
                 );
 
             SerializableDictionaryTabViewKeyProviderRegistry<BuildTargetGroup>.EnumProvider =
@@ -53,7 +57,8 @@ namespace BuildMagic.Window.Editor.Drawers
                     (prop, value) => prop.enumValueIndex = value,
                     value => Enum.GetName(typeof(BuildTargetGroup), value),
                     value => BuildPlatformWrapper.BuildPlatforms.FirstOrDefault(b =>
-                        b.NamedBuildTarget.ToBuildTargetGroup() == (BuildTargetGroup)value).SmallIcon
+                        b.NamedBuildTarget.ToBuildTargetGroup() == (BuildTargetGroup)value).SmallIcon,
+                    (prop) => (BuildTargetGroup)prop.enumValueIndex
                 );
         }
 
@@ -85,7 +90,6 @@ namespace BuildMagic.Window.Editor.Drawers
         private static VisualElement CreatePropertyGUI<TKey>(SerializedProperty property, string label)
         {
             var provider = SerializableDictionaryTabViewKeyProviderRegistry<TKey>.Provider;
-            if (provider == null) return new PropertyField(property, label);
 
             var root = new VisualElement();
             var labelElement = new Label(label);
@@ -101,7 +105,8 @@ namespace BuildMagic.Window.Editor.Drawers
                                        prop => prop.enumValueIndex,
                                        (prop, value) => prop.enumValueIndex = value,
                                        value => Enum.GetName(typeof(TKey), value),
-                                       value => null
+                                       value => null,
+                                       (prop) => (TKey)(object)prop.enumValueIndex
                                    );
 
                 if (property.propertyType != SerializedPropertyType.Enum)
@@ -115,13 +120,17 @@ namespace BuildMagic.Window.Editor.Drawers
                         prop => prop.intValue,
                         (prop, value) => prop.intValue = value,
                         value => capturedEnumProvider.GetDisplayName(value),
-                        value => capturedEnumProvider.GetIcon(value)
+                        value => capturedEnumProvider.GetIcon(value),
+                        (prop) => (TKey)(object)prop.intValue
                     );
                 }
 
                 root.Add(new SerializableDictionaryTabView<int>(property, enumProvider));
                 return root;
             }
+
+            // enumProvider may not be null even if provider is null.
+            if (provider == null) return new PropertyField(property, label);
 
             root.Add(new SerializableDictionaryTabView<TKey>(property, provider));
             return root;

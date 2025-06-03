@@ -16,5 +16,6 @@ namespace BuildMagic.Window.Editor.Elements
         void SetValue(SerializedProperty target, T value);
         string GetDisplayName(T target);
         Texture2D GetIcon(T target);
+        object GetUserData(SerializedProperty target);
     }
 }

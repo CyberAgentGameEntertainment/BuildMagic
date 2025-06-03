@@ -17,7 +17,8 @@ namespace BuildMagic.Window.Editor.Elements
             Func<SerializedProperty, T> getValueDelegate,
             Action<SerializedProperty, T> setValueDelegate,
             Func<T, string> getDisplayNameDelegate,
-            Func<T, Texture2D> getIconDelegate)
+            Func<T, Texture2D> getIconDelegate,
+            Func<SerializedProperty, object> getUserDataDelegate)
         {
             EqualityComparer = equalityComparer;
             AvailableValues = availableValues;
@@ -25,12 +26,14 @@ namespace BuildMagic.Window.Editor.Elements
             SetValueDelegate = setValueDelegate;
             GetDisplayNameDelegate = getDisplayNameDelegate;
             GetIconDelegate = getIconDelegate;
+            GetUserDataDelegate = getUserDataDelegate;
         }
 
         private Func<SerializedProperty, T> GetValueDelegate { get; }
         private Action<SerializedProperty, T> SetValueDelegate { get; }
         private Func<T, string> GetDisplayNameDelegate { get; }
         private Func<T, Texture2D> GetIconDelegate { get; }
+        public Func<SerializedProperty, object> GetUserDataDelegate { get; }
 
         #region ISerializableDictionaryTabViewKeyProvider<T> Members
 
@@ -56,6 +59,11 @@ namespace BuildMagic.Window.Editor.Elements
         public Texture2D GetIcon(T target)
         {
             return GetIconDelegate(target);
+        }
+
+        public object GetUserData(SerializedProperty target)
+        {
+            return GetUserDataDelegate(target);
         }
 
         #endregion

@@ -31,6 +31,7 @@ It provides a user-friendly interface and offers built-in task implementaions th
     * [Implementing Custom Build Tasks](#implementing-custom-build-tasks)
     * [Reflecting Project Settings in Build Configurations](#reflecting-project-settings-in-build-configurations)
     * [Built-in Build Configurations](#built-in-build-configurations)
+  * [Using with Build Profiles](#using-with-build-profiles)
 <!-- TOC -->
 
 ## Motivation
@@ -79,6 +80,9 @@ In addition, there are the following functional differences:
 - **Partial setting application**: Build Profiles apply settings such as PlayerSettings in bulk, but BuildMagic defines build configurations for each setting item, allowing you to override individual items.
 - **Extensibility**: By implementing build configurations in BuildMagic, you can manage project-specific settings.
 - **Manageability**: Build schemes in BuildMagic are serialized in a human-readable JSON format.
+
+> [!TIP]
+> BuildMagic also provides `Switch Build Profile` task so that you can use BuildMagic in conjunction with Unity's Build Profiles. See [Using with Build Profiles](#using-with-build-profiles) for more information.
 
 ## Quick Start
 
@@ -397,3 +401,10 @@ The following build configurations are provided by BuildMagic:
     - [EditorUserBuildSettings](https://docs.unity3d.com/ja/2022.3/ScriptReference/EditorUserBuildSettings.html)
 - Build configurations applied in the build phase
     - [BuildPlayerOptions](https://docs.unity3d.com/ja/2022.3/ScriptReference/BuildPlayerOptions.html)
+
+## Using with Build Profiles
+
+BuildMagic provides a `Switch Build Profile` build task that allows you to switch Build Profiles in the Pre-build phase. However, there are some important points to note:
+
+- You need to create a Build Profile for each target platform.
+- The Build Profile replaces the **instance** of Player Settings. Any changes made to Player Settings after switching Build Profiles will be overwritten to the Build Profile itself. These changes are not automatically rolled back.
