@@ -31,6 +31,7 @@ BuildMagicは、開発・本番などの複数の設定を管理し、ビルド�
     * [独自のビルドタスクを実装する](#独自のビルドタスクを実装する)
     * [プロジェクトの設定をビルドコンフィギュレーションに反映する](#プロジェクトの設定をビルドコンフィギュレーションに反映する)
     * [ビルトインのビルドコンフィギュレーション](#ビルトインのビルドコンフィギュレーション)
+  * [Build Profiles との併用](#build-profiles-との併用)
 <!-- TOC -->
 
 ## モチベーション
@@ -81,7 +82,7 @@ BuildMagic は Build Profiles とは異なり、ビルド設定だけではな�
 - **管理性**: BuildMagicのビルドスキームは、人間にも読みやすいJSON形式でシリアライズされます。
 
 > [!TIP]
-> BuildMagic 内で Build Profile を切り替える `Switch Build Profile` ビルドタスクも提供しているため、BuildMagic と組み合わせて使うことも可能です。
+> BuildMagic 内で Build Profile を切り替える `Switch Build Profile` ビルドタスクも提供しているため、BuildMagic と組み合わせて使うことも可能です。詳しくは [Build Profiles との併用](#build-profiles-との併用) をご覧ください。
 
 ## Quick Start
 
@@ -403,3 +404,10 @@ public partial class SampleApiSettingBuildTaskConfiguration : IProjectSettingApp
     * [EditorUserBuildSettings](https://docs.unity3d.com/ja/2022.3/ScriptReference/EditorUserBuildSettings.html)
 * ビルドフェーズに適用されるビルドコンフィギュレーション
     * [BuildPlayerOptions](https://docs.unity3d.com/ja/2022.3/ScriptReference/BuildPlayerOptions.html)
+
+## Build Profiles との併用
+
+BuildMagic が提供する `Switch Build Profile` ビルドタスクを利用すると、Pre-build フェーズで Build Profile を切り替えることができます。ただし、次のような注意点があります：
+
+- Build Profile はターゲットとするプラットフォームごとに作成する必要があります。
+- Build Profile は Player Settings の**インスタンス**を置き換えるような動作をします。Switch Build Profile の後に Player Settings に加えた変更は、Build Profile 自体に上書きされます。この変更は自動的にロールバックされません。
