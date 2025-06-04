@@ -108,5 +108,10 @@ namespace BuildMagic.Window.Editor
             _model.Save();
             Repaint();
         }
+
+        private void Update()
+        {
+            _presenter?.Update();
+        }
     }
 }
