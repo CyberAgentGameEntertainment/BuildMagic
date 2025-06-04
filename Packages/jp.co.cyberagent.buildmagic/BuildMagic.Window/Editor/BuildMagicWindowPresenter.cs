@@ -25,8 +25,9 @@ namespace BuildMagic.Window.Editor
         
         private readonly FileSystemWatcher _fileSystemWatcher;
 
-        private Action _mainThreadAction;
-        private object _mainThreadActionLock = new object();
+        private Action _pendingAction;
+        private readonly object _pendingActionLock = new();
+        private volatile bool _pendingActionInProgress;
 
         public BuildMagicWindowPresenter(BuildMagicWindowModel model, VisualElement rootVisualElement)
         {
@@ -250,18 +251,26 @@ namespace BuildMagic.Window.Editor
 
         private void OnFileSystemChanged(object sender, FileSystemEventArgs e)
         {
-            lock (_mainThreadActionLock)
+            if (_pendingActionInProgress)
+                return; // If an action is already in progress, ignore this event
+            
+            lock (_pendingActionLock)
             {
-                if (_mainThreadAction != null)
+                if (_pendingAction != null)
                     return; // If there is already a pending action, ignore this event to avoid multiple dialogs
 
-                _mainThreadAction = () =>
+                _pendingAction = () =>
                 {
+                    using var scope = new FileWatcherSuspender(_fileSystemWatcher);
+                    
                     var opt = EditorUtility.DisplayDialog("File Changed",
                                                           $"The file '{e.Name}' has been changed outside of the editor. Do you want to reload?",
                                                           "Reload", "Cancel");
                     if (opt)
                         Reload();
+
+                    lock (_pendingActionLock)
+                        _pendingActionInProgress = false;
                 };
             }
         }
@@ -270,21 +279,23 @@ namespace BuildMagic.Window.Editor
         
         public void Update()
         {
-            Action mainThreadAction = null;
-            if (Monitor.TryEnter(_mainThreadActionLock))
+            Action pendingAction = null;
+            if (Monitor.TryEnter(_pendingActionLock))
             {
                 try
                 {
-                    mainThreadAction = _mainThreadAction;
-                    _mainThreadAction = null;
+                    pendingAction = _pendingAction;
+                    _pendingAction = null;
+                    if (pendingAction != null)
+                        _pendingActionInProgress = true;
                 }
                 finally
                 {
-                    Monitor.Exit(_mainThreadActionLock);
+                    Monitor.Exit(_pendingActionLock);
                 }
             }
             
-            mainThreadAction?.Invoke();
+            pendingAction?.Invoke();
         }
 
         private class BuildSchemeContextualActionsFactory : IBuildSchemeContextualActionsFactory
