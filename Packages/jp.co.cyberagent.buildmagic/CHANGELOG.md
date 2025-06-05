@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.8.0]
+
+### Added
+
+- Added a feature to copy and paste configurations.
+- Added a task to set iOS URL schemes.
+- Added a task to switch Build Profile.
+- Added a feature to detect file changes outside the Unity editor and reload it.
+
+### Fixed
+
+- Fixed an exception is thrown when "Add Configuration" if there is a BuildTask type doesn't inherit `BuildTaskBase<>` directly.
+- Fixed `ObjectDisposedException` is thrown when unbinding a configuration.
+
+### Changed
+
+- Improved configuration appearance.
+- Set base scheme name when copying configuration.
+- Updated the context menu actions of build scheme to be more abstract.
+
 ## [1.7.1]
 
 ### Fixed
