@@ -2,7 +2,8 @@
 // Copyright 2024 CyberAgent, Inc.
 // --------------------------------------------------------------
 
-using UnityEngine;
+using System;
+using UnityEditor;
 
 namespace BuildMagicEditor
 {
@@ -10,10 +11,14 @@ namespace BuildMagicEditor
     {
         public static string Serialize(IBuildScheme schemes)
         {
-            return JsonUtility.ToJson(schemes, true);
+            return EditorJsonUtility.ToJson(schemes, true);
         }
 
         public static T Deserialize<T>(string json) where T : IBuildScheme
-            => JsonUtility.FromJson<T>(json);
+        {
+            var obj = Activator.CreateInstance(typeof(T));
+            EditorJsonUtility.FromJsonOverwrite(json, obj);
+            return (T)obj;
+        }
     }
 }
