@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.1] - 2025-06-20
+
+### Fixed
+
+- Fixed object reference serialization is not persistent.
+
 ## [1.8.0]
 
 ### Added
