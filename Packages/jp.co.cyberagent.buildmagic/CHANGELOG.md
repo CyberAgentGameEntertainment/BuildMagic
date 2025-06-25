@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.2] - 2025-06-25
+
+### Fixed
+
+- Fixed primary build scheme doesn't run pre-build tasks on editor startup.
+
 ## [1.8.1] - 2025-06-20
 
 ### Fixed
