@@ -52,7 +52,7 @@ namespace BuildMagicEditor
                     return;
 
                 var preBuildTask = BuildTaskBuilderUtility.CreateBuildTasks<IPreBuildContext>(
-                    BuildSchemeUtility.EnumerateComposedConfigurations<IPostBuildContext>(scheme,
+                    BuildSchemeUtility.EnumerateComposedConfigurations<IPreBuildContext>(scheme,
                         BuildSchemeLoader.LoadAll<BuildScheme>()));
 
                 BuildPipeline.PreBuild(preBuildTask);
