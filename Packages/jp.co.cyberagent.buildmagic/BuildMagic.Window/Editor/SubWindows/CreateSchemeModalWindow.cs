@@ -38,7 +38,7 @@ namespace BuildMagic.Window.Editor.SubWindows
                 ? 0
                 : copySelectDropdown.choices.IndexOf(_context.copyFromName);
 
-            baseSelectDropdown.choices = _context.baseCompatibleSchemeNames.Prepend("-").ToList();
+            baseSelectDropdown.choices = _context.existingSchemeNames.Prepend("-").ToList();
             baseSelectDropdown.index = string.IsNullOrEmpty(_context.baseSchemeName)
                 ? 0
                 : baseSelectDropdown.choices.IndexOf(_context.baseSchemeName);
@@ -84,19 +84,16 @@ namespace BuildMagic.Window.Editor.SubWindows
             public readonly string copyFromName;
             public readonly string baseSchemeName;
             public readonly ICollection<string> existingSchemeNames;
-            public readonly ICollection<string> baseCompatibleSchemeNames;
             public readonly Action<string, string, string> callback;
 
             public Context(string copyFromName,
                            string baseSchemeName,
                 ICollection<string> existingSchemeNames,
-                ICollection<string> baseCompatibleSchemeNames,
                 Action<string, string, string> callback)
             {
                 this.copyFromName = copyFromName;
                 this.baseSchemeName = baseSchemeName;
                 this.existingSchemeNames = existingSchemeNames;
-                this.baseCompatibleSchemeNames = baseCompatibleSchemeNames;
                 this.callback = callback;
             }
         }
