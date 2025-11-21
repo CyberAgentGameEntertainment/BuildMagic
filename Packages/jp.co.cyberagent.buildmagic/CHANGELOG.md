@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3] - 2025-11-21
+
+### Fixed
+
+- Fixed non-root schemes are not selectable as a base in create scheme modal window.
+- Fixed left pane scheme tree view fails to move a scheme to another place when the user doesn't drop a scheme over another scheme directly but between schemes.
+
 ## [1.8.2] - 2025-06-25
 
 ### Fixed
