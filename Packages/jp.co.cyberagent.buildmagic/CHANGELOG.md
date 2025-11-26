@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.4] - 2025-11-26
+
+### Changed
+
+- Updated builtin tasks.
+
 ## [1.8.3] - 2025-11-21
 
 ### Fixed
