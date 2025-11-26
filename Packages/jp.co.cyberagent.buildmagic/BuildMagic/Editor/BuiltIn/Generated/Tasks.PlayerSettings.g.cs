@@ -1499,7 +1499,7 @@ partial class PlayerSettingsSetAllowUnsafeCodeTaskConfiguration : global::BuildM
     }
 }
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Use incremental GC", PropertyName = @"PlayerSettings.GcIncremental")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Use incremental GC*", PropertyName = @"PlayerSettings.GcIncremental")]
 public class PlayerSettingsSetGcIncrementalTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetGcIncrementalTask(global::System.Boolean gcIncremental)
@@ -3847,7 +3847,7 @@ partial class PlayerSettingsIOSSetShowActivityIndicatorOnLoadingTaskConfiguratio
     }
 }
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.IOS: Use on-demand resources*", PropertyName = @"PlayerSettings.IOS.UseOnDemandResources")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.IOS: Use On Demand Resources", PropertyName = @"PlayerSettings.IOS.UseOnDemandResources")]
 public class PlayerSettingsIOSSetUseOnDemandResourcesTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsIOSSetUseOnDemandResourcesTask(global::System.Boolean useOnDemandResources)
@@ -10900,6 +10900,31 @@ partial class PlayerSettingsTvOSSetSimulatorSdkArchitectureTaskConfiguration : g
     }
 }
 #endif
+// [2022.3.61f1 - (2022.3 latest)], [6000.0.0f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_60 && !UNITY_2022_3_59 && !UNITY_2022_3_58 && !UNITY_2022_3_57 && !UNITY_2022_3_56 && !UNITY_2022_3_55 && !UNITY_2022_3_54 && !UNITY_2022_3_53 && !UNITY_2022_3_52 && !UNITY_2022_3_51 && !UNITY_2022_3_50 && !UNITY_2022_3_49 && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Predictive Back Support", PropertyName = @"PlayerSettings.Android.PredictiveBackSupport")]
+public class PlayerSettingsAndroidSetPredictiveBackSupportTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetPredictiveBackSupportTask(global::System.Boolean predictiveBackSupport)
+    {
+        this.predictiveBackSupport = predictiveBackSupport;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.predictiveBackSupport = this.predictiveBackSupport;
+    }
+    private readonly global::System.Boolean predictiveBackSupport;
+}
+partial class PlayerSettingsAndroidSetPredictiveBackSupportTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.predictiveBackSupport;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
 // [2023.1.0f1 - (latest)]
 #if UNITY_2023_1_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Static Batching For Platform", PropertyName = @"PlayerSettings.SetStaticBatchingForPlatform()")]
@@ -11261,8 +11286,8 @@ partial class PlayerSettingsQNXSetGraphicConfPathTaskConfiguration : global::Bui
     }
 }
 #endif
-// [2023.2.0f1 - (latest)]
-#if UNITY_2023_2_OR_NEWER
+// [2023.2.0f1 - (6000.0 latest)]
+#if !UNITY_6000_1_OR_NEWER && UNITY_2023_2_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.WebGL: Enable Web GPU", PropertyName = @"PlayerSettings.WebGL.EnableWebGPU")]
 public class PlayerSettingsWebGLSetEnableWebGPUTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
@@ -11363,31 +11388,6 @@ partial class PlayerSettingsWebGLSetCloseOnQuitTaskConfiguration : global::Build
 #endif
 // [6000.0.0f1 - (latest)]
 #if UNITY_6000_0_OR_NEWER
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Predictive Back Support", PropertyName = @"PlayerSettings.Android.PredictiveBackSupport")]
-public class PlayerSettingsAndroidSetPredictiveBackSupportTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
-{
-    public PlayerSettingsAndroidSetPredictiveBackSupportTask(global::System.Boolean predictiveBackSupport)
-    {
-        this.predictiveBackSupport = predictiveBackSupport;
-    }
-
-    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
-    {
-        global::UnityEditor.PlayerSettings.Android.predictiveBackSupport = this.predictiveBackSupport;
-    }
-    private readonly global::System.Boolean predictiveBackSupport;
-}
-partial class PlayerSettingsAndroidSetPredictiveBackSupportTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
-{
-    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
-    {
-        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.predictiveBackSupport;
-        this.Value = __BUILDMAGIC__0;
-    }
-}
-#endif
-// [6000.0.0f1 - (latest)]
-#if UNITY_6000_0_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.WebGL: Wasm 2023", PropertyName = @"PlayerSettings.WebGL.Wasm2023")]
 public class PlayerSettingsWebGLSetWasm2023Task : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
@@ -11457,6 +11457,56 @@ partial class PlayerSettingsAndroidSetRunWithoutFocusTaskConfiguration : global:
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
         var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.runWithoutFocus;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.1.0f1 - (latest)]
+#if UNITY_6000_1_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Android Vulkan Device Filter List Asset", PropertyName = @"PlayerSettings.Android.AndroidVulkanDeviceFilterListAsset")]
+public class PlayerSettingsAndroidSetAndroidVulkanDeviceFilterListAssetTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetAndroidVulkanDeviceFilterListAssetTask(global::UnityEngine.VulkanDeviceFilterLists androidVulkanDeviceFilterListAsset)
+    {
+        this.androidVulkanDeviceFilterListAsset = androidVulkanDeviceFilterListAsset;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.androidVulkanDeviceFilterListAsset = this.androidVulkanDeviceFilterListAsset;
+    }
+    private readonly global::UnityEngine.VulkanDeviceFilterLists androidVulkanDeviceFilterListAsset;
+}
+partial class PlayerSettingsAndroidSetAndroidVulkanDeviceFilterListAssetTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.androidVulkanDeviceFilterListAsset;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.1.0f1 - (latest)]
+#if UNITY_6000_1_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.WebGL: Enable Submodule Stripping Compatibility", PropertyName = @"PlayerSettings.WebGL.EnableSubmoduleStrippingCompatibility")]
+public class PlayerSettingsWebGLSetEnableSubmoduleStrippingCompatibilityTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsWebGLSetEnableSubmoduleStrippingCompatibilityTask(global::System.Boolean enableSubmoduleStrippingCompatibility)
+    {
+        this.enableSubmoduleStrippingCompatibility = enableSubmoduleStrippingCompatibility;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.WebGL.enableSubmoduleStrippingCompatibility = this.enableSubmoduleStrippingCompatibility;
+    }
+    private readonly global::System.Boolean enableSubmoduleStrippingCompatibility;
+}
+partial class PlayerSettingsWebGLSetEnableSubmoduleStrippingCompatibilityTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.WebGL.enableSubmoduleStrippingCompatibility;
         this.Value = __BUILDMAGIC__0;
     }
 }
