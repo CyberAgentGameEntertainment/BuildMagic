@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.0] - 2025-12-22
+
+### Added
+
+- Added a task to enable iOS Game Mode.
+
 ## [1.8.4] - 2025-11-26
 
 ### Changed
