@@ -15,13 +15,11 @@ namespace BuildMagicEditor.BuiltIn
         PropertyName = "BuildMagicEditor.BuiltIn.iOSEnableGameModeTask")]
     public sealed class iOSEnableGameModeTask : BuildTaskBase<IPostBuildContext>
     {
-        private readonly bool _enableLSSupportsGameMode;
-        private readonly bool _enableGCSupportsGameMode;
+        private readonly bool _enableGameMode;
 
-        public iOSEnableGameModeTask(bool enableLSSupportsGameMode, bool enableGCSupportsGameMode)
+        public iOSEnableGameModeTask(bool enableGameMode)
         {
-            _enableLSSupportsGameMode = enableLSSupportsGameMode;
-            _enableGCSupportsGameMode = enableGCSupportsGameMode;
+            _enableGameMode = enableGameMode;
         }
 
         public override void Run(IPostBuildContext context)
@@ -48,8 +46,8 @@ namespace BuildMagicEditor.BuiltIn
 
             var root = plist.root;
             
-            root.SetBoolean("LSSupportsGameMode", _enableLSSupportsGameMode);
-            root.SetBoolean("GCSupportsGameMode", _enableGCSupportsGameMode);
+            root.SetBoolean("LSSupportsGameMode", _enableGameMode);
+            root.SetBoolean("GCSupportsGameMode", _enableGameMode);
 
             plist.WriteToFile(infoPlistPath);
         }
