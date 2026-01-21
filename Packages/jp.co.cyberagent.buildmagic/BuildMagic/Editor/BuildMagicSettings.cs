@@ -43,6 +43,8 @@ namespace BuildMagicEditor
         {
             EditorApplicationUtility.projectWasLoaded += () =>
             {
+                if (Application.isBatchMode)
+                    return;
                 var target = instance.PrimaryBuildScheme;
                 if (string.IsNullOrEmpty(target))
                     return;
