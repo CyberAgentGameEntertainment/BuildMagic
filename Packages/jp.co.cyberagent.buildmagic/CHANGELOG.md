@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.1] - 2026-01-21
+
+### Changed
+
+- Automatic primary build scheme application is disabled in batch mode.
+
 ## [1.9.0] - 2025-12-22
 
 ### Added
