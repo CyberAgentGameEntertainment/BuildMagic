@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.2] - 2026-02-13
+
+### Fixed
+
+- Fixed compiler errors in Unity 6.3 and later.
+
 ## [1.9.1] - 2026-01-21
 
 ### Changed
