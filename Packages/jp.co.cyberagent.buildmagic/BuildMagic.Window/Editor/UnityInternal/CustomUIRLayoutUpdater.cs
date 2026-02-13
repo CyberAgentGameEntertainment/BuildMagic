@@ -7,7 +7,12 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.UnityInternal
 {
-    internal sealed class CustomUIRLayoutUpdater : UIRLayoutUpdater
+    internal sealed class CustomUIRLayoutUpdater
+#if UNITY_6000_3_OR_NEWER
+        : VisualTreeLayoutUpdater
+#else
+        : UIRLayoutUpdater
+#endif
     {
         public override void Update()
         {
