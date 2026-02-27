@@ -228,7 +228,7 @@ The command-line options are as follows:
 
 | Option       | Description                                                                                                          | Type         |
 |:------------|:---------------------------------------------------------------------------------------------------------------------|:------------|
-| `-scheme`   | Specifies the name of the build scheme to apply.                                                                     | string      |
+| `-scheme`   | Specifies the name of the build scheme to apply. If omitted, the primary scheme is used.                             | string      |
 | `-override` | Overrides the value of the build configuration.                                                                      | string      |
 | `-strict`   | When enabled, if there is any error log output during the build, the build will fail regardless of the build result. | bool (flag) |
 
