@@ -149,17 +149,25 @@ public static class BuildMagicCLI
 
     internal static BuildScheme LoadScheme(CommandLineParser parser, IEnumerable<BuildScheme> allSchemes = null)
     {
-        var name = parser.ParseFirst(SchemeOption);
+        string name;
+        if (parser.TryParse(SchemeOption, out var names))
+        {
+            if (names.Length != 1)
+            {
+                throw new CommandLineArgumentException("Exactly one scheme must be specified with the -scheme option.");
+            }
+
+            name = names[0];
+        }
+        else
+        {
+            name = BuildMagicSettings.instance.PrimaryBuildScheme;
+        }
 
         allSchemes ??= BuildSchemeLoader.LoadAll<BuildScheme>();
 
         var scheme = allSchemes.FirstOrDefault(s => s.Name == name);
-        if (scheme == null)
-        {
-            throw new CommandLineArgumentException($"No such scheme found: {name}");
-        }
-
-        return scheme;
+        return scheme ?? throw new CommandLineArgumentException($"No such scheme found: {name}");
     }
 
     internal static List<OverrideProperty> ParseOverrideProperties(
