@@ -20,7 +20,8 @@ It provides a user-friendly interface and offers built-in task implementaions th
     * [Installation](#installation)
     * [Creating a Build Scheme](#creating-a-build-scheme)
     * [Adding and Editing Build Configurations](#adding-and-editing-build-configurations)
-  * [Switching Build Schemes](#switching-build-schemes)
+    * [Applying Pre-build configurations](#applying-pre-build-configurations)
+    * [Applying Pre-build configurations on Editor Startup](#applying-pre-build-configurations-on-editor-startup)
     * [Building from the UI](#building-from-the-ui)
     * [Build Scheme Inheritance](#build-scheme-inheritance)
   * [Build Phases](#build-phases)
@@ -149,17 +150,21 @@ After editing the settings, click the `Save` button to save the settings.
 
 ![](./Documentation~/configure-build-scheme-save.png)
 
-## Switching Build Schemes
+### Applying Pre-build configurations
 
-To switch the Unity project settings to those of the selected build scheme, select the build scheme you want to apply in the left pane.
-
-Then, click the `Menu` in the upper left corner of the BuildMagic window to expand the dropdown menu and select `Switch selected build scheme`.
+To apply Pre-build configurations to current Unity project settings, right-click on the build scheme in the left pane and select "Apply Pre-build Now".
 
 ![](./Documentation~/configure-build-scheme-switch.png)
 
+### Applying Pre-build configurations on Editor Startup
+
+To apply Pre-build configurations on Editor startup, right-click on the build scheme in the left pane and select "Set as Primary".
+
+![](./Documentation~/configure-build-scheme-primary.png)
+
 ### Building from the UI
 
-To build the app, click the `Menu` in the upper left corner of the BuildMagic window to expand the dropdown menu and select `Build with selected scheme`.
+To build the app, right-click on the build scheme in the left pane and select "Build Player Now...".
 
 ![](./Documentation~/configure-build-scheme-build.png)
 
