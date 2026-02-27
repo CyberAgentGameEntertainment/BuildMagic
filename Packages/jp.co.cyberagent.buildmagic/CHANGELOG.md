@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.3] - 2026-02-27
+
+### Changed
+
+- Changed CLI behavior to use primary scheme when `-scheme` is not present.
+- Changed the title of `BuildMagicWindow` to "Build Magic".
+
 ## [1.9.2] - 2026-02-13
 
 ### Fixed
