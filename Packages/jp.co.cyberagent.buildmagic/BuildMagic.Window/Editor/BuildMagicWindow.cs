@@ -27,6 +27,7 @@ namespace BuildMagic.Window.Editor
         private void OnEnable()
         {
             minSize = MinSize;
+            titleContent = new GUIContent("Build Magic");
         }
 
         private void OnDisable()
