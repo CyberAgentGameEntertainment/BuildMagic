@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.0] - 2026-05-14
+
+### Added
+
+- Added a task to set iOS memory capabilities (Extended Virtual Addressing / Increased Memory Limit).
+
 ## [1.9.3] - 2026-02-27
 
 ### Changed
