@@ -82,6 +82,11 @@ namespace BuildMagicEditor.BuiltIn
         }
 
         [Serializable]
+        public class ExtendedVirtualAddressingCapability : ICapability
+        {
+        }
+
+        [Serializable]
         public class GameCenterCapability : ICapability
         {
         }
@@ -108,6 +113,11 @@ namespace BuildMagicEditor.BuiltIn
 
         [Serializable]
         public class InAppPurchaseCapability : ICapability
+        {
+        }
+
+        [Serializable]
+        public class IncreasedMemoryLimitCapability : ICapability
         {
         }
 
