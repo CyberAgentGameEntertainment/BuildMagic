@@ -5,32 +5,49 @@
 #if UNITY_IOS
 
 using System;
+using System.Reflection;
 using UnityEditor.iOS.Xcode;
 
 namespace BuildMagicEditor.BuiltIn
 {
     public sealed partial class iOSAddCapabilityTask
     {
+        private const string ExtendedVirtualAddressingCapabilityId =
+            "com.apple.developer.kernel.extended-virtual-addressing";
+        private const string ExtendedVirtualAddressingEntitlementKey =
+            "com.apple.developer.kernel.extended-virtual-addressing";
+        private const string IncreasedMemoryLimitCapabilityId =
+            "com.apple.developer.kernel.increased-memory-limit";
+        private const string IncreasedMemoryLimitEntitlementKey =
+            "com.apple.developer.kernel.increased-memory-limit";
+
         private void RunInternal(IPostBuildContext context)
         {
-            var pbxProjectPath = PBXProject.GetPBXProjectPath(context.BuildReport.summary.outputPath);
+            var buildPath = context.BuildReport.summary.outputPath;
+            var pbxProjectPath = PBXProject.GetPBXProjectPath(buildPath);
             var pbxProject = new PBXProject();
             pbxProject.ReadFromFile(pbxProjectPath);
+            var targetGuid = pbxProject.GetUnityMainTargetGuid();
 
-            var manager = new ProjectCapabilityManager(
+            var manager = new iOSProjectCapabilityManager(
                 pbxProjectPath,
                 _entitlementFilePath,
-                targetGuid: pbxProject.GetUnityMainTargetGuid());
+                targetGuid);
+            var capabilityProcessContext = new iOSCapabilityProcessContext(
+                manager,
+                targetGuid,
+                _entitlementFilePath);
 
-            foreach (var capability in _capabilities.Value) ProcessCapability(manager, capability);
+            foreach (var capability in _capabilities.Value)
+                ProcessCapability(capabilityProcessContext, capability);
 
-            manager.WriteToFile();
+            capabilityProcessContext.WriteToFile();
         }
 
-        private static void ProcessCapability(ProjectCapabilityManager manager, ICapability capability)
+        private static void ProcessCapability(iOSCapabilityProcessContext context, ICapability capability)
         {
             var generator = GenerateProcessor(capability);
-            generator.Process(manager, capability);
+            generator.Process(context, capability);
         }
 
         private static ICapabilityProcessor GenerateProcessor(ICapability capability)
@@ -42,11 +59,13 @@ namespace BuildMagicEditor.BuiltIn
                 AssociatedDomainsCapability => new AssociatedDomainsCapabilityProcessor(),
                 BackgroundModesCapability => new BackgroundModesCapabilityProcessor(),
                 DataProtectionCapability => new DataProtectionCapabilityProcessor(),
+                ExtendedVirtualAddressingCapability => new ExtendedVirtualAddressingCapabilityProcessor(),
                 GameCenterCapability => new GameCenterCapabilityProcessor(),
                 HealthKitCapability => new HealthKitCapabilityProcessor(),
                 HomeKitCapability => new HomeKitCapabilityProcessor(),
                 iCloudCapability => new iCloudCapabilityProcessor(),
                 InAppPurchaseCapability => new InAppPurchaseCapabilityProcessor(),
+                IncreasedMemoryLimitCapability => new IncreasedMemoryLimitCapabilityProcessor(),
                 InterAppAudioCapability => new InterAppAudioCapabilityProcessor(),
                 KeychainSharingCapability => new KeychainSharingCapabilityProcessor(),
                 MapsCapability => new MapsCapabilityProcessor(),
@@ -62,49 +81,131 @@ namespace BuildMagicEditor.BuiltIn
 
         private interface ICapabilityProcessor
         {
-            void Process(ProjectCapabilityManager manager, ICapability capability);
+            void Process(iOSCapabilityProcessContext context, ICapability capability);
         }
 
         private abstract class CapabilityProcessorBase<T> : ICapabilityProcessor
             where T : ICapability
         {
-            protected abstract void Process(ProjectCapabilityManager manager, T capability);
+            protected abstract void Process(iOSCapabilityProcessContext context, T capability);
 
-            public void Process(ProjectCapabilityManager manager, ICapability capability)
+            public void Process(iOSCapabilityProcessContext context, ICapability capability)
             {
-                if (capability is T t) Process(manager, t);
+                if (capability is T t) Process(context, t);
             }
+        }
+
+        private sealed class iOSCapabilityProcessContext
+        {
+            private const string GetOrCreateEntitlementDocMethodName = "GetOrCreateEntitlementDoc";
+
+            private static readonly MethodInfo GetOrCreateEntitlementDocMethod =
+                typeof(ProjectCapabilityManager).GetMethod(
+                    GetOrCreateEntitlementDocMethodName,
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+
+            private readonly string _entitlementFilePath;
+            private readonly iOSProjectCapabilityManager _manager;
+
+            public iOSCapabilityProcessContext(
+                iOSProjectCapabilityManager manager,
+                string targetGuid,
+                string entitlementFilePath)
+            {
+                _manager = manager;
+                Project = manager.Project;
+                TargetGuid = targetGuid;
+                _entitlementFilePath = entitlementFilePath;
+            }
+
+            public ProjectCapabilityManager Manager => _manager;
+
+            public PBXProject Project { get; }
+
+            public string TargetGuid { get; }
+
+            public string EntitlementFilePath
+            {
+                get
+                {
+                    EnsureEntitlementFilePath();
+                    return _entitlementFilePath;
+                }
+            }
+
+            public void SetEntitlementBoolean(string entitlementKey)
+            {
+                var entitlementDocument = GetOrCreateEntitlementDocument();
+                entitlementDocument.root.SetBoolean(entitlementKey, true);
+            }
+
+            public void WriteToFile()
+            {
+                _manager.WriteToFile();
+            }
+
+            private void EnsureEntitlementFilePath()
+            {
+                if (string.IsNullOrEmpty(_entitlementFilePath))
+                    throw new InvalidOperationException(
+                        "An entitlement file path is required to add iOS memory capabilities.");
+            }
+
+            private PlistDocument GetOrCreateEntitlementDocument()
+            {
+                EnsureEntitlementFilePath();
+
+                if (GetOrCreateEntitlementDocMethod == null)
+                    throw new MissingMethodException(
+                        typeof(ProjectCapabilityManager).FullName,
+                        GetOrCreateEntitlementDocMethodName);
+
+                return (PlistDocument)GetOrCreateEntitlementDocMethod.Invoke(_manager, null);
+            }
+        }
+
+        private sealed class iOSProjectCapabilityManager : ProjectCapabilityManager
+        {
+            public iOSProjectCapabilityManager(
+                string pbxProjectPath,
+                string entitlementFilePath,
+                string targetGuid)
+                : base(pbxProjectPath, entitlementFilePath, targetGuid: targetGuid)
+            {
+            }
+
+            public PBXProject Project => project;
         }
 
         private class AppGroupsCapabilityProcessor : CapabilityProcessorBase<AppGroupsCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, AppGroupsCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, AppGroupsCapability capability)
             {
-                manager.AddAppGroups(capability.groups);
+                context.Manager.AddAppGroups(capability.groups);
             }
         }
 
         private class ApplePayCapabilityProcessor : CapabilityProcessorBase<ApplePayCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, ApplePayCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, ApplePayCapability capability)
             {
-                manager.AddApplePay(capability.merchants);
+                context.Manager.AddApplePay(capability.merchants);
             }
         }
 
         private class AssociatedDomainsCapabilityProcessor : CapabilityProcessorBase<AssociatedDomainsCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, AssociatedDomainsCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, AssociatedDomainsCapability capability)
             {
-                manager.AddAssociatedDomains(capability.domains);
+                context.Manager.AddAssociatedDomains(capability.domains);
             }
         }
 
         private class BackgroundModesCapabilityProcessor : CapabilityProcessorBase<BackgroundModesCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, BackgroundModesCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, BackgroundModesCapability capability)
             {
-                manager.AddBackgroundModes(ToUnityType(capability.modes));
+                context.Manager.AddBackgroundModes(ToUnityType(capability.modes));
             }
 
             private static UnityEditor.iOS.Xcode.BackgroundModesOptions ToUnityType(BackgroundModesOptions options)
@@ -115,41 +216,61 @@ namespace BuildMagicEditor.BuiltIn
 
         private class DataProtectionCapabilityProcessor : CapabilityProcessorBase<DataProtectionCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, DataProtectionCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, DataProtectionCapability capability)
             {
-                manager.AddDataProtection();
+                context.Manager.AddDataProtection();
+            }
+        }
+
+        private class ExtendedVirtualAddressingCapabilityProcessor :
+            CapabilityProcessorBase<ExtendedVirtualAddressingCapability>
+        {
+            protected override void Process(
+                iOSCapabilityProcessContext context,
+                ExtendedVirtualAddressingCapability capability)
+            {
+#if UNITY_6000_0_OR_NEWER
+                context.Manager.AddExtendedVirtualAddressing();
+#else
+                context.SetEntitlementBoolean(ExtendedVirtualAddressingEntitlementKey);
+                context.Project.AddCapability(
+                    context.TargetGuid,
+                    new PBXCapabilityType(ExtendedVirtualAddressingCapabilityId, true, null, false),
+                    context.EntitlementFilePath,
+                    false);
+#endif
             }
         }
 
         private class GameCenterCapabilityProcessor : CapabilityProcessorBase<GameCenterCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, GameCenterCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, GameCenterCapability capability)
             {
-                manager.AddGameCenter();
+                context.Manager.AddGameCenter();
             }
         }
 
         private class HealthKitCapabilityProcessor : CapabilityProcessorBase<HealthKitCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, HealthKitCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, HealthKitCapability capability)
             {
-                manager.AddHealthKit();
+                context.Manager.AddHealthKit();
             }
         }
 
         private class HomeKitCapabilityProcessor : CapabilityProcessorBase<HomeKitCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, HomeKitCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, HomeKitCapability capability)
             {
-                manager.AddHomeKit();
+                context.Manager.AddHomeKit();
             }
         }
 
         private class iCloudCapabilityProcessor : CapabilityProcessorBase<iCloudCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, iCloudCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, iCloudCapability capability)
             {
-                manager.AddiCloud(
+                context.Manager.AddiCloud(
                     capability.enableKeyValueStorage,
                     capability.enableiCloudDocument,
                     capability.enablecloudKit,
@@ -160,33 +281,52 @@ namespace BuildMagicEditor.BuiltIn
 
         private class InAppPurchaseCapabilityProcessor : CapabilityProcessorBase<InAppPurchaseCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, InAppPurchaseCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, InAppPurchaseCapability capability)
             {
-                manager.AddInAppPurchase();
+                context.Manager.AddInAppPurchase();
+            }
+        }
+
+        private class IncreasedMemoryLimitCapabilityProcessor : CapabilityProcessorBase<IncreasedMemoryLimitCapability>
+        {
+            protected override void Process(
+                iOSCapabilityProcessContext context,
+                IncreasedMemoryLimitCapability capability)
+            {
+#if UNITY_6000_0_OR_NEWER
+                context.Manager.AddIncreasedMemoryLimit();
+#else
+                context.SetEntitlementBoolean(IncreasedMemoryLimitEntitlementKey);
+                context.Project.AddCapability(
+                    context.TargetGuid,
+                    new PBXCapabilityType(IncreasedMemoryLimitCapabilityId, true, null, false),
+                    context.EntitlementFilePath,
+                    false);
+#endif
             }
         }
 
         private class InterAppAudioCapabilityProcessor : CapabilityProcessorBase<InterAppAudioCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, InterAppAudioCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, InterAppAudioCapability capability)
             {
-                manager.AddInterAppAudio();
+                context.Manager.AddInterAppAudio();
             }
         }
 
         private class KeychainSharingCapabilityProcessor : CapabilityProcessorBase<KeychainSharingCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, KeychainSharingCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, KeychainSharingCapability capability)
             {
-                manager.AddKeychainSharing(capability.accessGroups);
+                context.Manager.AddKeychainSharing(capability.accessGroups);
             }
         }
 
         private class MapsCapabilityProcessor : CapabilityProcessorBase<MapsCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, MapsCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, MapsCapability capability)
             {
-                manager.AddMaps(ToUnityType(capability.options));
+                context.Manager.AddMaps(ToUnityType(capability.options));
             }
 
             private static UnityEditor.iOS.Xcode.MapsOptions ToUnityType(MapsOptions options)
@@ -197,51 +337,51 @@ namespace BuildMagicEditor.BuiltIn
 
         private class PersonalVPNCapabilityProcessor : CapabilityProcessorBase<PersonalVPNCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, PersonalVPNCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, PersonalVPNCapability capability)
             {
-                manager.AddPersonalVPN();
+                context.Manager.AddPersonalVPN();
             }
         }
 
         private class PushNotificationCapabilityProcessor : CapabilityProcessorBase<PushNotificationCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, PushNotificationCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, PushNotificationCapability capability)
             {
-                manager.AddPushNotifications(capability.development);
+                context.Manager.AddPushNotifications(capability.development);
             }
         }
 
         private class SigninWithAppleCapabilityProcessor : CapabilityProcessorBase<SigninWithAppleCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, SigninWithAppleCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, SigninWithAppleCapability capability)
             {
-                manager.AddSignInWithApple();
+                context.Manager.AddSignInWithApple();
             }
         }
 
         private class SiriCapabilityProcessor : CapabilityProcessorBase<SiriCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, SiriCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, SiriCapability capability)
             {
-                manager.AddSiri();
+                context.Manager.AddSiri();
             }
         }
 
         private class WalletCapabilityProcessor : CapabilityProcessorBase<WalletCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager, WalletCapability capability)
+            protected override void Process(iOSCapabilityProcessContext context, WalletCapability capability)
             {
-                manager.AddWallet(capability.passSubset);
+                context.Manager.AddWallet(capability.passSubset);
             }
         }
 
         private class WirelessAccessoryConfigurationCapabilityProcessor :
             CapabilityProcessorBase<WirelessAccessoryConfigurationCapability>
         {
-            protected override void Process(ProjectCapabilityManager manager,
+            protected override void Process(iOSCapabilityProcessContext context,
                 WirelessAccessoryConfigurationCapability capability)
             {
-                manager.AddWirelessAccessoryConfiguration();
+                context.Manager.AddWirelessAccessoryConfiguration();
             }
         }
     }
