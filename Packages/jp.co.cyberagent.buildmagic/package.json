@@ -4,7 +4,7 @@
     "displayName": "Build Magic",
     "description": "Build Magic",
     "unity": "2022.3",
-    "UnityRelease": "12f1",
+    "unityRelease": "12f1",
     "keywords": [
         "Tools"
     ],
