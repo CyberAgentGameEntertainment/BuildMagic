@@ -2,9 +2,11 @@
 
 English: [README.md](./README.md)
 
-これは、[UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference)のソースをもとに、`PlayerSettings`や`EditorUserBuildSettings`などに対して設定を行う`IBuildTask`実装を事前生成するツールです。
+これは、[UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference)の各リリースタグを走査し、`PlayerSettings`・`EditorUserBuildSettings`のバージョンごとのAPI表面を集約して、ソースジェネレータ (`BuildMagic.BuiltinTasks.Generators`) が消費する**`ApiSignatureLock.g.cs`**を出力するメンテナ向けのツールです。
 
-新しいUnityバージョンがリリースされ、[UnityCsReferenceにタグとして追加されたら](https://github.com/Unity-Technologies/UnityCsReference/tags)、本ツールを実行することで新しいバージョンに対する解析を行い、生成コードを更新します。
+実際のタスククラスは利用者側のUnityコンパイル時にソースジェネレータが生成します。本オフラインツールは、ソースジェネレータが同名オーバーロードをUnityバージョン間で曖昧解決するためのロックファイル (「古いオーバーロードを優先する」/ 歴史的優先順位ルール) を出力するのみです。ロックファイルが空でも動作はしますが、その場合ソースジェネレータは衝突したオーバーロードの勝者を決定できず、該当API名の生成をスキップします。新しいUnity LTSが同名オーバーロードを追加した際は、本ツールを再実行してください。
+
+新しいUnityバージョンがリリースされ、[UnityCsReferenceにタグとして追加されたら](https://github.com/Unity-Technologies/UnityCsReference/tags)、本ツールを実行し、再生成された`ApiSignatureLock.g.cs`をコミットして新しいパッケージバージョンをリリースしてください。
 
 <!-- TOC -->
 * [Builtin Task Generator](#builtin-task-generator)
@@ -28,11 +30,13 @@ English: [README.md](./README.md)
 
 ## 基本的な使い方
 
-`generate`サブコマンドを使用します。`-o`オプションで生成ファイル (`.cs`) の出力先ディレクトリを指定します。
+`generate`サブコマンドを使用します。`-o`オプションでソースジェネレータプロジェクトのディレクトリ (`ApiSignatureLock.g.cs`の出力先) を指定します。
 
 ```shell
-dotnet run -- generate -o ../../Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated
+dotnet run -- generate -o ../BuildMagic.BuiltinTasks.Generators
 ```
+
+本ツールは `BuildMagic.BuiltinTasks.Generators/ApiSignatureLock.g.cs` のみを書き出します。コミットしてソースジェネレータプロジェクトを再ビルドし、新しいパッケージバージョンとして配布してください。
 
 ## 解析結果のキャッシュ
 

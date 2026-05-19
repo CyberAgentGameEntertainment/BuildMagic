@@ -4,7 +4,7 @@ Japanese: [README.ja.md](./README.ja.md)
 
 Builtin Task Generator is a maintainer-side tool that sweeps every release tag of [UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference), aggregates the per-version `PlayerSettings` / `EditorUserBuildSettings` API surface, and emits **`ApiSignatureLock.g.cs`** consumed by the in-process source generator (`BuildMagic.BuiltinTasks.Generators`).
 
-The actual task classes are generated at the consumer's Unity compile by the source generator. This offline tool only produces the lockfile that the source generator uses to disambiguate same-name overloads across Unity versions (the "older overload wins" / historical-precedence rule). An empty lockfile is valid — the source generator falls back to a NamedBuildTarget heuristic.
+The actual task classes are generated at the consumer's Unity compile by the source generator. This offline tool only produces the lockfile that the source generator uses to disambiguate same-name overloads across Unity versions (the "older overload wins" / historical-precedence rule). An empty lockfile is valid, but the source generator then has no way to pick a winner among colliding overloads and will skip emission for those API names — re-run this tool whenever a new Unity LTS adds a same-name overload.
 
 When a new Unity LTS is released and added as a tag to UnityCsReference, run this tool, commit the regenerated `ApiSignatureLock.g.cs`, and ship a new package version.
 
