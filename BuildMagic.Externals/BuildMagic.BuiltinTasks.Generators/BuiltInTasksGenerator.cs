@@ -722,9 +722,13 @@ $$"""
 
         public override (string, bool) ToBuildExpression(string sourceExpression)
         {
+            // Always emit an explicit (a, b, c) ValueTuple expression. The serialized form is
+            // an anonymous container struct with implicit operators to/from ValueTuple, but
+            // those operators only bridge scalar assignments. Inside a Dictionary value slot
+            // there is no covariant conversion from Dictionary<K, ContainerStruct> to
+            // IReadOnlyDictionary<K, (...)>, so we must materialize the real tuple here so
+            // the enclosing WeavedDictionary takes the element-by-element transform path.
             var inner = Items.Select(i => i.Item.ToBuildExpression($"{sourceExpression}.{i.Name}")).ToList();
-            if (inner.All(x => !x.NeedsTransform))
-                return (sourceExpression, false);
             var tup = string.Join(", ", inner.Select(x => x.Expression));
             return ($"({tup})", true);
         }

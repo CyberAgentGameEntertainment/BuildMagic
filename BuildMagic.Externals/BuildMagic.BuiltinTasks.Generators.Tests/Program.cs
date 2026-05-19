@@ -89,6 +89,15 @@ namespace UnityEditor
         // the only way the SG can pick a winner among same-NBT overloads.
         public static void SetLockedThing(UnityEditor.Build.NamedBuildTarget buildTarget, string value) { }
         public static void SetLockedThing(UnityEditor.Build.NamedBuildTarget buildTarget, string value, int extra) { }
+
+        // Dictionary-of-tuple regression (mirror of PlayerSettings.XboxOne.SetSocketDefinition):
+        // string key + tuple-of-primitives value. The serialized form is an anonymous container
+        // struct, which only has a scalar implicit conversion to its real ValueTuple — at
+        // dictionary value level the cast Dictionary<K, Struct> → IReadOnlyDictionary<K, (...)>
+        // fails. WeavedTuple.ToBuildExpression must always emit the explicit tuple expression
+        // so the enclosing dictionary takes the element-by-element ToDictionary path.
+        public static void SetSocketDef(string name, int port, int retries) { }
+        public static int GetSocketDef(string name, out int retries) { retries = 0; return 0; }
     }
 }
 
