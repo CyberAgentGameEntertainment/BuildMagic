@@ -16,4 +16,8 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="BuildMagic.BuiltinTasks.Generators.Tests"/>
+    </ItemGroup>
+
 </Project>

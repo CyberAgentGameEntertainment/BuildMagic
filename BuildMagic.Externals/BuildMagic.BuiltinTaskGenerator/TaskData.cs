@@ -33,6 +33,9 @@ namespace BuildMagic.BuiltinTaskGenerator
         public UnityVersion LatestVersion { get; private set; }
         public ApiData LatestVersionApiData { get; private set; }
 
+        public string ExpectedName => _expectedName;
+        public IReadOnlyList<TaskParameterData> Parameters => _parameters;
+
         public bool MatchesParameterSignature(IEnumerable<ParameterData> parameters)
         {
             var i = 0;

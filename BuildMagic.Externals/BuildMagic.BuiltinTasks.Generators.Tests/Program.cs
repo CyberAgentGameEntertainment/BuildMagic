@@ -4,6 +4,7 @@
 // inside a "BuildMagic.Editor" assembly and dumps the generated source.
 // --------------------------------------------------------------
 
+using System.Collections.Generic;
 using BuildMagic.BuiltinTasks.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -52,9 +53,11 @@ namespace UnityEditor
         public static void SetIcons(UnityEditor.Build.NamedBuildTarget buildTarget, UnityEngine.Texture2D[] icons, UnityEditor.IconKind kind) { }
         public static UnityEngine.Texture2D[] GetIcons(UnityEditor.Build.NamedBuildTarget buildTarget, UnityEditor.IconKind kind) => null!;
 
-        // Wrapper case — NamedBuildTarget as single param
+        // Both overloads carry NamedBuildTarget — the (string) variant is Ignored by override,
+        // so the (string[]) variant should be the sole surviving candidate after filtering and
+        // therefore the one emitted.
         public static void SetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget buildTarget, string defines) { }
-        // (ignored by override)
+        public static void SetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget buildTarget, string[] defines) { }
 
         // Override displayname
         public static void SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget buildTarget, UnityEditor.Il2CppCompilerConfiguration configuration) { }
@@ -76,9 +79,16 @@ namespace UnityEditor
         public static void SetPlatformSettings(string platform, string name, string value) { }
         public static void SetPlatformSettings(string buildTargetGroup, string platform, string name, string value) { }
 
-        // Overloaded — NamedBuildTarget overload should win.
+        // Overloaded with no lockfile entry — under strict mode the SG cannot decide which
+        // overload is the historically-prior one, so it must skip emission entirely. The
+        // previous NamedBuildTarget heuristic is gone.
         public static void SetThing(string name, string value) { }
         public static void SetThing(UnityEditor.Build.NamedBuildTarget buildTarget, string value) { }
+
+        // Overloaded — lockfile pins the (NamedBuildTarget, string, int) variant below. This is
+        // the only way the SG can pick a winner among same-NBT overloads.
+        public static void SetLockedThing(UnityEditor.Build.NamedBuildTarget buildTarget, string value) { }
+        public static void SetLockedThing(UnityEditor.Build.NamedBuildTarget buildTarget, string value, int extra) { }
     }
 }
 
@@ -117,6 +127,18 @@ var compilation = CSharpCompilation.Create(
     syntaxTrees: new[] { syntaxTree },
     references: references,
     options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+// Inject a lockfile entry pinning the 3-parameter SetLockedThing overload, so the SG
+// can't fall back to the NamedBuildTarget heuristic (both overloads have it).
+ApiSignatureLock.Entries = new Dictionary<string, string[]>
+{
+    ["EditorUserBuildSettingsSetLockedThingTask"] = new[]
+    {
+        "global::UnityEditor.Build.NamedBuildTarget",
+        "global::System.String",
+        "global::System.Int32",
+    },
+};
 
 var generator = new BuiltInTasksGenerator();
 var driver = CSharpGeneratorDriver.Create(generator);

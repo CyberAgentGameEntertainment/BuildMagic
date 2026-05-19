@@ -2,9 +2,11 @@
 
 Japanese: [README.ja.md](./README.ja.md)
 
-Buildin Task Generator is a tool that generates `IBuildTask` implementations that set settings for `PlayerSettings`, `EditorUserBuildSettings`, etc. based on the source code of [UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference).
+Builtin Task Generator is a maintainer-side tool that sweeps every release tag of [UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference), aggregates the per-version `PlayerSettings` / `EditorUserBuildSettings` API surface, and emits **`ApiSignatureLock.g.cs`** consumed by the in-process source generator (`BuildMagic.BuiltinTasks.Generators`).
 
-When a new Unity version is released and added as a tag to [UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference), running this tool will analyze the new version and update the generated code.
+The actual task classes are generated at the consumer's Unity compile by the source generator. This offline tool only produces the lockfile that the source generator uses to disambiguate same-name overloads across Unity versions (the "older overload wins" / historical-precedence rule). An empty lockfile is valid — the source generator falls back to a NamedBuildTarget heuristic.
+
+When a new Unity LTS is released and added as a tag to UnityCsReference, run this tool, commit the regenerated `ApiSignatureLock.g.cs`, and ship a new package version.
 
 <!-- TOC -->
 * [Builtin Task Generator](#builtin-task-generator)
@@ -28,11 +30,13 @@ When a new Unity version is released and added as a tag to [UnityCsReference](ht
 
 ## Basic Usage
 
-Use the `generate` subcommand. Specify the output directory for the generated files (`.cs`) with the `-o` option.
+Run the `generate` subcommand and point `-o` at the source generator project directory (where `ApiSignatureLock.g.cs` should land):
 
 ```shell
-dotnet run -- generate -o ../../Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated
+dotnet run -- generate -o ../BuildMagic.BuiltinTasks.Generators
 ```
+
+The tool writes a single file: `BuildMagic.BuiltinTasks.Generators/ApiSignatureLock.g.cs`. Commit it; rebuild the source generator project; ship.
 
 ## Caching of Analysis Results
 

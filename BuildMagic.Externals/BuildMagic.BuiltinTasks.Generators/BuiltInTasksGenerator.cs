@@ -149,6 +149,7 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
         {
             if (!IsCandidateProperty(prop)) continue;
             if (!IsSerializable(prop.Type, unityObject)) continue;
+            if (IsIgnoredByOverride(prop, typeExpression)) continue;
             var className = $"{classNamePrefix}Set{Capitalize(prop.Name)}Task";
             if (!groups.TryGetValue(className, out var g)) groups[className] = g = new CandidateGroup();
             g.Properties.Add(prop);
@@ -159,6 +160,7 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
         {
             if (!IsCandidateMethod(method)) continue;
             if (method.Parameters.Any(p => !IsSerializable(p.Type, unityObject))) continue;
+            if (IsIgnoredByOverride(method, typeExpression)) continue;
             var className = $"{classNamePrefix}{method.Name}Task";
             if (!groups.TryGetValue(className, out var g)) groups[className] = g = new CandidateGroup();
             g.Methods.Add(method);
@@ -170,21 +172,23 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
             var group = kvp.Value;
             if (TypeAlreadyExists(compilation, className)) continue;
 
-            // Prefer a method overload with NamedBuildTarget if there is more than one method candidate.
+            // Overload disambiguation is lockfile-only. When the candidate group has more than
+            // one method we require an ApiSignatureLock entry that pins the canonical signature
+            // (recorded by the offline UnityCsReference sweep — the historical-precedence rule).
+            // Without an entry we skip emission rather than guess: if the offline sweep hasn't
+            // run for the colliding API yet, the "earlier overload wins" rule cannot be applied,
+            // and emitting either choice risks pinning the wrong one.
             if (group.Methods.Count > 1)
             {
-                var withNamedBuildTarget = group.Methods.Where(m => m.Parameters.Any(p =>
-                    p.Type.ToDisplayString(FullyQualifiedNoKeywords) == "global::UnityEditor.Build.NamedBuildTarget"))
-                    .ToList();
-                if (withNamedBuildTarget.Count == 1)
-                {
-                    group.Methods.Clear();
-                    group.Methods.Add(withNamedBuildTarget[0]);
-                }
-                else
-                {
-                    continue; // ambiguous; skip rather than emit a duplicate
-                }
+                if (!ApiSignatureLock.Entries.TryGetValue(className, out var canonicalSignature))
+                    continue;
+                var matches = group.Methods.Where(m =>
+                    m.Parameters.Length == canonicalSignature.Length &&
+                    m.Parameters.Select(p => p.Type.ToDisplayString(FullyQualifiedNoKeywords))
+                        .SequenceEqual(canonicalSignature)).ToList();
+                if (matches.Count != 1) continue;
+                group.Methods.Clear();
+                group.Methods.Add(matches[0]);
             }
 
             // If property and method collide, skip property in favor of the (single) method.
@@ -512,6 +516,25 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
         if (!ApiOverrides.TryGetValue(key, out var ovr)) return null;
         if (!ovr.ParameterTypes.SequenceEqual(paramTypeFqns)) return null;
         return ovr;
+    }
+
+    // Filter Ignored overrides BEFORE the overload tiebreak so cases where every overload
+    // carries NamedBuildTarget (e.g. SetScriptingDefineSymbols(NamedBuildTarget, string) vs
+    // (NamedBuildTarget, string[])) can still be disambiguated by the override table.
+    private static bool IsIgnoredByOverride(IPropertySymbol prop, string typeExpression)
+    {
+        var setterExpression = $"{typeExpression}.{prop.Name} = {{0}};";
+        var paramTypeFqn = prop.Type.ToDisplayString(FullyQualifiedNoKeywords);
+        return LookupOverride(setterExpression, new[] { paramTypeFqn }) is { Ignored: true };
+    }
+
+    private static bool IsIgnoredByOverride(IMethodSymbol method, string typeExpression)
+    {
+        var setterExpression = BuildMethodSetterExpression(typeExpression, method);
+        var paramTypeFqns = method.Parameters
+            .Select(p => p.Type.ToDisplayString(FullyQualifiedNoKeywords))
+            .ToArray();
+        return LookupOverride(setterExpression, paramTypeFqns) is { Ignored: true };
     }
 
     // ===== Weaving =====================================================
