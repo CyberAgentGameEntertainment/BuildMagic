@@ -15,7 +15,7 @@ namespace BuildMagic.Window.Editor.Elements
 #if UNITY_6000_0_OR_NEWER
     [UxmlElement]
 #endif
-    public sealed partial class LeftPaneView : VisualElement, ILeftPaneView
+    internal sealed partial class LeftPaneView : VisualElement, ILeftPaneView
     {
         private readonly VisualTreeAsset _listEntryTemplate;
         private readonly LeftPaneTreeView _treeView;

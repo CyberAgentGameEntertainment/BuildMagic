@@ -19,7 +19,7 @@ namespace BuildMagic.Window.Editor.Elements
 #if UNITY_6000_0_OR_NEWER
     [UxmlElement]
 #endif
-    public partial class ConfigurationListView : BindableElement
+    internal partial class ConfigurationListView : BindableElement
     {
         private readonly Label _label;
         private readonly ListView _listView;

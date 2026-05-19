@@ -10,7 +10,7 @@ namespace BuildMagic.Window.Editor.Elements
 #if UNITY_6000_0_OR_NEWER
     [UxmlElement]
 #endif
-    public sealed partial class TabView : VisualElement, IDisposable
+    internal sealed partial class TabView : VisualElement, IDisposable
     {
         private const string SelectedClassName = "selected";
         private const string TabClassName = "tab";

@@ -18,7 +18,7 @@ namespace BuildMagic.Window.Editor.Elements
 #if UNITY_6000_0_OR_NEWER
     [UxmlElement]
 #endif
-    public sealed partial class RightPaneView : VisualElement, IRightPaneView
+    internal sealed partial class RightPaneView : VisualElement, IRightPaneView
     {
         private readonly Button _addConfigurationButton;
         private readonly Foldout _internalPrepareConfigurationFoldout;

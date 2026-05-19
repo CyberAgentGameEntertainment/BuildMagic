@@ -9,7 +9,7 @@ namespace BuildMagic.Window.Editor.Elements
 #if UNITY_6000_0_OR_NEWER
     [UxmlElement]
 #endif
-    public sealed partial class TwoPaneSplitView : UnityEngine.UIElements.TwoPaneSplitView
+    internal sealed partial class TwoPaneSplitView : UnityEngine.UIElements.TwoPaneSplitView
     {
 #if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<TwoPaneSplitView, UxmlTraits>
