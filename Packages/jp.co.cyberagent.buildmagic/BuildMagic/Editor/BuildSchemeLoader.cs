@@ -78,6 +78,9 @@ namespace BuildMagicEditor
 
         public static FileSystemWatcher CreateFileSystemWatcher()
         {
+            if (Directory.Exists(BuildMagicDirectory) == false)
+                Directory.CreateDirectory(BuildMagicDirectory);
+
             var fullPath = Path.GetFullPath(BuildMagicDirectory);
             var watcher = new FileSystemWatcher
             {

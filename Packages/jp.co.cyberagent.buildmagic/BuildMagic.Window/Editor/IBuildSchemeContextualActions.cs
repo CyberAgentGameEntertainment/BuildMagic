@@ -24,25 +24,27 @@ namespace BuildMagic.Window.Editor
             string subMenuPath = null)
         {
             Func<DropdownMenuAction, DropdownMenuAction.Status> getStatus = _ =>
-                getOptions().IsActive ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled;
+                getOptions() is { IsActive: true } ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled;
             var prefix = string.IsNullOrEmpty(subMenuPath) ? string.Empty : $"{subMenuPath}/";
-            menu.AppendAction($"{prefix}Apply Pre-build Now", _ => getOptions().PreBuildRequested(),
+            menu.AppendAction($"{prefix}Apply Pre-build Now", _ => getOptions()?.PreBuildRequested(),
                 getStatus);
-            menu.AppendAction($"{prefix}Build Player Now...", _ => getOptions().BuildRequested(), getStatus);
+            menu.AppendAction($"{prefix}Build Player Now...", _ => getOptions()?.BuildRequested(), getStatus);
             menu.AppendSeparator(prefix);
-            menu.AppendAction($"{prefix}Copy...", _ => getOptions().CopyCreateRequested(), getStatus);
-            menu.AppendAction($"{prefix}Inherit...", _ => getOptions().InheritCreateRequested(), getStatus);
-            menu.AppendAction($"{prefix}Remove", _ => getOptions().RemoveRequested(), getStatus);
-            menu.AppendAction($"{prefix}Unset Primary", _ => getOptions().UnsetPrimaryRequested(),
+            menu.AppendAction($"{prefix}Copy...", _ => getOptions()?.CopyCreateRequested(), getStatus);
+            menu.AppendAction($"{prefix}Inherit...", _ => getOptions()?.InheritCreateRequested(), getStatus);
+            menu.AppendAction($"{prefix}Remove", _ => getOptions()?.RemoveRequested(), getStatus);
+            menu.AppendAction($"{prefix}Unset Primary", _ => getOptions()?.UnsetPrimaryRequested(),
                 _ => getOptions() switch
                 {
+                    null => DropdownMenuAction.Status.Hidden,
                     { IsPrimary: false } => DropdownMenuAction.Status.Hidden,
                     { IsActive: false } => DropdownMenuAction.Status.Disabled,
                     _ => DropdownMenuAction.Status.Normal
                 });
-            menu.AppendAction($"{prefix}Set as Primary", _ => getOptions().SetAsPrimaryRequested(),
+            menu.AppendAction($"{prefix}Set as Primary", _ => getOptions()?.SetAsPrimaryRequested(),
                 _ => getOptions() switch
                 {
+                    null => DropdownMenuAction.Status.Hidden,
                     { IsPrimary: true } => DropdownMenuAction.Status.Hidden,
                     { IsActive: false } => DropdownMenuAction.Status.Disabled,
                     _ => DropdownMenuAction.Status.Normal
