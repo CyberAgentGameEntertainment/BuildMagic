@@ -38,6 +38,10 @@ namespace UnityEditor
         [System.Obsolete]
         public static bool legacyFlag { get; set; }
 
+        // error:true obsolete must be skipped entirely (compiler refuses to bind).
+        [System.Obsolete("gone", true)]
+        public static bool fatallyObsoleteFlag { get; set; }
+
         public static void SetDefaultShaderChunkCount(int chunkCount) { }
 
         // Multi-param with key — should weave into IReadOnlyDictionary<BuildTarget, GraphicsDeviceType[]>

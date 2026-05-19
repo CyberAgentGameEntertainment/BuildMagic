@@ -240,11 +240,28 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
 
     private static bool IsObsoleteError(ISymbol symbol)
     {
+        // ObsoleteAttribute's "error" flag lives at constructor arg index 1.
+        // Filter only members the compiler would refuse to bind; preserve warning-only
+        // obsoletes so existing schemes referencing those configuration types still
+        // deserialize.
         foreach (var attr in symbol.GetAttributes())
         {
-            var attrName = attr.AttributeClass?.ToDisplayString();
-            if (attrName != "System.ObsoleteAttribute") continue;
-            return true;
+            if (attr.AttributeClass?.ToDisplayString() != "System.ObsoleteAttribute") continue;
+            if (attr.ConstructorArguments.Length >= 2 &&
+                attr.ConstructorArguments[1].Value is bool isError &&
+                isError)
+                return true;
+        }
+        return false;
+    }
+
+    private static bool HasObsoleteAttribute(ISymbol symbol)
+    {
+        for (var s = symbol; s is not null; s = s.ContainingType)
+        {
+            foreach (var attr in s.GetAttributes())
+                if (attr.AttributeClass?.ToDisplayString() == "System.ObsoleteAttribute")
+                    return true;
         }
         return false;
     }
@@ -351,7 +368,8 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
 
         EmitTask(sb, className, rooted, displayName, propertyNameAttr,
             setterTemplate: setterExpression,
-            getterTemplate: prop.GetMethod is not null ? $"{{0}} = {typeExpression}.{prop.Name};" : null);
+            getterTemplate: prop.GetMethod is not null ? $"{{0}} = {typeExpression}.{prop.Name};" : null,
+            isObsolete: HasObsoleteAttribute(prop));
     }
 
     private static void EmitMethodTask(StringBuilder sb, IMethodSymbol method, IMethodSymbol[] siblings,
@@ -386,7 +404,8 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
 
         EmitTask(sb, className, rooted, displayName, propertyNameAttr,
             setterTemplate: setterExpression,
-            getterTemplate: getterTemplate);
+            getterTemplate: getterTemplate,
+            isObsolete: HasObsoleteAttribute(method));
     }
 
     private static string BuildMethodSetterExpression(string typeExpression, IMethodSymbol method)
@@ -785,7 +804,8 @@ $$"""
     // ===== Emission ====================================================
 
     private static void EmitTask(StringBuilder sb, string className, List<WeavedRoot> rootParameters,
-        string displayName, string propertyNameAttr, string setterTemplate, string? getterTemplate)
+        string displayName, string propertyNameAttr, string setterTemplate, string? getterTemplate,
+        bool isObsolete)
     {
         var ctx = new EmitContext();
         var serializableTypeExpressions = rootParameters
@@ -799,17 +819,19 @@ $$"""
             ? $"global::{EmittedNamespace}.{parametersClassName}"
             : serializableTypeExpressions[0];
 
-        EmitTaskClass(sb, className, rootParameters, setterTemplate);
+        EmitTaskClass(sb, className, rootParameters, setterTemplate, isObsolete);
         EmitConfigurationClass(sb, className, taskFqn, parameterTypeExpression, rootParameters,
-            getterTemplate, displayName, propertyNameAttr, needDedicatedParameterType);
+            getterTemplate, displayName, propertyNameAttr, needDedicatedParameterType, isObsolete);
         if (needDedicatedParameterType)
             EmitParametersClass(sb, parametersClassName, rootParameters, serializableTypeExpressions, ctx);
-        EmitBuilderClass(sb, className, taskFqn, parameterTypeExpression, rootParameters, needDedicatedParameterType);
+        EmitBuilderClass(sb, className, taskFqn, parameterTypeExpression, rootParameters,
+            needDedicatedParameterType, isObsolete);
     }
 
     private static void EmitTaskClass(StringBuilder sb, string className, List<WeavedRoot> rootParameters,
-        string setterTemplate)
+        string setterTemplate, bool isObsolete)
     {
+        if (isObsolete) sb.AppendLine("[global::System.Obsolete]");
         sb.AppendLine($"public class {className} : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>");
         sb.AppendLine("{");
 
@@ -838,10 +860,11 @@ $$"""
 
     private static void EmitConfigurationClass(StringBuilder sb, string className, string taskFqn,
         string parameterTypeExpression, List<WeavedRoot> rootParameters, string? getterTemplate,
-        string displayName, string propertyNameAttr, bool needDedicatedParameterType)
+        string displayName, string propertyNameAttr, bool needDedicatedParameterType, bool isObsolete)
     {
         sb.AppendLine($"[global::BuildMagicEditor.BuildConfiguration(DisplayName = @\"{displayName}\", PropertyName = @\"{propertyNameAttr}\")]");
         sb.AppendLine("[global::System.Serializable]");
+        if (isObsolete) sb.AppendLine("[global::System.Obsolete]");
         var baseList = $"global::BuildMagicEditor.BuildConfigurationBase<{taskFqn}, {parameterTypeExpression}>";
         if (getterTemplate is not null)
             baseList += ", global::BuildMagicEditor.IProjectSettingApplier";
@@ -944,9 +967,11 @@ $$"""
     }
 
     private static void EmitBuilderClass(StringBuilder sb, string className, string taskFqn,
-        string parameterTypeExpression, List<WeavedRoot> rootParameters, bool needDedicatedParameterType)
+        string parameterTypeExpression, List<WeavedRoot> rootParameters, bool needDedicatedParameterType,
+        bool isObsolete)
     {
         sb.AppendLine($"[global::BuildMagicEditor.BuildTaskBuilder(typeof({taskFqn}), typeof({parameterTypeExpression}))]");
+        if (isObsolete) sb.AppendLine("[global::System.Obsolete]");
         sb.AppendLine($"public class {className}Builder : global::BuildMagicEditor.BuildTaskBuilderBase<{taskFqn}, {parameterTypeExpression}>");
         sb.AppendLine("{");
         sb.AppendLine($"    public override {taskFqn} Build({parameterTypeExpression} value)");
