@@ -12,7 +12,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal class LeftPaneTreeView : TreeView
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    internal partial class LeftPaneTreeView : TreeView
     {
         private SerializedProperty _currentSchemeListProp;
         private BuildScheme[] _currentSchemes;
@@ -172,6 +175,7 @@ namespace BuildMagic.Window.Editor.Elements
             Rebuild();
         }
 
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<LeftPaneTreeView, UxmlTraits>
         {
         }
@@ -179,5 +183,6 @@ namespace BuildMagic.Window.Editor.Elements
         public new class UxmlTraits : TreeView.UxmlTraits
         {
         }
+#endif
     }
 }

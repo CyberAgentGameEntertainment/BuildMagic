@@ -9,7 +9,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal sealed class ConfigurationEntryView : PropertyField
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    internal sealed partial class ConfigurationEntryView : PropertyField
     {
         public ConfigurationType Type { get; private set; }
         public int Index { get; private set; }
@@ -39,8 +42,10 @@ namespace BuildMagic.Window.Editor.Elements
             ((IProjectSettingApplier)Configuration).ApplyProjectSetting();
         }
 
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<ConfigurationEntryView, UxmlTraits>
         {
         }
+#endif
     }
 }

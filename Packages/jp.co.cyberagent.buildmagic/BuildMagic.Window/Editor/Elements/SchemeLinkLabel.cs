@@ -7,7 +7,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    public class SchemeLinkLabel : BindableElement, INotifyValueChanged<string>
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    public partial class SchemeLinkLabel : BindableElement, INotifyValueChanged<string>
     {
         private readonly Label _leadingLabel;
         private readonly Label _linkLabel;
@@ -29,6 +32,14 @@ namespace BuildMagic.Window.Editor.Elements
                 }, this);
         }
 
+#if UNITY_6000_0_OR_NEWER
+        [UxmlAttribute("text")]
+        public string Text
+        {
+            get => _value;
+            set => ((INotifyValueChanged<string>)this).value = value;
+        }
+#else
         #region Nested type: UxmlFactory
 
         public new class UxmlFactory : UxmlFactory<SchemeLinkLabel, UxmlTraits>
@@ -59,6 +70,7 @@ namespace BuildMagic.Window.Editor.Elements
         }
 
         #endregion
+#endif
 
         #region INotifyValueChanged<string> Members
 

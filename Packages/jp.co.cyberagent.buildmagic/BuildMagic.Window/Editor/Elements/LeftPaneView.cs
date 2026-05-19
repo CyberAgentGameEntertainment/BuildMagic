@@ -12,7 +12,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal sealed class LeftPaneView : VisualElement, ILeftPaneView
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    internal sealed partial class LeftPaneView : VisualElement, ILeftPaneView
     {
         private readonly VisualTreeAsset _listEntryTemplate;
         private readonly LeftPaneTreeView _treeView;
@@ -81,8 +84,10 @@ namespace BuildMagic.Window.Editor.Elements
             return index >= 0 ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled;
         }
 
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<LeftPaneView, UxmlTraits>
         {
         }
+#endif
     }
 }

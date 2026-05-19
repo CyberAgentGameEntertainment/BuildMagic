@@ -16,7 +16,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal class ConfigurationListView : BindableElement
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    internal partial class ConfigurationListView : BindableElement
     {
         private readonly Label _label;
         private readonly ListView _listView;
@@ -229,6 +232,14 @@ namespace BuildMagic.Window.Editor.Elements
             entry.Unbind();
         }
 
+#if UNITY_6000_0_OR_NEWER
+        [UxmlAttribute("configuration-type")]
+        public ConfigurationType ConfigurationTypeAttribute
+        {
+            get => Type;
+            set => Type = value;
+        }
+#else
         public new class UxmlFactory : UxmlFactory<ConfigurationListView, UxmlTraits>
         {
         }
@@ -248,6 +259,7 @@ namespace BuildMagic.Window.Editor.Elements
                 derived.Type = _type.GetValueFromBag(bag, cc);
             }
         }
+#endif
 
         private interface IConfigurationFilter
         {

@@ -278,9 +278,11 @@ namespace BuildMagic.Window.Editor.SubWindows
                 public const string DiffEmpty = "diff-empty";
             }
 
+#if !UNITY_6000_0_OR_NEWER
             public new class UxmlFactory : UxmlFactory<DiffRowView, UxmlTraits>
             {
             }
+#endif
         }
     }
 }
