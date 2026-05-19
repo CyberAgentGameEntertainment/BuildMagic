@@ -15,7 +15,7 @@ namespace BuildMagic.Window.Editor.Elements
 #if UNITY_6000_0_OR_NEWER
     [UxmlElement]
 #endif
-    internal partial class LeftPaneTreeView : TreeView
+    public partial class LeftPaneTreeView : TreeView
     {
         private SerializedProperty _currentSchemeListProp;
         private BuildScheme[] _currentSchemes;
