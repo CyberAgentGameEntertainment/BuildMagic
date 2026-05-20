@@ -14,6 +14,8 @@ namespace UnityEngine
 {
     public class Object { }
     public class Texture2D : Object { }
+    public struct Vector2 { public float x, y; }
+    public struct Color { public float r, g, b, a; }
     namespace Rendering { public enum GraphicsDeviceType { Vulkan, Metal } }
 }
 
@@ -35,6 +37,11 @@ namespace UnityEditor
         public static string productName { get; set; } = "";
         public static int defaultScreenWidth { get; set; }
         public static bool runInBackground { get; set; }
+
+        // Unity value-type serializables — must be accepted by IsPlainSerializable even
+        // though they're not primitives / enums / UnityEngine.Object subclasses.
+        public static UnityEngine.Vector2 cursorHotspot { get; set; }
+        public static UnityEngine.Color splashScreenBackgroundColor { get; set; }
 
         [System.Obsolete]
         public static bool legacyFlag { get; set; }

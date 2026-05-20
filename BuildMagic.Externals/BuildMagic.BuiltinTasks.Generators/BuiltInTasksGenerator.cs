@@ -50,6 +50,33 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
         ("UnityEditor.Build.NamedBuildTarget", "global::BuildMagicEditor.NamedBuildTargetSerializationWrapper"),
     };
 
+    // Mirrors TypeUtils.BuiltinSerializableTypes — Unity value types that survive JsonUtility
+    // round-trip but aren't picked up by primitive/enum/UnityObject checks. Names match
+    // ITypeSymbol.ToDisplayString(FullyQualifiedNoKeywords) form (with `global::` prefix).
+    private static readonly HashSet<string> UnityBuiltinSerializableTypes = new()
+    {
+        "global::UnityEngine.Vector3",
+        "global::UnityEngine.Vector3Int",
+        "global::UnityEngine.Vector2",
+        "global::UnityEngine.Vector2Int",
+        "global::UnityEngine.Quaternion",
+        "global::UnityEngine.Color",
+        "global::UnityEngine.Bounds",
+        "global::UnityEngine.Vector4",
+        "global::UnityEngine.Rect",
+        "global::UnityEngine.RectInt",
+        "global::UnityEngine.Matrix4x4",
+        "global::UnityEngine.Color32",
+        "global::UnityEngine.LayerMask",
+        "global::UnityEngine.PropertyName",
+        "global::UnityEngine.Rendering.SphericalHarmonicsL2",
+        "global::UnityEngine.Hash128",
+        "global::UnityEngine.RenderingLayerMask",
+        "global::UnityEngine.AnimationCurve",
+        "global::UnityEngine.Gradient",
+        "global::UnityEngine.RectOffset",
+    };
+
     // Per-setter-expression overrides. Mirrors BuildMagic.BuiltinTaskGenerator/appsettings.json "Apis".
     // Key is setter expression with `global::` stripped (same form as offline matches).
     private static readonly Dictionary<string, ApiOverride> ApiOverrides = new()
@@ -300,6 +327,22 @@ public class BuiltInTasksGenerator : IIncrementalGenerator
 
         if (type.TypeKind == TypeKind.Enum) return true;
         if (unityObject is not null && InheritsFrom(type, unityObject)) return true;
+
+        if (type is INamedTypeSymbol named)
+        {
+            if (UnityBuiltinSerializableTypes.Contains(named.ToDisplayString(FullyQualifiedNoKeywords)))
+                return true;
+
+            if (named.IsGenericType && !named.IsUnboundGenericType &&
+                named.ConstructUnboundGenericType().ToDisplayString() == "System.Collections.Generic.List<>")
+                return IsPlainSerializable(named.TypeArguments[0], unityObject);
+
+            // Mirrors TypeUtils.IsSerializableFieldType: any non-readonly [Serializable] type
+            // is treated as a serializable field type. Catches user-defined structs/classes
+            // marked [Serializable] (e.g. UnityEditor.AndroidBanner).
+            if (named.IsSerializable && !named.IsReadOnly) return true;
+        }
+
         return false;
     }
 
