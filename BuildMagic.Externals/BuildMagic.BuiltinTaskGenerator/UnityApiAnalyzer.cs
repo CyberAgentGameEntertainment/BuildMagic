@@ -80,6 +80,35 @@ public class UnityApiAnalyzer(
 
             logger.ZLogInformation($"Solution loaded: {solution.Projects.Count()} projects");
 
+            // MSBuildWorkspace 5.x (used with .NET 10) switched to an out-of-process BuildHost.
+            // When targeting netstandard2.1, the BuildHost needs NETStandard.Library.Ref as a targeting
+            // pack. If the pack cannot be resolved (e.g. it is no longer bundled in the .NET 10 SDK packs),
+            // none of the projects get a BCL reference and System.Object resolves to an error type.
+            // The UnityEditor project references UnityEngine and several helper projects, so a missing BCL
+            // in any referenced project cascades into tens of thousands of errors in UnityEditor. Inject
+            // netstandard.dll into every project so the whole project graph shares a consistent core library.
+            var editorProject = solution.Projects.FirstOrDefault(p => p.Name is "UnityEditor");
+            if (editorProject != null)
+            {
+                var editorCompilation = await editorProject.GetCompilationAsync(ct);
+                if (editorCompilation != null &&
+                    editorCompilation.GetSpecialType(SpecialType.System_Object).TypeKind == TypeKind.Error)
+                {
+                    var bclRefs = FindBclRefAssemblies();
+                    if (bclRefs.Length > 0)
+                    {
+                        logger.ZLogInformation($"BCL references missing; adding {bclRefs.Length} assemblies from {Path.GetDirectoryName(bclRefs[0])} to all projects");
+                        var refs = bclRefs.Select(p => (MetadataReference)MetadataReference.CreateFromFile(p)).ToArray();
+                        foreach (var p in solution.Projects.ToList())
+                            solution = solution.AddMetadataReferences(p.Id, refs);
+                    }
+                    else
+                    {
+                        logger.ZLogWarning($"BCL references missing and BCL reference assemblies could not be located");
+                    }
+                }
+            }
+
             foreach (var project in solution.Projects)
             {
                 if (project.Name is not "UnityEditor")
@@ -418,6 +447,24 @@ public class UnityApiAnalyzer(
 
             await library.SaveAsync(version, ct);
         }
+    }
+
+    private static string[] FindBclRefAssemblies()
+    {
+        // netstandard.dll (the netstandard2.1 reference assembly) and mscorlib.dll (a type-forwarding
+        // facade to it) are copied next to the executable from the NETStandard.Library.Ref package by
+        // the csproj build. netstandard.dll is the framework reference for the netstandard2.1 project;
+        // mscorlib.dll satisfies metadata that references mscorlib directly.
+        var refDir = Path.Combine(AppContext.BaseDirectory, "ref");
+        var result = new List<string>();
+        foreach (var name in new[] { "netstandard.dll", "mscorlib.dll" })
+        {
+            var path = Path.Combine(refDir, name);
+            if (File.Exists(path))
+                result.Add(path);
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>

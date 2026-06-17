@@ -4,12 +4,9 @@
 
 using System.IO;
 using BuildMagic.BuiltinTaskGenerator;
-using Microsoft.Build.Locator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ZLogger;
-
-MSBuildLocator.RegisterDefaults();
 
 var builder = ConsoleApp.CreateBuilder(args)
     .ConfigureServices((context, services) =>
