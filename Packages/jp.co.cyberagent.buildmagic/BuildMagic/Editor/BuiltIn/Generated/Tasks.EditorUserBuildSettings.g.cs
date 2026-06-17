@@ -1806,6 +1806,9 @@ partial class EditorUserBuildSettingsSetSwitchWaitForMemoryTrackerOnStartupTaskC
 // [2022.3.49f1 - (2022.3 latest)], [6000.0.0f1 - (latest)]
 #if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Switch NVNAftermath", PropertyName = @"EditorUserBuildSettings.SwitchNVNAftermath")]
+#if UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER && !UNITY_6000_0_60 && !UNITY_6000_0_59 && !UNITY_6000_0_58 && !UNITY_6000_0_58 && !UNITY_6000_0_57 && !UNITY_6000_0_56 && !UNITY_6000_0_55 && !UNITY_6000_0_54 && !UNITY_6000_0_53 && !UNITY_6000_0_52 && !UNITY_6000_0_51 && !UNITY_6000_0_50 && !UNITY_6000_0_49 && !UNITY_6000_0_48 && !UNITY_6000_0_47 && !UNITY_6000_0_46 && !UNITY_6000_0_45 && !UNITY_6000_0_44 && !UNITY_6000_0_43 && !UNITY_6000_0_42 && !UNITY_6000_0_41 && !UNITY_6000_0_40 && !UNITY_6000_0_39 && !UNITY_6000_0_38 && !UNITY_6000_0_37 && !UNITY_6000_0_36 && !UNITY_6000_0_35 && !UNITY_6000_0_34 && !UNITY_6000_0_33 && !UNITY_6000_0_32 && !UNITY_6000_0_31 && !UNITY_6000_0_30 && !UNITY_6000_0_29 && !UNITY_6000_0_28 && !UNITY_6000_0_27 && !UNITY_6000_0_26 && !UNITY_6000_0_25 && !UNITY_6000_0_24 && !UNITY_6000_0_23 && !UNITY_6000_0_22 && !UNITY_6000_0_21 && !UNITY_6000_0_20 && !UNITY_6000_0_19 && !UNITY_6000_0_18 && !UNITY_6000_0_17 && !UNITY_6000_0_16 && !UNITY_6000_0_15 && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0 || UNITY_6000_4_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class EditorUserBuildSettingsSetSwitchNVNAftermathTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public EditorUserBuildSettingsSetSwitchNVNAftermathTask(global::System.Boolean switchNVNAftermath)
@@ -1949,6 +1952,56 @@ partial class EditorUserBuildSettingsSetSwitchEnableHostIOTaskConfiguration : gl
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
         var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.switchEnableHostIO;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.0.61f1 - (6000.0 latest)], [6000.4.0f1 - (latest)]
+#if UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER && !UNITY_6000_0_60 && !UNITY_6000_0_59 && !UNITY_6000_0_58 && !UNITY_6000_0_58 && !UNITY_6000_0_57 && !UNITY_6000_0_56 && !UNITY_6000_0_55 && !UNITY_6000_0_54 && !UNITY_6000_0_53 && !UNITY_6000_0_52 && !UNITY_6000_0_51 && !UNITY_6000_0_50 && !UNITY_6000_0_49 && !UNITY_6000_0_48 && !UNITY_6000_0_47 && !UNITY_6000_0_46 && !UNITY_6000_0_45 && !UNITY_6000_0_44 && !UNITY_6000_0_43 && !UNITY_6000_0_42 && !UNITY_6000_0_41 && !UNITY_6000_0_40 && !UNITY_6000_0_39 && !UNITY_6000_0_38 && !UNITY_6000_0_37 && !UNITY_6000_0_36 && !UNITY_6000_0_35 && !UNITY_6000_0_34 && !UNITY_6000_0_33 && !UNITY_6000_0_32 && !UNITY_6000_0_31 && !UNITY_6000_0_30 && !UNITY_6000_0_29 && !UNITY_6000_0_28 && !UNITY_6000_0_27 && !UNITY_6000_0_26 && !UNITY_6000_0_25 && !UNITY_6000_0_24 && !UNITY_6000_0_23 && !UNITY_6000_0_22 && !UNITY_6000_0_21 && !UNITY_6000_0_20 && !UNITY_6000_0_19 && !UNITY_6000_0_18 && !UNITY_6000_0_17 && !UNITY_6000_0_16 && !UNITY_6000_0_15 && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0 || UNITY_6000_4_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Switch NVNAftermath Level", PropertyName = @"EditorUserBuildSettings.SwitchNVNAftermathLevel")]
+public class EditorUserBuildSettingsSetSwitchNVNAftermathLevelTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public EditorUserBuildSettingsSetSwitchNVNAftermathLevelTask(global::System.Int32 switchNVNAftermathLevel)
+    {
+        this.switchNVNAftermathLevel = switchNVNAftermathLevel;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.EditorUserBuildSettings.switchNVNAftermathLevel = this.switchNVNAftermathLevel;
+    }
+    private readonly global::System.Int32 switchNVNAftermathLevel;
+}
+partial class EditorUserBuildSettingsSetSwitchNVNAftermathLevelTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.switchNVNAftermathLevel;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"EditorUserBuildSettings: Build With Code Coverage", PropertyName = @"EditorUserBuildSettings.BuildWithCodeCoverage")]
+public class EditorUserBuildSettingsSetBuildWithCodeCoverageTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public EditorUserBuildSettingsSetBuildWithCodeCoverageTask(global::System.Boolean buildWithCodeCoverage)
+    {
+        this.buildWithCodeCoverage = buildWithCodeCoverage;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.EditorUserBuildSettings.buildWithCodeCoverage = this.buildWithCodeCoverage;
+    }
+    private readonly global::System.Boolean buildWithCodeCoverage;
+}
+partial class EditorUserBuildSettingsSetBuildWithCodeCoverageTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.EditorUserBuildSettings.buildWithCodeCoverage;
         this.Value = __BUILDMAGIC__0;
     }
 }

@@ -2,24 +2,37 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <LangVersion>12</LangVersion>
+        <LangVersion>13</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="ConsoleAppFramework" Version="4.2.4"/>
         <PackageReference Include="LibGit2Sharp" Version="0.30.0"/>
-        <PackageReference Include="Microsoft.Build.Locator" Version="1.7.8"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.2"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.9.2"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.3.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.3.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.9" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.9" />
+        <PackageReference Include="NETStandard.Library.Ref" Version="2.1.0"
+                          ExcludeAssets="all" PrivateAssets="all"
+                          GeneratePathProperty="true" />
         <PackageReference Include="ZLogger" Version="2.4.1"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="..\Common\**\*.cs" Link="./Common/*"/>
+        <Compile Include="..\Common\**\*.cs" Link="./Common/*" />
+    </ItemGroup>
+
+    <!-- Copy the netstandard2.1 reference assemblies next to the executable so they can be injected
+         into the Roslyn compilation at runtime without depending on the NuGet cache layout.
+         mscorlib.dll is a type-forwarding facade to netstandard.dll; it satisfies metadata that
+         references mscorlib directly. -->
+    <ItemGroup>
+        <None Include="$(PkgNETStandard_Library_Ref)\ref\netstandard2.1\netstandard.dll"
+              CopyToOutputDirectory="PreserveNewest" Link="ref\netstandard.dll" Visible="false" />
+        <None Include="$(PkgNETStandard_Library_Ref)\ref\netstandard2.1\mscorlib.dll"
+              CopyToOutputDirectory="PreserveNewest" Link="ref\mscorlib.dll" Visible="false" />
     </ItemGroup>
 
 </Project>

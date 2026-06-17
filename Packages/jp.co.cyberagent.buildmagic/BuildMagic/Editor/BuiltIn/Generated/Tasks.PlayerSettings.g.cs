@@ -1640,7 +1640,8 @@ partial class PlayerSettingsSetGraphicsJobModeTaskConfiguration : global::BuildM
         this.Value = __BUILDMAGIC__0;
     }
 }
-// [2022.3.0f1 - (latest)]
+// [2022.3.0f1 - (6000.3 latest)]
+#if !UNITY_6000_4_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Wsa Holographic Remoting Enabled", PropertyName = @"PlayerSettings.SetWsaHolographicRemotingEnabled()")]
 public class PlayerSettingsSetWsaHolographicRemotingEnabledTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
@@ -1663,8 +1664,12 @@ partial class PlayerSettingsSetWsaHolographicRemotingEnabledTaskConfiguration : 
         this.Value = __BUILDMAGIC__0;
     }
 }
+#endif
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Enable Internal Profiler* (Deprecated)", PropertyName = @"PlayerSettings.EnableInternalProfiler")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Enable Internal Profiler", PropertyName = @"PlayerSettings.EnableInternalProfiler")]
+#if UNITY_6000_5_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsSetEnableInternalProfilerTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetEnableInternalProfilerTask(global::System.Boolean enableInternalProfiler)
@@ -1687,7 +1692,10 @@ partial class PlayerSettingsSetEnableInternalProfilerTaskConfiguration : global:
     }
 }
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: On .Net UnhandledException*", PropertyName = @"PlayerSettings.ActionOnDotNetUnhandledException")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Action On Dot Net Unhandled Exception", PropertyName = @"PlayerSettings.ActionOnDotNetUnhandledException")]
+#if UNITY_6000_2_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsSetActionOnDotNetUnhandledExceptionTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetActionOnDotNetUnhandledExceptionTask(global::UnityEditor.ActionOnDotNetUnhandledException actionOnDotNetUnhandledException)
@@ -1941,6 +1949,9 @@ partial class PlayerSettingsSetAllowedAutorotateToLandscapeLeftTaskConfiguration
 }
 // [2022.3.0f1 - (latest)]
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Use Animated Autorotation", PropertyName = @"PlayerSettings.UseAnimatedAutorotation")]
+#if UNITY_6000_5_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsSetUseAnimatedAutorotationTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetUseAnimatedAutorotationTask(global::System.Boolean useAnimatedAutorotation)
@@ -2726,6 +2737,9 @@ partial class PlayerSettingsAndroidSetAndroidTVCompatibilityTaskConfiguration : 
 }
 // [2022.3.0f1 - (latest)]
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Android Game", PropertyName = @"PlayerSettings.Android.AndroidIsGame")]
+#if UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER && !UNITY_6000_0_55 && !UNITY_6000_0_54 && !UNITY_6000_0_53 && !UNITY_6000_0_52 && !UNITY_6000_0_51 && !UNITY_6000_0_50 && !UNITY_6000_0_49 && !UNITY_6000_0_48 && !UNITY_6000_0_47 && !UNITY_6000_0_46 && !UNITY_6000_0_45 && !UNITY_6000_0_44 && !UNITY_6000_0_43 && !UNITY_6000_0_42 && !UNITY_6000_0_41 && !UNITY_6000_0_40 && !UNITY_6000_0_39 && !UNITY_6000_0_38 && !UNITY_6000_0_37 && !UNITY_6000_0_36 && !UNITY_6000_0_35 && !UNITY_6000_0_34 && !UNITY_6000_0_33 && !UNITY_6000_0_32 && !UNITY_6000_0_31 && !UNITY_6000_0_30 && !UNITY_6000_0_29 && !UNITY_6000_0_28 && !UNITY_6000_0_27 && !UNITY_6000_0_26 && !UNITY_6000_0_25 && !UNITY_6000_0_24 && !UNITY_6000_0_23 && !UNITY_6000_0_22 && !UNITY_6000_0_21 && !UNITY_6000_0_20 && !UNITY_6000_0_19 && !UNITY_6000_0_18 && !UNITY_6000_0_17 && !UNITY_6000_0_16 && !UNITY_6000_0_15 && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0 || UNITY_6000_1_OR_NEWER && !UNITY_6000_1_15 && !UNITY_6000_1_14 && !UNITY_6000_1_13 && !UNITY_6000_1_12 && !UNITY_6000_1_11 && !UNITY_6000_1_10 && !UNITY_6000_1_9 && !UNITY_6000_1_8 && !UNITY_6000_1_7 && !UNITY_6000_1_6 && !UNITY_6000_1_5 && !UNITY_6000_1_4 && !UNITY_6000_1_3 && !UNITY_6000_1_2 && !UNITY_6000_1_1 && !UNITY_6000_1_0
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsAndroidSetAndroidIsGameTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsAndroidSetAndroidIsGameTask(global::System.Boolean androidIsGame)
@@ -3135,6 +3149,9 @@ partial class PlayerSettingsAndroidSetMaxAspectRatioTaskConfiguration : global::
 }
 // [2022.3.0f1 - (latest)]
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Hide Navigation Bar", PropertyName = @"PlayerSettings.Android.StartInFullscreen")]
+#if UNITY_6000_5_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsAndroidSetStartInFullscreenTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsAndroidSetStartInFullscreenTask(global::System.Boolean startInFullscreen)
@@ -8248,7 +8265,7 @@ partial class PlayerSettingsSwitchSetNetworkInterfaceManagerInitializeEnabledTas
     }
 }
 // [2022.3.0f1 - 2022.3.10f1], [2023.1.0f1 - 2023.1.10f1]
-#if !UNITY_2022_3_OR_NEWER || UNITY_2022_3_10 || UNITY_2022_3_9 || UNITY_2022_3_8 || UNITY_2022_3_7 || UNITY_2022_3_6 || UNITY_2022_3_5 || UNITY_2022_3_4 || UNITY_2022_3_3 || UNITY_2022_3_2 || UNITY_2022_3_1 || UNITY_2022_3_0 || UNITY_2023_1_OR_NEWER && !UNITY_2023_1_11 && !UNITY_2023_1_12 && !UNITY_2023_1_13 && !UNITY_2023_1_14 && !UNITY_2023_1_15 && !UNITY_2023_1_16 && !UNITY_2023_1_17 && !UNITY_2023_1_18 && !UNITY_2023_1_19 && !UNITY_2023_1_20 && !UNITY_2023_2_OR_NEWER
+#if !UNITY_2022_3_OR_NEWER || UNITY_2022_3_10 || UNITY_2022_3_9 || UNITY_2022_3_8 || UNITY_2022_3_7 || UNITY_2022_3_6 || UNITY_2022_3_5 || UNITY_2022_3_4 || UNITY_2022_3_3 || UNITY_2022_3_2 || UNITY_2022_3_1 || UNITY_2022_3_0 || UNITY_2023_1_0 || UNITY_2023_1_1 || UNITY_2023_1_2 || UNITY_2023_1_3 || UNITY_2023_1_4 || UNITY_2023_1_5 || UNITY_2023_1_6 || UNITY_2023_1_7 || UNITY_2023_1_8 || UNITY_2023_1_9 || UNITY_2023_1_10
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Switch: Player Connection Enabled", PropertyName = @"PlayerSettings.Switch.PlayerConnectionEnabled")]
 public class PlayerSettingsSwitchSetPlayerConnectionEnabledTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
@@ -8551,7 +8568,7 @@ partial class PlayerSettingsSetVulkanNumSwapchainBuffersTaskConfiguration : glob
     }
 }
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Acquire swapchain image late as possible*", PropertyName = @"PlayerSettings.VulkanEnableLateAcquireNextImage")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Get swapchain image late as possible*", PropertyName = @"PlayerSettings.VulkanEnableLateAcquireNextImage")]
 public class PlayerSettingsSetVulkanEnableLateAcquireNextImageTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetVulkanEnableLateAcquireNextImageTask(global::System.Boolean vulkanEnableLateAcquireNextImage)
@@ -10800,8 +10817,8 @@ partial class PlayerSettingsWSASetSyncCapabilitiesTaskConfiguration : global::Bu
     }
 }
 #endif
-// [2022.3.49f1 - (2022.3 latest)]
-#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1
+// [2022.3.49f1 - (2022.3 latest)], [6000.0.58f1 - (6000.0 latest)], [6000.2.5f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER && !UNITY_6000_0_57 && !UNITY_6000_0_56 && !UNITY_6000_0_55 && !UNITY_6000_0_54 && !UNITY_6000_0_53 && !UNITY_6000_0_52 && !UNITY_6000_0_51 && !UNITY_6000_0_50 && !UNITY_6000_0_49 && !UNITY_6000_0_48 && !UNITY_6000_0_47 && !UNITY_6000_0_46 && !UNITY_6000_0_45 && !UNITY_6000_0_44 && !UNITY_6000_0_43 && !UNITY_6000_0_42 && !UNITY_6000_0_41 && !UNITY_6000_0_40 && !UNITY_6000_0_39 && !UNITY_6000_0_38 && !UNITY_6000_0_37 && !UNITY_6000_0_36 && !UNITY_6000_0_35 && !UNITY_6000_0_34 && !UNITY_6000_0_33 && !UNITY_6000_0_32 && !UNITY_6000_0_31 && !UNITY_6000_0_30 && !UNITY_6000_0_29 && !UNITY_6000_0_28 && !UNITY_6000_0_27 && !UNITY_6000_0_26 && !UNITY_6000_0_25 && !UNITY_6000_0_24 && !UNITY_6000_0_23 && !UNITY_6000_0_22 && !UNITY_6000_0_21 && !UNITY_6000_0_20 && !UNITY_6000_0_19 && !UNITY_6000_0_18 && !UNITY_6000_0_17 && !UNITY_6000_0_16 && !UNITY_6000_0_15 && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0 || UNITY_6000_2_OR_NEWER && !UNITY_6000_2_4 && !UNITY_6000_2_3 && !UNITY_6000_2_2 && !UNITY_6000_2_1 && !UNITY_6000_2_0
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Audio Spatial Experience", PropertyName = @"PlayerSettings.AudioSpatialExperience")]
 public class PlayerSettingsSetAudioSpatialExperienceTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
@@ -10925,6 +10942,56 @@ partial class PlayerSettingsAndroidSetPredictiveBackSupportTaskConfiguration : g
     }
 }
 #endif
+// [2022.3.67f1 - (2022.3 latest)], [6000.3.0f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_66 && !UNITY_2022_3_65 && !UNITY_2022_3_64 && !UNITY_2022_3_63 && !UNITY_2022_3_62 && !UNITY_2022_3_62 && !UNITY_2022_3_62 && !UNITY_2022_3_61 && !UNITY_2022_3_60 && !UNITY_2022_3_59 && !UNITY_2022_3_58 && !UNITY_2022_3_57 && !UNITY_2022_3_56 && !UNITY_2022_3_55 && !UNITY_2022_3_54 && !UNITY_2022_3_53 && !UNITY_2022_3_52 && !UNITY_2022_3_51 && !UNITY_2022_3_50 && !UNITY_2022_3_49 && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_3_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Preferred Data Location", PropertyName = @"PlayerSettings.Android.PreferredDataLocation")]
+public class PlayerSettingsAndroidSetPreferredDataLocationTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetPreferredDataLocationTask(global::UnityEditor.AndroidPreferredDataLocation preferredDataLocation)
+    {
+        this.preferredDataLocation = preferredDataLocation;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.preferredDataLocation = this.preferredDataLocation;
+    }
+    private readonly global::UnityEditor.AndroidPreferredDataLocation preferredDataLocation;
+}
+partial class PlayerSettingsAndroidSetPreferredDataLocationTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.preferredDataLocation;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [2022.3.68f1 - (2022.3 latest)], [6000.0.60f1 - (6000.0 latest)], [6000.2.8f1 - (latest)]
+#if UNITY_2022_3_OR_NEWER && !UNITY_2023_1_OR_NEWER && !UNITY_2022_3_67 && !UNITY_2022_3_67 && !UNITY_2022_3_66 && !UNITY_2022_3_65 && !UNITY_2022_3_64 && !UNITY_2022_3_63 && !UNITY_2022_3_62 && !UNITY_2022_3_62 && !UNITY_2022_3_62 && !UNITY_2022_3_61 && !UNITY_2022_3_60 && !UNITY_2022_3_59 && !UNITY_2022_3_58 && !UNITY_2022_3_57 && !UNITY_2022_3_56 && !UNITY_2022_3_55 && !UNITY_2022_3_54 && !UNITY_2022_3_53 && !UNITY_2022_3_52 && !UNITY_2022_3_51 && !UNITY_2022_3_50 && !UNITY_2022_3_49 && !UNITY_2022_3_48 && !UNITY_2022_3_47 && !UNITY_2022_3_46 && !UNITY_2022_3_45 && !UNITY_2022_3_44 && !UNITY_2022_3_43 && !UNITY_2022_3_42 && !UNITY_2022_3_41 && !UNITY_2022_3_40 && !UNITY_2022_3_39 && !UNITY_2022_3_38 && !UNITY_2022_3_37 && !UNITY_2022_3_36 && !UNITY_2022_3_35 && !UNITY_2022_3_34 && !UNITY_2022_3_33 && !UNITY_2022_3_32 && !UNITY_2022_3_31 && !UNITY_2022_3_30 && !UNITY_2022_3_29 && !UNITY_2022_3_28 && !UNITY_2022_3_27 && !UNITY_2022_3_26 && !UNITY_2022_3_25 && !UNITY_2022_3_24 && !UNITY_2022_3_23 && !UNITY_2022_3_22 && !UNITY_2022_3_21 && !UNITY_2022_3_20 && !UNITY_2022_3_19 && !UNITY_2022_3_18 && !UNITY_2022_3_17 && !UNITY_2022_3_16 && !UNITY_2022_3_15 && !UNITY_2022_3_14 && !UNITY_2022_3_13 && !UNITY_2022_3_12 && !UNITY_2022_3_11 && !UNITY_2022_3_10 && !UNITY_2022_3_9 && !UNITY_2022_3_8 && !UNITY_2022_3_7 && !UNITY_2022_3_6 && !UNITY_2022_3_5 && !UNITY_2022_3_4 && !UNITY_2022_3_3 && !UNITY_2022_3_2 && !UNITY_2022_3_1 || UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER && !UNITY_6000_0_59 && !UNITY_6000_0_58 && !UNITY_6000_0_58 && !UNITY_6000_0_57 && !UNITY_6000_0_56 && !UNITY_6000_0_55 && !UNITY_6000_0_54 && !UNITY_6000_0_53 && !UNITY_6000_0_52 && !UNITY_6000_0_51 && !UNITY_6000_0_50 && !UNITY_6000_0_49 && !UNITY_6000_0_48 && !UNITY_6000_0_47 && !UNITY_6000_0_46 && !UNITY_6000_0_45 && !UNITY_6000_0_44 && !UNITY_6000_0_43 && !UNITY_6000_0_42 && !UNITY_6000_0_41 && !UNITY_6000_0_40 && !UNITY_6000_0_39 && !UNITY_6000_0_38 && !UNITY_6000_0_37 && !UNITY_6000_0_36 && !UNITY_6000_0_35 && !UNITY_6000_0_34 && !UNITY_6000_0_33 && !UNITY_6000_0_32 && !UNITY_6000_0_31 && !UNITY_6000_0_30 && !UNITY_6000_0_29 && !UNITY_6000_0_28 && !UNITY_6000_0_27 && !UNITY_6000_0_26 && !UNITY_6000_0_25 && !UNITY_6000_0_24 && !UNITY_6000_0_23 && !UNITY_6000_0_22 && !UNITY_6000_0_21 && !UNITY_6000_0_20 && !UNITY_6000_0_19 && !UNITY_6000_0_18 && !UNITY_6000_0_17 && !UNITY_6000_0_16 && !UNITY_6000_0_15 && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0 || UNITY_6000_2_OR_NEWER && !UNITY_6000_2_7 && !UNITY_6000_2_6 && !UNITY_6000_2_6 && !UNITY_6000_2_5 && !UNITY_6000_2_4 && !UNITY_6000_2_3 && !UNITY_6000_2_2 && !UNITY_6000_2_1 && !UNITY_6000_2_0
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Display Options", PropertyName = @"PlayerSettings.Android.DisplayOptions")]
+public class PlayerSettingsAndroidSetDisplayOptionsTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetDisplayOptionsTask(global::UnityEditor.AndroidDisplayOptions displayOptions)
+    {
+        this.displayOptions = displayOptions;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.displayOptions = this.displayOptions;
+    }
+    private readonly global::UnityEditor.AndroidDisplayOptions displayOptions;
+}
+partial class PlayerSettingsAndroidSetDisplayOptionsTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.displayOptions;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
 // [2023.1.0f1 - (latest)]
 #if UNITY_2023_1_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Static Batching For Platform", PropertyName = @"PlayerSettings.SetStaticBatchingForPlatform()")]
@@ -10962,6 +11029,9 @@ partial class PlayerSettingsSetStaticBatchingForPlatformTaskConfiguration : glob
 // [2023.1.0f1 - (latest)]
 #if UNITY_2023_1_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Dynamic Batching For Platform", PropertyName = @"PlayerSettings.SetDynamicBatchingForPlatform()")]
+#if UNITY_6000_5_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsSetDynamicBatchingForPlatformTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetDynamicBatchingForPlatformTask(global::System.Collections.Generic.IReadOnlyDictionary<global::UnityEditor.BuildTarget, global::System.Boolean> platform)
@@ -11461,6 +11531,31 @@ partial class PlayerSettingsAndroidSetRunWithoutFocusTaskConfiguration : global:
     }
 }
 #endif
+// [6000.0.56f1 - (6000.0 latest)], [6000.1.16f1 - (latest)]
+#if UNITY_6000_0_OR_NEWER && !UNITY_6000_1_OR_NEWER && !UNITY_6000_0_55 && !UNITY_6000_0_54 && !UNITY_6000_0_53 && !UNITY_6000_0_52 && !UNITY_6000_0_51 && !UNITY_6000_0_50 && !UNITY_6000_0_49 && !UNITY_6000_0_48 && !UNITY_6000_0_47 && !UNITY_6000_0_46 && !UNITY_6000_0_45 && !UNITY_6000_0_44 && !UNITY_6000_0_43 && !UNITY_6000_0_42 && !UNITY_6000_0_41 && !UNITY_6000_0_40 && !UNITY_6000_0_39 && !UNITY_6000_0_38 && !UNITY_6000_0_37 && !UNITY_6000_0_36 && !UNITY_6000_0_35 && !UNITY_6000_0_34 && !UNITY_6000_0_33 && !UNITY_6000_0_32 && !UNITY_6000_0_31 && !UNITY_6000_0_30 && !UNITY_6000_0_29 && !UNITY_6000_0_28 && !UNITY_6000_0_27 && !UNITY_6000_0_26 && !UNITY_6000_0_25 && !UNITY_6000_0_24 && !UNITY_6000_0_23 && !UNITY_6000_0_22 && !UNITY_6000_0_21 && !UNITY_6000_0_20 && !UNITY_6000_0_19 && !UNITY_6000_0_18 && !UNITY_6000_0_17 && !UNITY_6000_0_16 && !UNITY_6000_0_15 && !UNITY_6000_0_14 && !UNITY_6000_0_13 && !UNITY_6000_0_12 && !UNITY_6000_0_11 && !UNITY_6000_0_10 && !UNITY_6000_0_9 && !UNITY_6000_0_8 && !UNITY_6000_0_7 && !UNITY_6000_0_5 && !UNITY_6000_0_4 && !UNITY_6000_0_3 && !UNITY_6000_0_2 && !UNITY_6000_0_1 && !UNITY_6000_0_0 || UNITY_6000_1_OR_NEWER && !UNITY_6000_1_15 && !UNITY_6000_1_14 && !UNITY_6000_1_13 && !UNITY_6000_1_12 && !UNITY_6000_1_11 && !UNITY_6000_1_10 && !UNITY_6000_1_9 && !UNITY_6000_1_8 && !UNITY_6000_1_7 && !UNITY_6000_1_6 && !UNITY_6000_1_5 && !UNITY_6000_1_4 && !UNITY_6000_1_3 && !UNITY_6000_1_2 && !UNITY_6000_1_1 && !UNITY_6000_1_0
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: App Category", PropertyName = @"PlayerSettings.Android.AppCategory")]
+public class PlayerSettingsAndroidSetAppCategoryTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetAppCategoryTask(global::System.String appCategory)
+    {
+        this.appCategory = appCategory;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.appCategory = this.appCategory;
+    }
+    private readonly global::System.String appCategory;
+}
+partial class PlayerSettingsAndroidSetAppCategoryTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.appCategory;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
 // [6000.1.0f1 - (latest)]
 #if UNITY_6000_1_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Android Vulkan Device Filter List Asset", PropertyName = @"PlayerSettings.Android.AndroidVulkanDeviceFilterListAsset")]
@@ -11507,6 +11602,265 @@ partial class PlayerSettingsWebGLSetEnableSubmoduleStrippingCompatibilityTaskCon
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
         var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.WebGL.enableSubmoduleStrippingCompatibility;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.2.7f2 - (latest)]
+#if UNITY_6000_2_OR_NEWER && !UNITY_6000_2_6 && !UNITY_6000_2_6 && !UNITY_6000_2_5 && !UNITY_6000_2_4 && !UNITY_6000_2_3 && !UNITY_6000_2_2 && !UNITY_6000_2_1 && !UNITY_6000_2_0
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Device Filtering Asset", PropertyName = @"PlayerSettings.D3D12DeviceFilterListAsset")]
+public class PlayerSettingsSetD3D12DeviceFilterListAssetTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetD3D12DeviceFilterListAssetTask(global::UnityEngine.D3D12DeviceFilterLists d3D12DeviceFilterListAsset)
+    {
+        this.d3D12DeviceFilterListAsset = d3D12DeviceFilterListAsset;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.d3D12DeviceFilterListAsset = this.d3D12DeviceFilterListAsset;
+    }
+    private readonly global::UnityEngine.D3D12DeviceFilterLists d3D12DeviceFilterListAsset;
+}
+partial class PlayerSettingsSetD3D12DeviceFilterListAssetTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.d3D12DeviceFilterListAsset;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.4.1f1 - (latest)]
+#if UNITY_6000_4_OR_NEWER && !UNITY_6000_4_0
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Enable Direct Storage", PropertyName = @"PlayerSettings.EnableDirectStorage")]
+public class PlayerSettingsSetEnableDirectStorageTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetEnableDirectStorageTask(global::System.Boolean enableDirectStorage)
+    {
+        this.enableDirectStorage = enableDirectStorage;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.enableDirectStorage = this.enableDirectStorage;
+    }
+    private readonly global::System.Boolean enableDirectStorage;
+}
+partial class PlayerSettingsSetEnableDirectStorageTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.enableDirectStorage;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Il2Cpp LTOMode", PropertyName = @"PlayerSettings.SetIl2CppLTOMode()")]
+public class PlayerSettingsSetIl2CppLTOModeTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetIl2CppLTOModeTask(global::System.Collections.Generic.IReadOnlyDictionary<global::UnityEditor.Build.NamedBuildTarget, global::UnityEditor.Il2CppLTOMode> buildTarget)
+    {
+        this.buildTarget = buildTarget;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        foreach (var (__BUILDMAGIC__0, __BUILDMAGIC__1) in this.buildTarget)
+        {
+                global::UnityEditor.PlayerSettings.SetIl2CppLTOMode(__BUILDMAGIC__0, __BUILDMAGIC__1);
+        }
+    }
+    private readonly global::System.Collections.Generic.IReadOnlyDictionary<global::UnityEditor.Build.NamedBuildTarget, global::UnityEditor.Il2CppLTOMode> buildTarget;
+}
+partial class PlayerSettingsSetIl2CppLTOModeTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__1 = this.Value;
+        __BUILDMAGIC__1 = new();
+        foreach (var (__BUILDMAGIC__2, __BUILDMAGIC__3) in this.Value)
+        {
+                        __BUILDMAGIC__1[__BUILDMAGIC__2] = global::UnityEditor.PlayerSettings.GetIl2CppLTOMode(__BUILDMAGIC__2);
+        }
+        var __BUILDMAGIC__0 = __BUILDMAGIC__1;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Adjust iOS FPS based on thermal state", PropertyName = @"PlayerSettings.AdjustIOSFPSUsingThermalState")]
+public class PlayerSettingsSetAdjustIOSFPSUsingThermalStateTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetAdjustIOSFPSUsingThermalStateTask(global::System.Boolean adjustIOSFPSUsingThermalState)
+    {
+        this.adjustIOSFPSUsingThermalState = adjustIOSFPSUsingThermalState;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.adjustIOSFPSUsingThermalState = this.adjustIOSFPSUsingThermalState;
+    }
+    private readonly global::System.Boolean adjustIOSFPSUsingThermalState;
+}
+partial class PlayerSettingsSetAdjustIOSFPSUsingThermalStateTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.adjustIOSFPSUsingThermalState;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Filter Touches When Obscured", PropertyName = @"PlayerSettings.Android.FilterTouchesWhenObscured")]
+public class PlayerSettingsAndroidSetFilterTouchesWhenObscuredTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetFilterTouchesWhenObscuredTask(global::System.Boolean filterTouchesWhenObscured)
+    {
+        this.filterTouchesWhenObscured = filterTouchesWhenObscured;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.filterTouchesWhenObscured = this.filterTouchesWhenObscured;
+    }
+    private readonly global::System.Boolean filterTouchesWhenObscured;
+}
+partial class PlayerSettingsAndroidSetFilterTouchesWhenObscuredTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.filterTouchesWhenObscured;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Requested Visible Insets", PropertyName = @"PlayerSettings.Android.RequestedVisibleInsets")]
+public class PlayerSettingsAndroidSetRequestedVisibleInsetsTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetRequestedVisibleInsetsTask(global::UnityEditor.AndroidWindowInsetsType requestedVisibleInsets)
+    {
+        this.requestedVisibleInsets = requestedVisibleInsets;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.requestedVisibleInsets = this.requestedVisibleInsets;
+    }
+    private readonly global::UnityEditor.AndroidWindowInsetsType requestedVisibleInsets;
+}
+partial class PlayerSettingsAndroidSetRequestedVisibleInsetsTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.requestedVisibleInsets;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: System Bars Behavior", PropertyName = @"PlayerSettings.Android.SystemBarsBehavior")]
+public class PlayerSettingsAndroidSetSystemBarsBehaviorTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetSystemBarsBehaviorTask(global::UnityEditor.AndroidSystemBarsBehavior systemBarsBehavior)
+    {
+        this.systemBarsBehavior = systemBarsBehavior;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.systemBarsBehavior = this.systemBarsBehavior;
+    }
+    private readonly global::UnityEditor.AndroidSystemBarsBehavior systemBarsBehavior;
+}
+partial class PlayerSettingsAndroidSetSystemBarsBehaviorTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.systemBarsBehavior;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Xcode Project Type", PropertyName = @"PlayerSettings.XcodeProjectType")]
+public class PlayerSettingsSetXcodeProjectTypeTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetXcodeProjectTypeTask(global::UnityEditor.XcodeProjectType xcodeProjectType)
+    {
+        this.xcodeProjectType = xcodeProjectType;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.xcodeProjectType = this.xcodeProjectType;
+    }
+    private readonly global::UnityEditor.XcodeProjectType xcodeProjectType;
+}
+partial class PlayerSettingsSetXcodeProjectTypeTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.xcodeProjectType;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Switch: Ca Store Source", PropertyName = @"PlayerSettings.Switch.CaStoreSource")]
+public class PlayerSettingsSwitchSetCaStoreSourceTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSwitchSetCaStoreSourceTask(global::UnityEditor.PlayerSettings.Switch.SwitchCaStoreSource caStoreSource)
+    {
+        this.caStoreSource = caStoreSource;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Switch.caStoreSource = this.caStoreSource;
+    }
+    private readonly global::UnityEditor.PlayerSettings.Switch.SwitchCaStoreSource caStoreSource;
+}
+partial class PlayerSettingsSwitchSetCaStoreSourceTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Switch.caStoreSource;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.5.0f1 - (latest)]
+#if UNITY_6000_5_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Switch: Ca Store File Path", PropertyName = @"PlayerSettings.Switch.CaStoreFilePath")]
+public class PlayerSettingsSwitchSetCaStoreFilePathTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSwitchSetCaStoreFilePathTask(global::System.String caStoreFilePath)
+    {
+        this.caStoreFilePath = caStoreFilePath;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Switch.caStoreFilePath = this.caStoreFilePath;
+    }
+    private readonly global::System.String caStoreFilePath;
+}
+partial class PlayerSettingsSwitchSetCaStoreFilePathTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Switch.caStoreFilePath;
         this.Value = __BUILDMAGIC__0;
     }
 }
