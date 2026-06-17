@@ -7,7 +7,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal sealed class TabView : VisualElement, IDisposable
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    internal sealed partial class TabView : VisualElement, IDisposable
     {
         private const string SelectedClassName = "selected";
         private const string TabClassName = "tab";
@@ -55,9 +58,11 @@ namespace BuildMagic.Window.Editor.Elements
             GetAllTabs().ForEach(tab => { tab.UnregisterCallback<ClickEvent>(OnClick); });
         }
         
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UnityEngine.UIElements.UxmlFactory<TabView, BindableElement.UxmlTraits>
         {
         }
+#endif
 
         public void Dispose()
         {

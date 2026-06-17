@@ -10,7 +10,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal sealed class LeftPaneListEntryView : BindableElement
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    internal sealed partial class LeftPaneListEntryView : BindableElement
     {
         private readonly VisualElement _autoMark;
         private readonly Label _label;
@@ -49,8 +52,10 @@ namespace BuildMagic.Window.Editor.Elements
             _autoMark.style.visibility = Value == target ? Visibility.Visible : Visibility.Hidden;
         }
 
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<LeftPaneListEntryView, UxmlTraits>
         {
         }
+#endif
     }
 }

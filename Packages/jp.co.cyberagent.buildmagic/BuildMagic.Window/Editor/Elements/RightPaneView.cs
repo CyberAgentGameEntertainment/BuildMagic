@@ -15,7 +15,10 @@ using UnityEngine.UIElements;
 
 namespace BuildMagic.Window.Editor.Elements
 {
-    internal sealed class RightPaneView : VisualElement, IRightPaneView
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    internal sealed partial class RightPaneView : VisualElement, IRightPaneView
     {
         private readonly Button _addConfigurationButton;
         private readonly Foldout _internalPrepareConfigurationFoldout;
@@ -95,8 +98,10 @@ namespace BuildMagic.Window.Editor.Elements
                     : DisplayStyle.None;
         }
 
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<RightPaneView, UxmlTraits>
         {
         }
+#endif
     }
 }
