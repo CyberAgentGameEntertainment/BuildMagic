@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.0] - 2026-06-17
+
+### Added
+
+- Added support for Unity 6.3 - 6.5.
+
 ## [1.10.0] - 2026-05-14
 
 ### Added
