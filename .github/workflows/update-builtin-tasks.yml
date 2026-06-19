@@ -1,0 +1,105 @@
+name: Update Builtin Tasks
+
+# Regenerate the built-in build tasks (Tasks.*.g.cs) for newly released Unity versions
+# and open/update a Pull Request together with the persisted analysis cache (AnalysisCache/*.json).
+#
+# - schedule: periodic run (new tags are detected via the ls-remote pre-check)
+# - workflow_dispatch: manual run
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Every Monday 00:00 UTC (adjust the cadence as needed)
+  workflow_dispatch:
+    inputs:
+      force_analyze:
+        description: 'Ignore the cached analysis results and re-analyze all versions (-f)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  CACHE_DIR: BuildMagic.Externals/BuildMagic.BuiltinTaskGenerator/AnalysisCache
+  OUTPUT_DIR: ../../Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pre-check whether UnityCsReference has any new "f" release tags that are not yet cached.
+      # A manual run with force_analyze=true always proceeds.
+      - name: Check for new Unity versions
+        id: check
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event.inputs.force_analyze }}" = "true" ]; then
+            echo "force_analyze requested; running unconditionally."
+            echo "has_new=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          remote_tags=$(git ls-remote --tags https://github.com/Unity-Technologies/UnityCsReference.git \
+            | sed 's#.*refs/tags/##; s/\^{}//' \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+f[0-9]+$' \
+            | sort -u)
+
+          has_new=false
+          new_list=""
+          for tag in $remote_tags; do
+            major=${tag%%.*}
+            rest=${tag#*.}
+            minor=${rest%%.*}
+            # Ignore versions older than the default min version (2022.3.0f1).
+            if [ "$major" -lt 2022 ]; then continue; fi
+            if [ "$major" -eq 2022 ] && [ "$minor" -lt 3 ]; then continue; fi
+            if [ ! -f "$CACHE_DIR/$tag.json" ]; then
+              has_new=true
+              new_list="$new_list $tag"
+            fi
+          done
+
+          echo "has_new=$has_new" >> "$GITHUB_OUTPUT"
+          if [ "$has_new" = "true" ]; then
+            echo "New Unity versions detected:$new_list"
+          else
+            echo "No new Unity versions. Skipping generation."
+          fi
+
+      - uses: actions/setup-dotnet@v4
+        if: steps.check.outputs.has_new == 'true'
+        with:
+          dotnet-version: '10.0.x'
+
+      # A fresh full clone of UnityCsReference is performed by the tool itself.
+      # It is not cached: clones only happen on the rare runs that find a new version,
+      # and for a repo this size caching brings little benefit while consuming the cache quota.
+      - name: Run generator
+        if: steps.check.outputs.has_new == 'true'
+        env:
+          BUILDMAGIC_LIBRARY_PATH: ${{ github.workspace }}/${{ env.CACHE_DIR }}
+        working-directory: BuildMagic.Externals/BuildMagic.BuiltinTaskGenerator
+        run: |
+          dotnet run --configuration Release -- generate -o "$OUTPUT_DIR" \
+            ${{ github.event.inputs.force_analyze == 'true' && '-f' || '' }}
+
+      - name: Create or update Pull Request
+        if: steps.check.outputs.has_new == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: auto/update-builtin-tasks
+          title: 'chore: update builtin tasks for new Unity versions'
+          commit-message: 'chore: regenerate builtin tasks for new Unity versions'
+          body: |
+            Automatically generated built-in build tasks for newly released Unity versions.
+
+            - `Tasks.*.g.cs`: regenerated build tasks
+            - `AnalysisCache/*.json`: persisted analysis cache (ensures deterministic output)
+
+            This PR is created by the `Update Builtin Tasks` workflow. If it is left unmerged
+            and the workflow runs again, this branch will be updated in place.
+          add-paths: |
+            Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated/**
+            BuildMagic.Externals/BuildMagic.BuiltinTaskGenerator/AnalysisCache/**
