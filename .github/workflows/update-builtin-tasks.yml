@@ -14,9 +14,6 @@ on:
         description: 'Ignore the cached analysis results and re-analyze all versions (-f)'
         type: boolean
         default: false
-  push:
-    branches:
-      - feature/auto_taskgen
 
 permissions:
   contents: write
