@@ -21,15 +21,14 @@ public class AnalysisLibrary
 {
     private readonly ILogger<AnalysisLibrary> _logger;
 
-    private readonly string _path = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "BuildMagic.BuiltinTaskGenerator", "library");
+    private readonly string _path;
 
     private readonly Dictionary<UnityVersion, AnalysisResult> _results = new();
 
-    public AnalysisLibrary(ILogger<AnalysisLibrary> logger)
+    public AnalysisLibrary(ILogger<AnalysisLibrary> logger, string path)
     {
         _logger = logger;
+        _path = path;
         _logger.ZLogInformation($"Using library path: {_path}");
         Directory.CreateDirectory(_path);
     }
