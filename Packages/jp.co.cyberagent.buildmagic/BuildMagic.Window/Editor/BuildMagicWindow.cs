@@ -48,7 +48,7 @@ namespace BuildMagic.Window.Editor
                 _model = CreateInstance<BuildMagicWindowModel>();
                 _model.Initialize();
                 if (_modelCache != null)
-                    JsonUtility.FromJsonOverwrite(_modelCache, _model);
+                    EditorJsonUtility.FromJsonOverwrite(_modelCache, _model);
                 _modelCache = null;
                 _model.hideFlags = HideFlags.HideInHierarchy | HideFlags.DontSaveInEditor;
             }
@@ -75,7 +75,7 @@ namespace BuildMagic.Window.Editor
 
         public void OnBeforeSerialize()
         {
-            _modelCache = JsonUtility.ToJson(_model);
+            _modelCache = EditorJsonUtility.ToJson(_model);
         }
 
         public void OnAfterDeserialize()

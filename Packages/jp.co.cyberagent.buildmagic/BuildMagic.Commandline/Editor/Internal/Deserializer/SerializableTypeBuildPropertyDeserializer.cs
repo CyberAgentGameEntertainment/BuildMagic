@@ -3,7 +3,7 @@
 // --------------------------------------------------------------
 
 using System;
-using UnityEngine;
+using UnityEditor;
 
 namespace BuildMagicEditor.Commandline.Internal
 {
@@ -21,7 +21,9 @@ namespace BuildMagicEditor.Commandline.Internal
         /// <inheritdoc cref="IBuildPropertyDeserializer.Deserialize" />
         public object Deserialize(string value, Type valueType)
         {
-            return JsonUtility.FromJson(value, valueType);
+            var obj = Activator.CreateInstance(valueType);
+            EditorJsonUtility.FromJsonOverwrite(value, obj);
+            return obj;
         }
     }
 }
