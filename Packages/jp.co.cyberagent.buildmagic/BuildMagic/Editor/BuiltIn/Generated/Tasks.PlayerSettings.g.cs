@@ -667,7 +667,10 @@ partial class PlayerSettingsSetUseFlipModelSwapchainTaskConfiguration : global::
     }
 }
 // [2022.3.0f1 - (latest)]
-[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Require ES3.1", PropertyName = @"PlayerSettings.OpenGLRequireES31")]
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Open GLRequire ES31", PropertyName = @"PlayerSettings.OpenGLRequireES31")]
+#if UNITY_6000_6_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsSetOpenGLRequireES31Task : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSetOpenGLRequireES31Task(global::System.Boolean openGLRequireES31)
@@ -6632,6 +6635,9 @@ partial class PlayerSettingsSwitchSetUseSwitchCPUProfilerTaskConfiguration : glo
 }
 // [2022.3.0f1 - (latest)]
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Switch: Switch LTOSetting", PropertyName = @"PlayerSettings.Switch.SwitchLTOSetting")]
+#if UNITY_6000_6_OR_NEWER
+[global::System.Obsolete]
+#endif
 public class PlayerSettingsSwitchSetSwitchLTOSettingTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
 {
     public PlayerSettingsSwitchSetSwitchLTOSettingTask(global::System.Int32 switchLTOSetting)
@@ -11026,10 +11032,10 @@ partial class PlayerSettingsSetStaticBatchingForPlatformTaskConfiguration : glob
     }
 }
 #endif
-// [2023.1.0f1 - (latest)]
-#if UNITY_2023_1_OR_NEWER
+// [2023.1.0f1 - (6000.5 latest)]
+#if !UNITY_6000_6_OR_NEWER && UNITY_2023_1_OR_NEWER
 [global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Dynamic Batching For Platform", PropertyName = @"PlayerSettings.SetDynamicBatchingForPlatform()")]
-#if UNITY_6000_5_OR_NEWER
+#if UNITY_6000_5_OR_NEWER && !UNITY_6000_6_OR_NEWER
 [global::System.Obsolete]
 #endif
 public class PlayerSettingsSetDynamicBatchingForPlatformTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
@@ -11861,6 +11867,140 @@ partial class PlayerSettingsSwitchSetCaStoreFilePathTaskConfiguration : global::
     void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
     {
         var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Switch.caStoreFilePath;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.6.0f1 - (latest)]
+#if UNITY_6000_6_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Managed Code Variant", PropertyName = @"PlayerSettings.SetManagedCodeVariant()")]
+public class PlayerSettingsSetManagedCodeVariantTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetManagedCodeVariantTask(global::System.Collections.Generic.IReadOnlyDictionary<global::UnityEditor.Build.NamedBuildTarget, global::UnityEditor.ManagedCodeVariant> buildTarget)
+    {
+        this.buildTarget = buildTarget;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        foreach (var (__BUILDMAGIC__0, __BUILDMAGIC__1) in this.buildTarget)
+        {
+                global::UnityEditor.PlayerSettings.SetManagedCodeVariant(__BUILDMAGIC__0, __BUILDMAGIC__1);
+        }
+    }
+    private readonly global::System.Collections.Generic.IReadOnlyDictionary<global::UnityEditor.Build.NamedBuildTarget, global::UnityEditor.ManagedCodeVariant> buildTarget;
+}
+partial class PlayerSettingsSetManagedCodeVariantTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__1 = this.Value;
+        __BUILDMAGIC__1 = new();
+        foreach (var (__BUILDMAGIC__2, __BUILDMAGIC__3) in this.Value)
+        {
+                        __BUILDMAGIC__1[__BUILDMAGIC__2] = global::UnityEditor.PlayerSettings.GetManagedCodeVariant(__BUILDMAGIC__2);
+        }
+        var __BUILDMAGIC__0 = __BUILDMAGIC__1;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.6.0f1 - (latest)]
+#if UNITY_6000_6_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Call OnDisable On AssetBundle Unload", PropertyName = @"PlayerSettings.CallOnDisableOnAssetBundleUnload")]
+public class PlayerSettingsSetCallOnDisableOnAssetBundleUnloadTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetCallOnDisableOnAssetBundleUnloadTask(global::System.Boolean callOnDisableOnAssetBundleUnload)
+    {
+        this.callOnDisableOnAssetBundleUnload = callOnDisableOnAssetBundleUnload;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.callOnDisableOnAssetBundleUnload = this.callOnDisableOnAssetBundleUnload;
+    }
+    private readonly global::System.Boolean callOnDisableOnAssetBundleUnload;
+}
+partial class PlayerSettingsSetCallOnDisableOnAssetBundleUnloadTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.callOnDisableOnAssetBundleUnload;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.6.0f1 - (latest)]
+#if UNITY_6000_6_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings: Device Filtering Asset", PropertyName = @"PlayerSettings.WebGPUDeviceFilterListAsset")]
+public class PlayerSettingsSetWebGPUDeviceFilterListAssetTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsSetWebGPUDeviceFilterListAssetTask(global::UnityEngine.WebGPUDeviceFilterLists webGPUDeviceFilterListAsset)
+    {
+        this.webGPUDeviceFilterListAsset = webGPUDeviceFilterListAsset;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.webGPUDeviceFilterListAsset = this.webGPUDeviceFilterListAsset;
+    }
+    private readonly global::UnityEngine.WebGPUDeviceFilterLists webGPUDeviceFilterListAsset;
+}
+partial class PlayerSettingsSetWebGPUDeviceFilterListAssetTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.webGPUDeviceFilterListAsset;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.6.0f1 - (latest)]
+#if UNITY_6000_6_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.Android: Gamepad Support Level", PropertyName = @"PlayerSettings.Android.GamepadSupportLevel")]
+public class PlayerSettingsAndroidSetGamepadSupportLevelTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsAndroidSetGamepadSupportLevelTask(global::UnityEditor.AndroidGamepadSupportLevel gamepadSupportLevel)
+    {
+        this.gamepadSupportLevel = gamepadSupportLevel;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.Android.gamepadSupportLevel = this.gamepadSupportLevel;
+    }
+    private readonly global::UnityEditor.AndroidGamepadSupportLevel gamepadSupportLevel;
+}
+partial class PlayerSettingsAndroidSetGamepadSupportLevelTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.Android.gamepadSupportLevel;
+        this.Value = __BUILDMAGIC__0;
+    }
+}
+#endif
+// [6000.6.0f1 - (latest)]
+#if UNITY_6000_6_OR_NEWER
+[global::BuildMagicEditor.GenerateBuildTaskAccessories(@"PlayerSettings.WebGL: Progressive Asset Loading", PropertyName = @"PlayerSettings.WebGL.ProgressiveAssetLoading")]
+public class PlayerSettingsWebGLSetProgressiveAssetLoadingTask : global::BuildMagicEditor.BuildTaskBase<global::BuildMagicEditor.IPreBuildContext>
+{
+    public PlayerSettingsWebGLSetProgressiveAssetLoadingTask(global::System.Boolean progressiveAssetLoading)
+    {
+        this.progressiveAssetLoading = progressiveAssetLoading;
+    }
+
+    public override void Run(global::BuildMagicEditor.IPreBuildContext context)
+    {
+        global::UnityEditor.PlayerSettings.WebGL.progressiveAssetLoading = this.progressiveAssetLoading;
+    }
+    private readonly global::System.Boolean progressiveAssetLoading;
+}
+partial class PlayerSettingsWebGLSetProgressiveAssetLoadingTaskConfiguration : global::BuildMagicEditor.IProjectSettingApplier
+{
+    void global::BuildMagicEditor.IProjectSettingApplier.ApplyProjectSetting()
+    {
+        var __BUILDMAGIC__0 = global::UnityEditor.PlayerSettings.WebGL.progressiveAssetLoading;
         this.Value = __BUILDMAGIC__0;
     }
 }
