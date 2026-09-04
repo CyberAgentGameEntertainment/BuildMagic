@@ -84,7 +84,7 @@ namespace BuildMagic.Window.Editor.SubWindows
             foreach (var parent in rootItems)
             {
                 sortChildrenMethod!.Invoke(parent, parameters);
-                if (parent.children.Any())
+                if (parent.GetChildren().Any())
                     continue;
                 parent.AddChild(new AdvancedDropdownItem("Configurations are not found.") {enabled = false});
             }
@@ -106,7 +106,7 @@ namespace BuildMagic.Window.Editor.SubWindows
                 for (var i = 0; i < split.Length - 1; i++)
                 {
                     var name = split[i];
-                    var child = currentParent.children.FirstOrDefault(c => c.name == name);
+                    var child = currentParent.GetChildren().FirstOrDefault(c => c.name == name);
                     if (child == null)
                     {
                         child = new AdvancedDropdownItem(name);
@@ -120,9 +120,9 @@ namespace BuildMagic.Window.Editor.SubWindows
             
             int Compare(AdvancedDropdownItem a, AdvancedDropdownItem b)
             {
-                if (a.children.Any() && !b.children.Any())
+                if (a.GetChildren().Any() && !b.GetChildren().Any())
                     return -1;
-                if (!a.children.Any() && b.children.Any())
+                if (!a.GetChildren().Any() && b.GetChildren().Any())
                     return 1;
                 
                 return string.CompareOrdinal(a.name, b.name);
