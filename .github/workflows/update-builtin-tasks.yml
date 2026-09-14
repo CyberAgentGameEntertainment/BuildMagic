@@ -3,6 +3,10 @@ name: Update Builtin Tasks
 # Regenerate the built-in build tasks (Tasks.*.g.cs) for newly released Unity versions
 # and open/update a Pull Request together with the persisted analysis cache (AnalysisCache/*.json).
 #
+# When a new Unity version turns out to produce no change in the generated code, no Pull Request
+# is created. The analysis cache is still committed to the working branch so that the next run can
+# reuse it instead of analyzing the same version again.
+#
 # - schedule: periodic run (new tags are detected via the ls-remote pre-check)
 # - workflow_dispatch: manual run
 on:
@@ -20,14 +24,40 @@ permissions:
   pull-requests: write
 
 env:
+  BRANCH: auto/update-builtin-tasks
   CACHE_DIR: BuildMagic.Externals/BuildMagic.BuiltinTaskGenerator/AnalysisCache
+  GENERATED_DIR: Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated
   OUTPUT_DIR: ../../Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
+      # The working branch has to be committed to and pushed from this checkout, so the full
+      # history is fetched instead of the default shallow clone.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Restore the analysis cache accumulated on the working branch, so that versions already
+      # analyzed by a previous run are not analyzed again. Only the cache directory is restored:
+      # the checked out branch stays the default branch so that a Pull Request is still opened
+      # against it.
+      - name: Restore analysis cache from the working branch
+        run: |
+          set -euo pipefail
+          if ! git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            echo "Branch $BRANCH does not exist yet; using the cache on the default branch."
+            exit 0
+          fi
+
+          git fetch origin "$BRANCH"
+          if git checkout "origin/$BRANCH" -- "$CACHE_DIR"; then
+            git reset --quiet -- "$CACHE_DIR"
+            echo "Restored the analysis cache from $BRANCH."
+          else
+            echo "Branch $BRANCH has no analysis cache; using the cache on the default branch."
+          fi
 
       # Pre-check whether UnityCsReference has any new "f" release tags that are not yet cached.
       # A manual run with force_analyze=true always proceeds.
@@ -85,11 +115,35 @@ jobs:
           dotnet run --configuration Release -- generate -o "$OUTPUT_DIR" \
             ${{ github.event.inputs.force_analyze == 'true' && '-f' || '' }}
 
-      - name: Create or update Pull Request
+      # Distinguish "the generated code changed" from "only the analysis cache changed".
+      # Both are measured against the checked out default branch.
+      - name: Detect changes
+        id: diff
         if: steps.check.outputs.has_new == 'true'
+        run: |
+          set -euo pipefail
+          git add --all -- "$GENERATED_DIR" "$CACHE_DIR"
+
+          if git diff --cached --quiet HEAD -- "$GENERATED_DIR"; then
+            code_changed=false
+          else
+            code_changed=true
+          fi
+          if git diff --cached --quiet HEAD -- "$CACHE_DIR"; then
+            cache_changed=false
+          else
+            cache_changed=true
+          fi
+
+          echo "code_changed=$code_changed" >> "$GITHUB_OUTPUT"
+          echo "cache_changed=$cache_changed" >> "$GITHUB_OUTPUT"
+          echo "Generated code changed: $code_changed / analysis cache changed: $cache_changed"
+
+      - name: Create or update Pull Request
+        if: steps.diff.outputs.code_changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: auto/update-builtin-tasks
+          branch: ${{ env.BRANCH }}
           title: 'chore: update builtin tasks for new Unity versions'
           commit-message: 'chore: regenerate builtin tasks for new Unity versions'
           body: |
@@ -103,3 +157,36 @@ jobs:
           add-paths: |
             Packages/jp.co.cyberagent.buildmagic/BuildMagic/Editor/BuiltIn/Generated/**
             BuildMagic.Externals/BuildMagic.BuiltinTaskGenerator/AnalysisCache/**
+
+      # No Pull Request is worth opening, but the analysis results are still worth keeping:
+      # commit them to the working branch so that the next run can reuse them.
+      - name: Commit analysis cache only
+        if: steps.diff.outputs.code_changed == 'false' && steps.diff.outputs.cache_changed == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          # Keep the freshly generated cache aside, because switching branches discards it.
+          staging=$(mktemp -d)
+          cp -R "$CACHE_DIR/." "$staging/"
+
+          if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout --force -B "$BRANCH" "origin/$BRANCH"
+          else
+            git checkout --force -B "$BRANCH"
+          fi
+
+          mkdir -p "$CACHE_DIR"
+          cp -R "$staging/." "$CACHE_DIR/"
+          git add --all -- "$CACHE_DIR"
+
+          if git diff --cached --quiet HEAD -- "$CACHE_DIR"; then
+            echo "The working branch already contains this analysis cache; nothing to commit."
+            exit 0
+          fi
+
+          git commit -m 'chore: update analysis cache for new Unity versions'
+          git push origin "$BRANCH"
+          echo "Committed the analysis cache to $BRANCH without opening a Pull Request."
