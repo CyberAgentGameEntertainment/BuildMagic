@@ -5,6 +5,7 @@
 using System;
 using System.Reflection;
 using BuildMagicEditor;
+using UnityEditor;
 using UnityEngine;
 
 namespace BuildMagic.Window.Editor.Utilities
@@ -22,7 +23,11 @@ namespace BuildMagic.Window.Editor.Utilities
         private string _valueJson;
         
         private Type _cachedType;
-        
+
+        private SerializableConfiguration()
+        {
+        }
+
         public SerializableConfiguration(IBuildConfiguration configuration)
         {
             if (configuration == null)
@@ -32,7 +37,7 @@ namespace BuildMagic.Window.Editor.Utilities
             _assemblyName = type.Assembly.FullName;
             _className = type.FullName;
             _cachedType = type;
-            _valueJson = JsonUtility.ToJson(configuration, true);
+            _valueJson = EditorJsonUtility.ToJson(configuration, true);
         }
 
         public Type ConfigurationType => _cachedType;
@@ -42,8 +47,9 @@ namespace BuildMagic.Window.Editor.Utilities
         {
             if (string.IsNullOrEmpty(json))
                 throw new ArgumentException("JSON cannot be null or empty.", nameof(json));
-            
-            var obj = JsonUtility.FromJson<SerializableConfiguration>(json);
+
+            var obj = new SerializableConfiguration();
+            EditorJsonUtility.FromJsonOverwrite(json, obj);
             if (obj == null)
                 throw new InvalidOperationException("Failed to deserialize SerializableConfiguration from JSON.");
             
